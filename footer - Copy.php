@@ -1,0 +1,40 @@
+<?php
+// footer.php - Page Footer and Shared Scripts
+$flash = getFlash();
+?>
+    </div>
+
+    <!-- Sidebar Drawer JavaScript Toggle Helper -->
+    <script>
+        function toggleSidebar() {
+            toggleMainSidebar();
+        }
+    </script>
+
+    <!-- SweetAlert2 Toast Notifications -->
+    <?php if ($flash): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+                background: '#11192e',
+                color: '#f8fafc',
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: <?= json_encode($flash['type'] === 'error' ? 'error' : ($flash['type'] === 'warning' ? 'warning' : 'success')) ?>,
+                title: <?= json_encode($flash['message']) ?>
+            });
+        });
+    </script>
+    <?php endif; ?>
+</body>
+</html>

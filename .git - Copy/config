@@ -1,0 +1,12 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[remote "Enter"]
+	url = https://github.com/UtsavGupta1737/GeoGuardians.git
+	fetch = +refs/heads/*:refs/remotes/Enter/*
+[branch "main"]
+	vscode-merge-base = Enter/main
