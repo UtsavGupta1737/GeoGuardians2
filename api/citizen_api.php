@@ -1,6 +1,6 @@
 <?php
 // api/citizen_api.php - AJAX API for Citizen Emergency Portal
-header('Content-Type: application/json; charset=utf-8');
+if (!headers_sent()) { header('Content-Type: application/json; charset=utf-8'); }
 require_once __DIR__ . '/../auth.php';
 
 $action = $_GET['action'] ?? $_POST['action'] ?? '';

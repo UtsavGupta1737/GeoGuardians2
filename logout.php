@@ -7,6 +7,9 @@ if (isLoggedIn()) {
     logoutUser();
 }
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 setFlash('info', 'You have been successfully signed out.');
 header("Location: login.php");
 exit;

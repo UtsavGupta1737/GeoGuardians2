@@ -248,7 +248,36 @@ function initializeDatabase(PDO $pdo) {
         FOREIGN KEY (assigned_task_id) REFERENCES volunteer_tasks(id) ON DELETE SET NULL
     );");
 
-    // 12. Department Agency Stations / Centers table
+    // 12. Facilities & Shelters table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS facilities (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        type TEXT NOT NULL, -- 'Hospital', 'Relief Shelter', 'Fire Station', 'Police Station'
+        latitude REAL NOT NULL,
+        longitude REAL NOT NULL,
+        total_capacity INTEGER DEFAULT 100,
+        available_capacity INTEGER DEFAULT 50,
+        contact TEXT,
+        status TEXT DEFAULT 'Operational'
+    );");
+
+    $facCount = $pdo->query("SELECT COUNT(*) FROM facilities")->fetchColumn();
+    if ($facCount == 0) {
+        $facStmt = $pdo->prepare("INSERT INTO facilities (id, name, type, latitude, longitude, total_capacity, available_capacity, contact, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $sampleFacilities = [
+            ['HOSP-01', 'District Multi-Specialty Hospital', 'Hospital', 28.4800, 77.4800, 150, 42, '+91 120-2500111', 'Operational'],
+            ['HOSP-02', 'Apex Trauma & Emergency Care', 'Hospital', 28.5200, 77.3800, 80, 12, '+91 120-2500222', 'Near Capacity'],
+            ['SHELTER-01', 'Sector 4 Community Relief Shelter', 'Relief Shelter', 28.4400, 77.5200, 300, 120, '+91 9876500001', 'Operational'],
+            ['SHELTER-02', 'Govt. Stadium Evacuation Camp', 'Relief Shelter', 28.6000, 77.2200, 500, 80, '+91 9876500002', 'Near Capacity'],
+            ['FIRE-01', 'Central Fire & Rescue Depot', 'Fire Station', 28.5400, 77.4100, 50, 50, '101', 'Operational'],
+            ['POLICE-01', 'Sector 12 Police Command Hub', 'Police Station', 28.4600, 77.4900, 60, 60, '112', 'Operational']
+        ];
+        foreach ($sampleFacilities as $sf) {
+            $facStmt->execute($sf);
+        }
+    }
+
+    // 13. Department Agency Stations / Centers table
     $pdo->exec("CREATE TABLE IF NOT EXISTS agency_stations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         agency_type TEXT NOT NULL, -- 'Police', 'Fire', 'Medical'

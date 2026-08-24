@@ -2,19 +2,10 @@
 // login.php - DisasterSafe Unified Multi-Role Authentication Portal
 require_once __DIR__ . '/auth.php';
 
-// Redirect if already logged in
-if (isLoggedIn()) {
-    $user = getCurrentUser($pdo);
-    if ($user) {
-        header("Location: " . getRoleHomeUrl($user));
-        exit;
-    }
-}
-
 $error = '';
 $success = '';
 
-// Handle quick login demo switch if requested via URL query
+// 1. Handle quick login demo switch if requested via URL query (Takes Precedence over existing session)
 if (isset($_GET['quick_login']) && !empty($_GET['quick_login'])) {
     $quickEmail = trim($_GET['quick_login']);
     $stmt = $pdo->prepare("SELECT u.*, r.slug as role_slug FROM users u JOIN roles r ON u.role_id = r.id WHERE u.email = ? LIMIT 1");
@@ -29,12 +20,15 @@ if (isset($_GET['quick_login']) && !empty($_GET['quick_login'])) {
 
         logActivity($pdo, 'LOGIN_SUCCESS', "Quick demo login as {$user['name']} ({$user['email']})");
         setFlash('success', "Welcome back, {$user['name']}!");
-        header("Location: " . getRoleHomeUrl($user['role_slug']));
+        $destination = getRoleHomeUrl($user['role_slug']);
+        header("Location: " . $destination);
         exit;
+    } else {
+        $error = "User '{$quickEmail}' not found or inactive.";
     }
 }
 
-// Handle Form Submission
+// 2. Handle Form Submission (Takes Precedence over existing session)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
@@ -67,7 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 logActivity($pdo, 'LOGIN_SUCCESS', "User {$user['name']} logged in successfully");
                 setFlash('success', "Welcome back, {$user['name']}!");
-                header("Location: " . getRoleHomeUrl($user['role_slug']));
+                $destination = getRoleHomeUrl($user['role_slug']);
+                header("Location: " . $destination);
                 exit;
             }
         } else {
@@ -77,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$activeLoggedInUser = isLoggedIn() ? getCurrentUser($pdo) : null;
 $csrfToken = generateCsrfToken();
 $flash = getFlash();
 ?>
@@ -204,6 +200,25 @@ $flash = getFlash();
                     </div>
                 </div>
 
+                <?php if ($activeLoggedInUser): ?>
+                    <div class="mb-5 p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                        <div class="flex items-center gap-2 overflow-hidden">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                            <div class="truncate">
+                                <span class="text-slate-400">Signed in as:</span> <strong class="text-white"><?= htmlspecialchars($activeLoggedInUser['name']) ?></strong> <span class="text-indigo-400 font-semibold">(<?= htmlspecialchars($activeLoggedInUser['role_name'] ?? $activeLoggedInUser['role_slug']) ?>)</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <a href="<?= htmlspecialchars(getRoleHomeUrl($activeLoggedInUser)) ?>" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] transition-colors">
+                                Dashboard &rarr;
+                            </a>
+                            <a href="logout.php" class="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-[11px] transition-colors">
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <?php if (!empty($error)): ?>
                     <div class="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-start gap-2.5">
                         <i class="fa-solid fa-triangle-exclamation text-rose-400 text-sm mt-0.5 shrink-0"></i>
@@ -211,9 +226,21 @@ $flash = getFlash();
                     </div>
                 <?php endif; ?>
 
-                <?php if ($flash && $flash['type'] === 'success'): ?>
-                    <div class="mb-5 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-start gap-2.5">
-                        <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                <?php if ($flash): ?>
+                    <?php 
+                    $fBg = match($flash['type']) {
+                        'success' => 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
+                        'info' => 'bg-blue-500/10 border-blue-500/30 text-blue-400',
+                        default => 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                    };
+                    $fIcon = match($flash['type']) {
+                        'success' => 'fa-circle-check text-emerald-400',
+                        'info' => 'fa-circle-info text-blue-400',
+                        default => 'fa-triangle-exclamation text-rose-400'
+                    };
+                    ?>
+                    <div class="mb-5 p-3.5 rounded-xl border <?= $fBg ?> text-xs flex items-start gap-2.5">
+                        <i class="fa-solid <?= $fIcon ?> text-sm mt-0.5 shrink-0"></i>
                         <div><?= htmlspecialchars($flash['message']) ?></div>
                     </div>
                 <?php endif; ?>

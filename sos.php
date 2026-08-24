@@ -9,8 +9,8 @@ $isSuperAdmin = isSuperAdmin($currentUser);
 $hasSosAccess = $isSuperAdmin || hasPermission($currentUser, 'access_sos_database');
 
 if (!$hasSosAccess) {
-    setFlash('error', 'Access Restricted: Standard citizens can transmit distress beacons from the Citizen Portal.');
-    header("Location: citizen.php");
+    setFlash('error', 'Access Restricted: You do not have access to the SOS triage database.');
+    header("Location: " . getRoleHomeUrl($currentUser));
     exit;
 }
 
