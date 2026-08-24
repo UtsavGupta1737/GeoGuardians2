@@ -1,5 +1,5 @@
 <?php
-// footer.php - Page Footer and Shared Scripts
+// footer.php - Page Footer and Shared Scripts (Government Theme)
 $flash = getFlash();
 ?>
     </div>
@@ -21,8 +21,11 @@ $flash = getFlash();
                 showConfirmButton: false,
                 timer: 4000,
                 timerProgressBar: true,
-                background: '#11192e',
-                color: '#f8fafc',
+                background: '#ffffff',
+                color: '#0f172a',
+                customClass: {
+                    popup: 'border border-slate-200 shadow-xl rounded-2xl'
+                },
                 didOpen: (toast) => {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
                     toast.addEventListener('mouseleave', Swal.resumeTimer)

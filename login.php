@@ -1,5 +1,5 @@
 <?php
-// login.php - DisasterSafe Unified Multi-Role Authentication Portal
+// login.php - DisasterSafe Unified Multi-Role Authentication Portal (Government Theme)
 require_once __DIR__ . '/auth.php';
 
 $error = '';
@@ -77,13 +77,13 @@ $csrfToken = generateCsrfToken();
 $flash = getFlash();
 ?>
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#0a0f1d]">
+<html lang="en" class="h-full bg-[#f8fafc]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In | DisasterSafe Command Center</title>
     
-    <!-- Google Fonts: Inter -->
+    <!-- Google Fonts: Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -97,14 +97,6 @@ $flash = getFlash();
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        navy: {
-                            950: '#060a14',
-                            900: '#0a0f1d',
-                            800: '#11192e',
-                            700: '#1c2b4e'
-                        }
-                    },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace']
@@ -114,72 +106,72 @@ $flash = getFlash();
         }
     </script>
 </head>
-<body class="h-full font-sans bg-[#0a0f1d] text-slate-100 antialiased flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-x-hidden">
+<body class="h-full font-sans bg-[#f8fafc] text-slate-800 antialiased flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-x-hidden">
 
     <!-- Background Decorative Glows -->
-    <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-100/60 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-rose-100/60 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="w-full max-w-5xl grid lg:grid-cols-12 gap-8 items-center relative z-10">
         
         <!-- Left Side: System Introduction & 1-Click Test Drive -->
         <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
             
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold">
-                <i class="fa-solid fa-shield-halved text-xs text-indigo-400"></i>
-                <span>Disaster Management & Multi-Agency Suite</span>
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold shadow-2xs">
+                <i class="fa-solid fa-shield-halved text-xs text-[#1d63d8]"></i>
+                <span>Disaster Management &amp; Multi-Agency Suite</span>
             </div>
 
             <div class="flex items-center justify-center lg:justify-start gap-3.5">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-indigo-600 flex items-center justify-center font-black text-white text-2xl shadow-lg shadow-indigo-600/30">
-                    <i class="fa-solid fa-shield-halved"></i>
+                <div class="w-12 h-12 rounded-2xl bg-[#0f172a] text-white flex items-center justify-center font-black text-2xl shadow-sm">
+                    <i class="fa-solid fa-shield-halved text-white text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">DisasterSafe</h1>
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Tactical Command Center</span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Disaster<span class="text-[#1d63d8]">Safe</span></h1>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest mono">Government Crisis Command</span>
                 </div>
             </div>
 
-            <p class="text-sm text-slate-400 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                Centralized crisis coordination platform linking **Superadmin Command**, **Police Emergency Dispatch**, and **Volunteer Relief Corps** with real-time geospatial radar tracking.
+            <p class="text-sm text-slate-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                Centralized crisis coordination platform linking <strong>Superadmin Command</strong>, <strong>Police &amp; NDRF Dispatch</strong>, and <strong>Volunteer Relief Corps</strong> with real-time geospatial radar tracking.
             </p>
 
             <!-- 1-Click Demo Accounts Grid (7 Specialized Roles) -->
-            <div class="p-4 rounded-2xl bg-[#11192e] border border-[#243049]">
-                <div class="flex items-center justify-between mb-2.5">
-                    <span class="text-xs font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-bolt text-amber-400"></i>
+            <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5 mono">
+                        <i class="fa-solid fa-bolt text-amber-500"></i>
                         1-Click Test Drive (7 Role Hierarchy)
                     </span>
-                    <span class="text-[10px] text-slate-500">Instant Access</span>
+                    <span class="text-[10px] text-slate-400 font-semibold mono">Instant Access</span>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    <a href="login.php?quick_login=superadmin@system.local" class="px-2 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs font-bold text-center transition-all hover:scale-[1.02]">
-                        <i class="fa-solid fa-crown text-[10px] block mb-1 text-purple-400"></i>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    <a href="login.php?quick_login=superadmin@system.local" class="px-2.5 py-2.5 rounded-2xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-900 text-xs font-bold text-center transition-all hover:scale-[1.02] shadow-2xs">
+                        <i class="fa-solid fa-crown text-xs block mb-1 text-purple-600"></i>
                         Superadmin
                     </a>
-                    <a href="login.php?quick_login=ndrf.commander@disaster.local" class="px-2 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-orange-300 text-xs font-bold text-center transition-all hover:scale-[1.02]">
-                        <i class="fa-solid fa-truck-monster text-[10px] block mb-1 text-orange-400"></i>
+                    <a href="login.php?quick_login=ndrf.commander@disaster.local" class="px-2.5 py-2.5 rounded-2xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-900 text-xs font-bold text-center transition-all hover:scale-[1.02] shadow-2xs">
+                        <i class="fa-solid fa-truck-monster text-xs block mb-1 text-orange-600"></i>
                         NDRF Force
                     </a>
-                    <a href="login.php?quick_login=police.command@disaster.local" class="px-2 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold text-center transition-all hover:scale-[1.02]">
-                        <i class="fa-solid fa-person-military-pointing text-[10px] block mb-1 text-blue-400"></i>
+                    <a href="login.php?quick_login=police.command@disaster.local" class="px-2.5 py-2.5 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-900 text-xs font-bold text-center transition-all hover:scale-[1.02] shadow-2xs">
+                        <i class="fa-solid fa-person-military-pointing text-xs block mb-1 text-blue-600"></i>
                         Police Command
                     </a>
-                    <a href="login.php?quick_login=fire.chief@disaster.local" class="px-2 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 text-xs font-bold text-center transition-all hover:scale-[1.02]">
-                        <i class="fa-solid fa-fire-extinguisher text-[10px] block mb-1 text-red-400"></i>
-                        Fire & Rescue
+                    <a href="login.php?quick_login=fire.chief@disaster.local" class="px-2.5 py-2.5 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-900 text-xs font-bold text-center transition-all hover:scale-[1.02] shadow-2xs">
+                        <i class="fa-solid fa-fire-extinguisher text-xs block mb-1 text-red-600"></i>
+                        Fire &amp; Rescue
                     </a>
-                    <a href="login.php?quick_login=medical.ems@disaster.local" class="px-2 py-2 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-teal-300 text-xs font-bold text-center transition-all hover:scale-[1.02]">
-                        <i class="fa-solid fa-heart-pulse text-[10px] block mb-1 text-teal-400"></i>
+                    <a href="login.php?quick_login=medical.ems@disaster.local" class="px-2.5 py-2.5 rounded-2xl bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-900 text-xs font-bold text-center transition-all hover:scale-[1.02] shadow-2xs">
+                        <i class="fa-solid fa-heart-pulse text-xs block mb-1 text-teal-600"></i>
                         Medical / EMS
                     </a>
-                    <a href="login.php?quick_login=volunteer@disaster.local" class="px-2 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-bold text-center transition-all hover:scale-[1.02]">
-                        <i class="fa-solid fa-hand-holding-heart text-[10px] block mb-1 text-emerald-400"></i>
+                    <a href="login.php?quick_login=volunteer@disaster.local" class="px-2.5 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 text-xs font-bold text-center transition-all hover:scale-[1.02] shadow-2xs">
+                        <i class="fa-solid fa-hand-holding-heart text-xs block mb-1 text-emerald-600"></i>
                         Volunteer Corps
                     </a>
-                    <a href="login.php?quick_login=citizen@example.com" class="col-span-2 sm:col-span-3 px-2 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-bold text-center transition-all hover:scale-[1.02] flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-user text-xs text-slate-400"></i>
+                    <a href="login.php?quick_login=citizen@example.com" class="col-span-2 sm:col-span-3 px-3 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-bold text-center transition-all hover:scale-[1.02] flex items-center justify-center gap-2 shadow-2xs">
+                        <i class="fa-solid fa-user text-xs text-slate-600"></i>
                         <span>Public Citizen (Standard Civilian)</span>
                     </a>
                 </div>
@@ -188,31 +180,31 @@ $flash = getFlash();
 
         <!-- Right Side: Login Form Card -->
         <div class="lg:col-span-6 max-w-md mx-auto w-full">
-            <div class="bg-[#11192e] backdrop-blur-xl border border-[#243049] rounded-3xl p-6 sm:p-8 shadow-2xl">
+            <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl">
                 
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                        <i class="fa-solid fa-lock text-white text-lg"></i>
+                <div class="flex items-center gap-3.5 mb-6">
+                    <div class="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-200 text-[#1d63d8] flex items-center justify-center font-bold text-lg shadow-2xs">
+                        <i class="fa-solid fa-lock text-base"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-white">Sign In to Command Center</h2>
-                        <p class="text-xs text-slate-400">Enter your credentials or use 1-click test drive</p>
+                        <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Command Sign In</h2>
+                        <p class="text-xs text-slate-500 font-medium">Enter credentials or use 1-click test drive</p>
                     </div>
                 </div>
 
                 <?php if ($activeLoggedInUser): ?>
-                    <div class="mb-5 p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div class="mb-5 p-3.5 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
                         <div class="flex items-center gap-2 overflow-hidden">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                             <div class="truncate">
-                                <span class="text-slate-400">Signed in as:</span> <strong class="text-white"><?= htmlspecialchars($activeLoggedInUser['name']) ?></strong> <span class="text-indigo-400 font-semibold">(<?= htmlspecialchars($activeLoggedInUser['role_name'] ?? $activeLoggedInUser['role_slug']) ?>)</span>
+                                <span class="text-slate-500">Signed in as:</span> <strong class="text-slate-900"><?= htmlspecialchars($activeLoggedInUser['name']) ?></strong> <span class="text-blue-700 font-bold mono">(<?= htmlspecialchars($activeLoggedInUser['role_name'] ?? $activeLoggedInUser['role_slug']) ?>)</span>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
-                            <a href="<?= htmlspecialchars(getRoleHomeUrl($activeLoggedInUser)) ?>" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] transition-colors">
+                            <a href="<?= htmlspecialchars(getRoleHomeUrl($activeLoggedInUser)) ?>" class="px-3 py-1 rounded-xl bg-[#1d63d8] hover:bg-[#1553c7] text-white font-bold text-[11px] transition-colors shadow-2xs">
                                 Dashboard &rarr;
                             </a>
-                            <a href="logout.php" class="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-[11px] transition-colors">
+                            <a href="logout.php" class="px-3 py-1 rounded-xl bg-red-100 hover:bg-red-200 text-red-800 font-bold text-[11px] transition-colors">
                                 Sign Out
                             </a>
                         </div>
@@ -220,8 +212,8 @@ $flash = getFlash();
                 <?php endif; ?>
 
                 <?php if (!empty($error)): ?>
-                    <div class="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-start gap-2.5">
-                        <i class="fa-solid fa-triangle-exclamation text-rose-400 text-sm mt-0.5 shrink-0"></i>
+                    <div class="mb-5 p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5">
+                        <i class="fa-solid fa-triangle-exclamation text-red-600 text-sm mt-0.5 shrink-0"></i>
                         <div><?= htmlspecialchars($error) ?></div>
                     </div>
                 <?php endif; ?>
@@ -229,17 +221,17 @@ $flash = getFlash();
                 <?php if ($flash): ?>
                     <?php 
                     $fBg = match($flash['type']) {
-                        'success' => 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
-                        'info' => 'bg-blue-500/10 border-blue-500/30 text-blue-400',
-                        default => 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                        'success' => 'bg-emerald-50 border-emerald-200 text-emerald-800',
+                        'info' => 'bg-blue-50 border-blue-200 text-blue-800',
+                        default => 'bg-red-50 border-red-200 text-red-800'
                     };
                     $fIcon = match($flash['type']) {
-                        'success' => 'fa-circle-check text-emerald-400',
-                        'info' => 'fa-circle-info text-blue-400',
-                        default => 'fa-triangle-exclamation text-rose-400'
+                        'success' => 'fa-circle-check text-emerald-600',
+                        'info' => 'fa-circle-info text-blue-600',
+                        default => 'fa-triangle-exclamation text-red-600'
                     };
                     ?>
-                    <div class="mb-5 p-3.5 rounded-xl border <?= $fBg ?> text-xs flex items-start gap-2.5">
+                    <div class="mb-5 p-3.5 rounded-2xl border <?= $fBg ?> text-xs flex items-start gap-2.5">
                         <i class="fa-solid <?= $fIcon ?> text-sm mt-0.5 shrink-0"></i>
                         <div><?= htmlspecialchars($flash['message']) ?></div>
                     </div>
@@ -250,52 +242,52 @@ $flash = getFlash();
 
                     <!-- Email Field -->
                     <div>
-                        <label for="email" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Email Address</label>
+                        <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Email Address</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                 <i class="fa-regular fa-envelope text-sm"></i>
                             </div>
                             <input type="email" id="email" name="email" required
                                    value="<?= htmlspecialchars($_POST['email'] ?? 'superadmin@system.local') ?>"
                                    placeholder="name@disaster.local"
-                                   class="w-full pl-10 pr-4 py-2.5 bg-[#0a0f1d] border border-[#243049] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors">
+                                   class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white transition-all font-medium">
                         </div>
                     </div>
 
                     <!-- Password Field -->
                     <div>
                         <div class="flex items-center justify-between mb-1.5">
-                            <label for="password" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Password</label>
-                            <span class="text-[11px] text-slate-500">Default: <strong class="text-indigo-300 font-mono">admin123</strong></span>
+                            <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mono">Password</label>
+                            <span class="text-[11px] text-slate-500">Default: <strong class="text-blue-700 font-mono">admin123</strong></span>
                         </div>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                 <i class="fa-solid fa-key text-sm"></i>
                             </div>
                             <input type="password" id="password" name="password" required
                                    value="admin123"
                                    placeholder="••••••••"
-                                   class="w-full pl-10 pr-10 py-2.5 bg-[#0a0f1d] border border-[#243049] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors">
-                            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300">
+                                   class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white transition-all font-medium">
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer">
                                 <i id="passIcon" class="fa-regular fa-eye text-sm"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2">
+                    <button type="submit" class="w-full mt-2 py-3 px-4 rounded-2xl bg-[#1d63d8] hover:bg-[#1553c7] text-white font-extrabold text-xs uppercase tracking-wider shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
                         <span>AUTHENTICATE SYSTEM</span>
                         <i class="fa-solid fa-arrow-right text-xs"></i>
                     </button>
                 </form>
 
                 <!-- Credentials Info & Public SOS Trigger -->
-                <div class="mt-6 pt-4 border-t border-[#243049] text-center space-y-2.5">
-                    <p class="text-xs text-slate-400">
-                        Default Password: <span class="font-mono text-indigo-300 font-bold">admin123</span>
+                <div class="mt-6 pt-4 border-t border-slate-100 text-center space-y-2.5">
+                    <p class="text-xs text-slate-500">
+                        Default System Password: <span class="font-mono text-blue-700 font-bold">admin123</span>
                     </p>
-                    <a href="citizen.php" class="block w-full py-2.5 px-4 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-300 text-xs font-bold transition-all shadow-md shadow-rose-950/40">
-                        <i class="fa-solid fa-triangle-exclamation mr-1.5 animate-pulse text-rose-400"></i>
+                    <a href="citizen.php" class="block w-full py-2.5 px-4 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold transition-all shadow-2xs">
+                        <i class="fa-solid fa-triangle-exclamation mr-1.5 animate-pulse text-red-600"></i>
                         Are you in danger? Transmit Public SOS Beacon →
                     </a>
                 </div>

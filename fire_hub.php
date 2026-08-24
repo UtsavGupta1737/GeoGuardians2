@@ -1,5 +1,5 @@
 <?php
-// fire_hub.php - DisasterSafe Fire & Rescue Department Command Hub
+// fire_hub.php - DisasterSafe Fire & Rescue Department Command Hub (Government Theme)
 define('PAGE_TITLE', 'Fire & Rescue Department');
 require_once __DIR__ . '/auth.php';
 
@@ -127,106 +127,106 @@ require_once __DIR__ . '/header.php';
 require_once __DIR__ . '/sidebar.php';
 ?>
 
-<div class="flex-1 flex flex-col min-w-0 bg-[#0a0f1d] min-h-screen overflow-y-auto">
+<div class="flex-1 flex flex-col min-w-0 bg-[#f8fafc] min-h-screen overflow-y-auto">
     <?php require_once __DIR__ . '/navbar.php'; ?>
 
     <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
 
         <!-- POINT OF CONTACT & DEPARTMENT BANNER -->
-        <section class="glass-panel p-5 sm:p-6 rounded-2xl border border-[#243049] relative overflow-hidden shadow-2xl">
-            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <section class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 relative overflow-hidden shadow-sm">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-red-100/60 rounded-full blur-3xl pointer-events-none"></div>
 
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                 <!-- Left Details -->
                 <div class="space-y-2">
                     <div class="flex items-center gap-2.5">
-                        <span class="w-8 h-8 rounded-xl bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-400 font-black text-base shadow-inner">
+                        <span class="w-9 h-9 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center text-red-600 font-black text-base shadow-2xs">
                             🚒
                         </span>
                         <div>
-                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-red-400">Emergency Services Agency</span>
-                            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">Fire & Rescue Department Command Hub</h2>
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-red-700 mono">Emergency Services Agency</span>
+                            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Fire &amp; Rescue Department Command Hub</h2>
                         </div>
                     </div>
-                    <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                    <p class="text-xs text-slate-600 max-w-2xl leading-relaxed font-medium">
                         Superadmin direct point of contact for chemical blaze suppression, hazardous material neutralization, structural rubble cutting, high-angle rescue, and industrial tender fleet deployment.
                     </p>
                 </div>
 
                 <!-- Right Point of Contact Card -->
-                <div class="p-4 rounded-xl bg-[#0c1326] border border-red-500/30 flex flex-wrap sm:flex-nowrap items-center gap-4 shrink-0 shadow-lg">
-                    <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80" alt="Chief" class="w-12 h-12 rounded-xl object-cover border border-red-500/40 shrink-0">
+                <div class="p-4 rounded-2xl bg-red-50/70 border border-red-200 flex flex-wrap sm:flex-nowrap items-center gap-4 shrink-0 shadow-2xs">
+                    <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80" alt="Chief" class="w-12 h-12 rounded-2xl object-cover border border-red-200 shrink-0">
                     <div class="text-xs space-y-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Department Chief In-Charge</span>
-                        <h4 class="font-extrabold text-white text-sm">Chief Thomas Sterling (Fire Chief)</h4>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mono">Department Chief In-Charge</span>
+                        <h4 class="font-extrabold text-slate-900 text-sm">Chief Thomas Sterling (Fire Chief)</h4>
                         <div class="flex flex-wrap items-center gap-3 pt-0.5 text-[11px]">
-                            <a href="tel:101" class="text-red-400 hover:text-red-300 font-mono font-bold flex items-center gap-1">
+                            <a href="tel:101" class="text-red-700 hover:underline font-mono font-bold flex items-center gap-1">
                                 <i class="fa-solid fa-phone text-[10px]"></i> 101 / +91 11 2341 2222
                             </a>
-                            <span class="text-slate-400 font-mono font-semibold flex items-center gap-1">
-                                <i class="fa-solid fa-walkie-talkie text-amber-400 text-[10px]"></i> VHF Fire Ch-1 (156.40 MHz)
+                            <span class="text-slate-600 font-mono font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-walkie-talkie text-orange-600 text-[10px]"></i> VHF Fire Ch-1 (156.40 MHz)
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Direct Tactical Broadcast Bar (Superadmin Point of Contact Action) -->
-            <form method="POST" action="fire_hub.php" class="mt-5 pt-4 border-t border-[#243049] flex flex-col sm:flex-row items-center gap-3">
+            <!-- Direct Tactical Broadcast Bar -->
+            <form method="POST" action="fire_hub.php" class="mt-5 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
                 <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                 <input type="hidden" name="action" value="broadcast_order">
                 <div class="relative flex-1 w-full">
-                    <i class="fa-solid fa-tower-broadcast absolute left-3.5 top-3 text-red-400 text-xs"></i>
-                    <input type="text" name="message" required placeholder="Transmit direct priority order to all Fire Stations and Hazmat response units..." class="w-full pl-9 pr-4 py-2 bg-[#11192e] border border-[#243049] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-red-500">
+                    <i class="fa-solid fa-tower-broadcast absolute left-3.5 top-3 text-red-600 text-xs"></i>
+                    <input type="text" name="message" required placeholder="Transmit direct priority order to all Fire Stations and Hazmat response units..." class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-red-600 focus:bg-white font-medium">
                 </div>
-                <button type="submit" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-lg shadow-red-600/30 transition-all shrink-0 flex items-center justify-center gap-1.5">
+                <button type="submit" class="w-full sm:w-auto px-5 py-2.5 rounded-2xl bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold text-xs shadow-2xs transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-paper-plane"></i> Broadcast Order
                 </button>
             </form>
         </section>
 
-        <!-- KPI METRICS HUD -->
+        <!-- KPI METRICS HUD WITH ACCENT CONTRAST -->
         <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="stat-card-accent p-3.5 rounded-xl border-t-2 border-t-red-500 shadow-md flex items-center justify-between">
+            <div class="bg-white border border-slate-200 border-l-4 border-l-red-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fire Stations</p>
-                    <h3 class="text-2xl font-extrabold text-white mt-0.5"><?= $totalStations ?></h3>
-                    <span class="text-[10px] font-semibold text-red-400">NCR Fire Depots</span>
+                    <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mono">Fire Stations</p>
+                    <h3 class="text-2xl font-black text-slate-900 mt-0.5"><?= $totalStations ?></h3>
+                    <span class="text-[10px] font-bold text-red-700 mono">NCR Fire Depots</span>
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 text-sm">
+                <div class="w-9 h-9 rounded-xl bg-red-50 border border-red-200 flex items-center justify-center text-red-600 text-sm">
                     <i class="fa-solid fa-fire-extinguisher"></i>
                 </div>
             </div>
 
-            <div class="stat-card-accent p-3.5 rounded-xl border-t-2 border-t-amber-500 shadow-md flex items-center justify-between">
+            <div class="bg-white border border-slate-200 border-l-4 border-l-amber-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Engines</p>
-                    <h3 class="text-2xl font-extrabold text-amber-400 mt-0.5"><?= count($teams) ?></h3>
-                    <span class="text-[10px] font-semibold text-slate-400"><?= $activeSquads ?> On-Scene • <?= $availableSquads ?> Standby</span>
+                    <p class="text-[10px] font-extrabold text-amber-800 uppercase tracking-wider mono">Active Engines</p>
+                    <h3 class="text-2xl font-black text-amber-700 mt-0.5"><?= count($teams) ?></h3>
+                    <span class="text-[10px] font-bold text-slate-500 mono"><?= $activeSquads ?> On-Scene • <?= $availableSquads ?> Standby</span>
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-sm">
+                <div class="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 text-sm">
                     <i class="fa-solid fa-truck-droplet"></i>
                 </div>
             </div>
 
-            <div class="stat-card-accent p-3.5 rounded-xl border-t-2 border-t-rose-500 shadow-md flex items-center justify-between">
+            <div class="bg-white border border-slate-200 border-l-4 border-l-rose-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fire Missions</p>
-                    <h3 class="text-2xl font-extrabold text-rose-400 mt-0.5"><?= $openTasks ?></h3>
-                    <span class="text-[10px] font-semibold text-rose-300">Hazmat & Suppression</span>
+                    <p class="text-[10px] font-extrabold text-rose-800 uppercase tracking-wider mono">Fire Missions</p>
+                    <h3 class="text-2xl font-black text-rose-700 mt-0.5"><?= $openTasks ?></h3>
+                    <span class="text-[10px] font-bold text-rose-700 mono">Hazmat &amp; Suppression</span>
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-sm">
+                <div class="w-9 h-9 rounded-xl bg-rose-100 border border-rose-300 flex items-center justify-center text-rose-700 text-sm">
                     <i class="fa-solid fa-fire"></i>
                 </div>
             </div>
 
-            <div class="stat-card-accent p-3.5 rounded-xl border-t-2 border-t-emerald-500 shadow-md flex items-center justify-between">
+            <div class="bg-white border border-slate-200 border-l-4 border-l-emerald-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Firefighters</p>
-                    <h3 class="text-2xl font-extrabold text-emerald-400 mt-0.5"><?= $totalPersonnel ?></h3>
-                    <span class="text-[10px] font-semibold text-emerald-300">SCBA Qualified</span>
+                    <p class="text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider mono">Firefighters</p>
+                    <h3 class="text-2xl font-black text-emerald-700 mt-0.5"><?= $totalPersonnel ?></h3>
+                    <span class="text-[10px] font-bold text-emerald-700 mono">SCBA Qualified</span>
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 text-sm">
                     <i class="fa-solid fa-person-military-pointing"></i>
                 </div>
             </div>
@@ -236,45 +236,45 @@ require_once __DIR__ . '/sidebar.php';
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             <!-- Dedicated Fire Operations Radar Map (Left Column) -->
-            <div class="lg:col-span-7 glass-panel p-4 rounded-2xl border border-[#243049] flex flex-col shadow-xl min-h-[380px]">
-                <div class="flex items-center justify-between pb-3 border-b border-[#243049] mb-3">
-                    <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-map-location-dot text-red-400"></i>
-                        <span>Fire & Hazmat GIS Radar</span>
+            <div class="lg:col-span-7 bg-white p-4 rounded-3xl border border-slate-200 flex flex-col shadow-xs min-h-[380px]">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                    <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-red-600"></i>
+                        <span>Fire &amp; Hazmat GIS Radar</span>
                     </h3>
-                    <span class="text-[10px] font-mono text-red-300 bg-red-950 px-2 py-0.5 rounded border border-red-800">
+                    <span class="text-[10px] font-bold font-mono text-red-700 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
                         <?= count($stations) ?> Stations • <?= count($teams) ?> Engines
                     </span>
                 </div>
-                <div id="fireMap" class="flex-1 w-full rounded-xl overflow-hidden min-h-[300px] border border-[#243049]"></div>
+                <div id="fireMap" class="flex-1 w-full rounded-2xl overflow-hidden min-h-[300px] border border-slate-200 bg-slate-100"></div>
             </div>
 
             <!-- Fire Stations Directory (Right Column) -->
-            <div class="lg:col-span-5 glass-panel p-4 rounded-2xl border border-[#243049] flex flex-col shadow-xl">
-                <div class="flex items-center justify-between pb-3 border-b border-[#243049] mb-3">
-                    <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-fire-flame-curved text-red-400"></i>
-                        <span>Fire Stations & Hazmat Depots</span>
+            <div class="lg:col-span-5 bg-white p-4 rounded-3xl border border-slate-200 flex flex-col shadow-xs">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                    <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-fire-flame-curved text-red-600"></i>
+                        <span>Fire Stations &amp; Hazmat Depots</span>
                     </h3>
-                    <span class="text-[10px] font-bold text-slate-400">Directory</span>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mono">Directory</span>
                 </div>
 
                 <div class="space-y-2.5 overflow-y-auto max-h-[320px] pr-1">
                     <?php foreach ($stations as $st): ?>
-                        <div class="p-3 rounded-xl bg-[#0c1326] border border-[#243049] hover:border-red-500/50 transition-all text-xs space-y-1.5">
+                        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-red-300 transition-all text-xs space-y-1.5">
                             <div class="flex items-center justify-between">
-                                <h4 class="font-extrabold text-white text-xs flex items-center gap-1.5">
-                                    <span class="w-2 h-2 rounded-full <?= $st['status'] === 'Operational' ? 'bg-emerald-400' : 'bg-rose-400 animate-pulse' ?>"></span>
+                                <h4 class="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full <?= $st['status'] === 'Operational' ? 'bg-emerald-500' : 'bg-red-500 animate-pulse' ?>"></span>
                                     <?= htmlspecialchars($st['station_name']) ?>
                                 </h4>
-                                <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded <?= $st['status'] === 'Operational' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-rose-950 text-rose-300 border border-rose-800' ?>">
+                                <span class="text-[9px] font-bold px-2 py-0.5 rounded-full <?= $st['status'] === 'Operational' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200' ?> mono">
                                     <?= htmlspecialchars($st['status']) ?>
                                 </span>
                             </div>
-                            <p class="text-slate-400 text-[11px]"><?= htmlspecialchars($st['address']) ?></p>
-                            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-[#243049]/60 text-[10px] text-slate-300 font-mono">
-                                <span><i class="fa-solid fa-user-tie text-amber-400 mr-1"></i> <?= htmlspecialchars($st['commander_name']) ?></span>
-                                <a href="tel:<?= urlencode($st['contact_phone']) ?>" class="text-red-400 hover:underline font-bold">
+                            <p class="text-slate-600 text-[11px] font-medium"><?= htmlspecialchars($st['address']) ?></p>
+                            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-200 text-[10px] text-slate-700 font-mono">
+                                <span><i class="fa-solid fa-user-tie text-orange-600 mr-1"></i> <?= htmlspecialchars($st['commander_name']) ?></span>
+                                <a href="tel:<?= urlencode($st['contact_phone']) ?>" class="text-red-700 hover:underline font-bold">
                                     <i class="fa-solid fa-phone text-[9px]"></i> <?= htmlspecialchars($st['contact_phone']) ?>
                                 </a>
                             </div>
@@ -286,14 +286,14 @@ require_once __DIR__ . '/sidebar.php';
         </div>
 
         <!-- TEAMS & OPERATIONAL SQUADS ROSTER -->
-        <section class="glass-panel p-5 rounded-2xl border border-[#243049] shadow-xl space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#243049]">
+        <section class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
                 <div>
-                    <h3 class="text-base font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-truck-fire text-red-400"></i>
-                        <span>Fire Tenders & Heavy Extrication Units</span>
+                    <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-truck-fire text-red-600"></i>
+                        <span>Fire Tenders &amp; Heavy Extrication Units</span>
                     </h3>
-                    <p class="text-xs text-slate-400">Active status of foam tenders, ladder units, hydraulic cutters, and hazmat extraction squads.</p>
+                    <p class="text-xs text-slate-500 font-medium">Active status of foam tenders, ladder units, hydraulic cutters, and hazmat extraction squads.</p>
                 </div>
             </div>
 
@@ -301,39 +301,39 @@ require_once __DIR__ . '/sidebar.php';
                 <?php foreach ($teams as $tm): ?>
                     <?php 
                         $statusClass = match($tm['status']) {
-                            'On-Scene' => 'bg-rose-950 text-rose-300 border-rose-800',
-                            'Dispatched' => 'bg-amber-950 text-amber-300 border-amber-800',
-                            'Available' => 'bg-emerald-950 text-emerald-300 border-emerald-800',
-                            default => 'bg-slate-800 text-slate-300 border-slate-700'
+                            'On-Scene' => 'bg-red-50 text-red-800 border-red-200',
+                            'Dispatched' => 'bg-amber-50 text-amber-800 border-amber-200',
+                            'Available' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                            default => 'bg-slate-100 text-slate-700 border-slate-200'
                         };
                     ?>
-                    <div class="p-3.5 rounded-xl bg-[#0c1326] border border-[#243049] hover:border-slate-500 transition-all text-xs space-y-2.5">
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-red-300 transition-all text-xs space-y-2.5">
                         <div class="flex items-center justify-between">
-                            <span class="font-extrabold text-white text-sm flex items-center gap-1.5">
-                                <i class="fa-solid fa-fire-extinguisher text-red-400 text-xs"></i>
+                            <span class="font-extrabold text-slate-900 text-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-fire-extinguisher text-red-600 text-xs"></i>
                                 <?= htmlspecialchars($tm['callsign']) ?>
                             </span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold border <?= $statusClass ?>">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?= $statusClass ?> mono">
                                 <?= htmlspecialchars($tm['status']) ?>
                             </span>
                         </div>
 
-                        <div class="space-y-1 text-slate-300 text-[11px]">
-                            <p><b>Unit Lead:</b> <?= htmlspecialchars($tm['team_lead']) ?> (<b><?= $tm['members_count'] ?> Firefighters</b>)</p>
-                            <p class="text-slate-400"><b>Apparatus:</b> <?= htmlspecialchars($tm['vehicle_equipment']) ?></p>
-                            <p class="text-red-300 font-medium"><b>Mission:</b> <?= htmlspecialchars($tm['current_task'] ?: 'Standby at Fire Station') ?></p>
+                        <div class="space-y-1 text-slate-700 text-[11px] font-medium">
+                            <p><b>Officer-in-Charge:</b> <?= htmlspecialchars($tm['team_lead']) ?> (<b><?= $tm['members_count'] ?> Crew</b>)</p>
+                            <p class="text-slate-500"><b>Apparatus:</b> <?= htmlspecialchars($tm['vehicle_equipment']) ?></p>
+                            <p class="text-red-700 font-semibold"><b>Task:</b> <?= htmlspecialchars($tm['current_task'] ?: 'Station Standby') ?></p>
                         </div>
 
                         <!-- Status Action Form -->
-                        <form method="POST" action="fire_hub.php" class="pt-2 border-t border-[#243049] flex items-center justify-between gap-2">
+                        <form method="POST" action="fire_hub.php" class="pt-2 border-t border-slate-200 flex items-center justify-between gap-2">
                             <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                             <input type="hidden" name="action" value="update_team_status">
                             <input type="hidden" name="team_id" value="<?= $tm['id'] ?>">
                             <input type="hidden" name="current_task" value="<?= htmlspecialchars($tm['current_task']) ?>">
 
-                            <select name="status" onchange="this.form.submit()" class="w-full px-2 py-1 bg-[#11192e] border border-[#243049] rounded-lg text-slate-200 text-[10px] font-semibold">
+                            <select name="status" onchange="this.form.submit()" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-[10px] font-bold focus:outline-none focus:border-red-600">
                                 <option value="Available" <?= $tm['status'] === 'Available' ? 'selected' : '' ?>>🟢 Available</option>
-                                <option value="Dispatched" <?= $tm['status'] === 'Dispatched' ? 'selected' : '' ?>>🟠 Dispatched</option>
+                                <option value="Dispatched" <?= $tm['status'] === 'Dispatched' ? 'selected' : '' ?>>🔵 Dispatched</option>
                                 <option value="On-Scene" <?= $tm['status'] === 'On-Scene' ? 'selected' : '' ?>>🔴 On-Scene</option>
                                 <option value="Standby" <?= $tm['status'] === 'Standby' ? 'selected' : '' ?>>🟡 Standby</option>
                             </select>
@@ -347,50 +347,50 @@ require_once __DIR__ . '/sidebar.php';
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             <!-- Fire Missions Queue (Left 7 Cols) -->
-            <div class="lg:col-span-7 glass-panel p-5 rounded-2xl border border-[#243049] shadow-xl space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-[#243049]">
+            <div class="lg:col-span-7 bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                     <div>
-                        <h3 class="text-base font-extrabold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-red-400"></i>
-                            <span>Assigned Fire & Hazmat Missions</span>
+                        <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-red-600"></i>
+                            <span>Assigned Fire &amp; Hazmat Incidents</span>
                         </h3>
                     </div>
-                    <button type="button" onclick="document.getElementById('fireTaskModal').classList.remove('hidden')" class="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-md shadow-red-600/20 transition-all flex items-center gap-1.5">
+                    <button type="button" onclick="document.getElementById('fireTaskModal').classList.remove('hidden')" class="px-3.5 py-2 rounded-2xl bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
                         <i class="fa-solid fa-plus"></i> New Mission
                     </button>
                 </div>
 
                 <div class="space-y-3">
                     <?php foreach ($tasks as $tsk): ?>
-                        <div class="p-3.5 rounded-xl bg-[#0c1326] border border-[#243049] hover:border-slate-500 transition-all text-xs space-y-2">
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-red-300 transition-all text-xs space-y-2">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase <?= $tsk['priority'] === 'Critical' ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-amber-950 text-amber-300 border border-amber-800' ?>">
+                                    <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase <?= $tsk['priority'] === 'Critical' ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-amber-100 text-amber-800 border border-amber-200' ?> mono">
                                         <?= htmlspecialchars($tsk['priority']) ?>
                                     </span>
-                                    <h4 class="font-bold text-white text-xs"><?= htmlspecialchars($tsk['title']) ?></h4>
+                                    <h4 class="font-extrabold text-slate-900 text-xs"><?= htmlspecialchars($tsk['title']) ?></h4>
                                 </div>
-                                <span class="px-2 py-0.5 rounded text-[10px] font-extrabold <?= $tsk['status'] === 'Completed' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-red-950 text-red-300 border border-red-800' ?>">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold <?= $tsk['status'] === 'Completed' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200' ?> mono">
                                     <?= htmlspecialchars($tsk['status']) ?>
                                 </span>
                             </div>
 
-                            <p class="text-slate-300 text-[11px]"><?= htmlspecialchars($tsk['description']) ?></p>
+                            <p class="text-slate-600 text-[11px] font-medium"><?= htmlspecialchars($tsk['description']) ?></p>
                             
-                            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#243049]/60 text-[11px]">
-                                <span class="text-slate-400"><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i> <?= htmlspecialchars($tsk['location']) ?></span>
-                                <span class="text-red-400 font-semibold"><i class="fa-solid fa-truck-fire mr-1"></i> <?= htmlspecialchars($tsk['assigned_team'] ?: 'Unassigned') ?></span>
+                            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200 text-[11px]">
+                                <span class="text-slate-500"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i> <?= htmlspecialchars($tsk['location']) ?></span>
+                                <span class="text-red-700 font-bold"><i class="fa-solid fa-fire-extinguisher mr-1"></i> <?= htmlspecialchars($tsk['assigned_team'] ?: 'Unassigned') ?></span>
                                 
                                 <form method="POST" action="fire_hub.php" class="inline">
                                     <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                                     <input type="hidden" name="action" value="update_task_status">
                                     <input type="hidden" name="task_id" value="<?= $tsk['id'] ?>">
                                     <?php if ($tsk['status'] !== 'Completed'): ?>
-                                        <button type="submit" name="status" value="Completed" class="px-2 py-0.5 rounded bg-emerald-600/80 hover:bg-emerald-500 text-white font-bold text-[10px]">
+                                        <button type="submit" name="status" value="Completed" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] cursor-pointer">
                                             <i class="fa-solid fa-check mr-1"></i> Mark Completed
                                         </button>
                                     <?php else: ?>
-                                        <button type="submit" name="status" value="In Progress" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px]">
+                                        <button type="submit" name="status" value="In Progress" class="px-2.5 py-1 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-[10px] font-bold cursor-pointer">
                                             Re-open
                                         </button>
                                     <?php endif; ?>
@@ -401,34 +401,34 @@ require_once __DIR__ . '/sidebar.php';
                 </div>
             </div>
 
-            <!-- Fire Equipment & Supplies Inventory (Right 5 Cols) -->
-            <div class="lg:col-span-5 glass-panel p-5 rounded-2xl border border-[#243049] shadow-xl space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-[#243049]">
-                    <h3 class="text-base font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-boxes-stacked text-red-400"></i>
-                        <span>Fire Suppression Inventory</span>
+            <!-- Fire Equipment & Capacity Inventory (Right 5 Cols) -->
+            <div class="lg:col-span-5 bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-stacked text-red-600"></i>
+                        <span>Fire Logistics &amp; Extrication Gear</span>
                     </h3>
                 </div>
 
                 <div class="space-y-3">
                     <?php foreach ($resources as $res): ?>
-                        <div class="p-3.5 rounded-xl bg-[#0c1326] border border-[#243049] text-xs space-y-2">
+                        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2">
                             <div class="flex items-center justify-between">
-                                <h4 class="font-extrabold text-white text-xs"><?= htmlspecialchars($res['item_name']) ?></h4>
-                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold <?= $res['status'] === 'In Stock' ? 'bg-emerald-950 text-emerald-300' : 'bg-rose-950 text-rose-300' ?>">
+                                <h4 class="font-extrabold text-slate-900 text-xs"><?= htmlspecialchars($res['item_name']) ?></h4>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold <?= $res['status'] === 'In Stock' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800' ?> mono">
                                     <?= htmlspecialchars($res['status']) ?>
                                 </span>
                             </div>
 
-                            <div class="flex items-center justify-between text-[11px] text-slate-300">
-                                <span>Available: <strong class="text-red-400"><?= $res['available_quantity'] ?> <?= htmlspecialchars($res['unit']) ?></strong></span>
-                                <span>Deployed: <strong class="text-amber-400"><?= $res['allocated_quantity'] ?></strong> / <?= $res['total_quantity'] ?></span>
+                            <div class="flex items-center justify-between text-[11px] text-slate-700 font-medium">
+                                <span>Available: <strong class="text-red-700"><?= $res['available_quantity'] ?> <?= htmlspecialchars($res['unit']) ?></strong></span>
+                                <span>Allocated: <strong class="text-amber-700"><?= $res['allocated_quantity'] ?></strong> / <?= $res['total_quantity'] ?></span>
                             </div>
 
                             <!-- Progress Bar -->
                             <?php $percent = $res['total_quantity'] > 0 ? round(($res['available_quantity'] / $res['total_quantity']) * 100) : 0; ?>
-                            <div class="w-full bg-[#11192e] rounded-full h-1.5 overflow-hidden">
-                                <div class="bg-red-500 h-1.5 rounded-full" style="width: <?= $percent ?>%"></div>
+                            <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-[#dc2626] h-1.5 rounded-full" style="width: <?= $percent ?>%"></div>
                             </div>
 
                             <!-- Quick Dispatch Allocation Form -->
@@ -436,9 +436,9 @@ require_once __DIR__ . '/sidebar.php';
                                 <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                                 <input type="hidden" name="action" value="allocate_resource">
                                 <input type="hidden" name="resource_id" value="<?= $res['id'] ?>">
-                                <input type="number" name="quantity" min="1" max="<?= $res['available_quantity'] ?>" value="5" class="w-16 px-2 py-1 bg-[#11192e] border border-[#243049] rounded-lg text-white text-[10px] text-center">
-                                <button type="submit" <?= $res['available_quantity'] <= 0 ? 'disabled' : '' ?> class="flex-1 py-1 rounded-lg bg-red-600/20 hover:bg-red-600/40 text-red-300 border border-red-500/30 text-[10px] font-bold transition-all disabled:opacity-40">
-                                    Deploy to Engines
+                                <input type="number" name="quantity" min="1" max="<?= $res['available_quantity'] ?>" value="2" class="w-16 px-2 py-1 bg-white border border-slate-200 rounded-xl text-slate-900 text-[10px] font-bold text-center">
+                                <button type="submit" <?= $res['available_quantity'] <= 0 ? 'disabled' : '' ?> class="flex-1 py-1 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[10px] font-bold transition-all disabled:opacity-40 cursor-pointer">
+                                    Deploy to Engine
                                 </button>
                             </form>
                         </div>
@@ -452,13 +452,13 @@ require_once __DIR__ . '/sidebar.php';
 </div>
 
 <!-- CREATE FIRE TASK MODAL -->
-<div id="fireTaskModal" class="fixed inset-0 bg-[#060a14]/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-[#0f172a] border border-[#243049] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
-        <div class="h-14 px-6 bg-[#0c1326] border-b border-[#243049] flex items-center justify-between">
-            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
-                <i class="fa-solid fa-truck-fire text-red-400"></i> Dispatch New Fire Mission
+<div id="fireTaskModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white border border-slate-200 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden">
+        <div class="h-14 px-6 bg-white border-b border-slate-100 flex items-center justify-between">
+            <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-fire-extinguisher text-red-600"></i> Dispatch Fire / Hazmat Mission
             </h3>
-            <button type="button" onclick="document.getElementById('fireTaskModal').classList.add('hidden')" class="text-slate-400 hover:text-white">
+            <button type="button" onclick="document.getElementById('fireTaskModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-800 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
@@ -467,22 +467,22 @@ require_once __DIR__ . '/sidebar.php';
             <input type="hidden" name="action" value="create_task">
 
             <div>
-                <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Mission Title *</label>
-                <input type="text" name="title" required placeholder="e.g. Chemical Solvent Tank Cooling & Extrication" class="w-full px-3 py-2 bg-[#11192e] border border-[#243049] rounded-xl text-white">
+                <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Incident Title *</label>
+                <input type="text" name="title" required placeholder="e.g. Sahibabad Industrial Solvent Hazmat Fire" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:border-red-600 font-medium">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Priority</label>
-                    <select name="priority" class="w-full px-3 py-2 bg-[#11192e] border border-[#243049] rounded-xl text-white font-semibold">
-                        <option value="Critical">🔴 Critical</option>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Priority</label>
+                    <select name="priority" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-red-600">
+                        <option value="Critical">🔴 Critical (Code Red)</option>
                         <option value="High" selected>🟠 High</option>
                         <option value="Medium">🟡 Medium</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Assign Tender Squad</label>
-                    <select name="assigned_team" class="w-full px-3 py-2 bg-[#11192e] border border-[#243049] rounded-xl text-white font-semibold">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Assign Engine Unit</label>
+                    <select name="assigned_team" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-red-600">
                         <?php foreach ($teams as $tm): ?>
                             <option value="<?= htmlspecialchars($tm['callsign']) ?>"><?= htmlspecialchars($tm['callsign']) ?> (<?= $tm['status'] ?>)</option>
                         <?php endforeach; ?>
@@ -491,18 +491,18 @@ require_once __DIR__ . '/sidebar.php';
             </div>
 
             <div>
-                <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Target Location *</label>
-                <input type="text" name="location" required placeholder="e.g. Site 4 Industrial Area, Sahibabad" class="w-full px-3 py-2 bg-[#11192e] border border-[#243049] rounded-xl text-white">
+                <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Target Location *</label>
+                <input type="text" name="location" required placeholder="e.g. Sector 4 Sahibabad Industrial Area" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:border-red-600 font-medium">
             </div>
 
             <div>
-                <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Suppression & Hazmat Directives</label>
-                <textarea name="description" rows="3" placeholder="Specify foam concentrate ratio, SCBA requirements, or rubble cutting orders..." class="w-full px-3 py-2 bg-[#11192e] border border-[#243049] rounded-xl text-white leading-relaxed"></textarea>
+                <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Suppression Directives &amp; Hazard Details</label>
+                <textarea name="description" rows="3" placeholder="Specify chemical agents involved, water bowser requirements, thermal cameras..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 leading-relaxed focus:bg-white focus:outline-none focus:border-red-600 font-medium"></textarea>
             </div>
 
             <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="document.getElementById('fireTaskModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold">Cancel</button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold shadow-lg shadow-red-600/30">Dispatch Fire Unit</button>
+                <button type="button" onclick="document.getElementById('fireTaskModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Cancel</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold shadow-sm cursor-pointer">Dispatch Engine Unit</button>
             </div>
         </form>
     </div>
@@ -511,11 +511,10 @@ require_once __DIR__ . '/sidebar.php';
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const fMap = L.map('fireMap', { zoomControl: false, attributionControl: false }).setView([28.6139, 77.2090], 11);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(fMap);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(fMap);
 
     const stationsData = <?= json_encode($stations) ?>;
 
-    // Fire Stations Pins
     stationsData.forEach(st => {
         L.circleMarker([st.gps_lat, st.gps_lng], {
             radius: 9,
@@ -528,8 +527,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="color:#0f172a; font-family:'Inter', sans-serif; font-size:12px; min-width:180px;">
                 <strong style="color:#dc2626;">🚒 ${st.station_name}</strong><br/>
                 <b>Zone:</b> ${st.zone_name}<br/>
-                <span>Officer: <b>${st.commander_name}</b></span><br/>
-                <span>Tenders: <b>${st.vehicles_count}</b> • Crew: <b>${st.personnel_count}</b></span><br/>
+                <span>Commander: <b>${st.commander_name}</b></span><br/>
+                <span>Engines: <b>${st.vehicles_count}</b> • Crew: <b>${st.personnel_count}</b></span><br/>
                 <span style="color:#64748b; font-size:10px;">Radio: ${st.radio_channel}</span>
             </div>
         `);

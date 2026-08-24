@@ -1,5 +1,5 @@
 <?php
-// relief.php - Relief Aid & Supplies Distributed Ledger
+// relief.php - Relief Aid & Supplies Distributed Ledger (Government Theme)
 define('PAGE_TITLE', 'Relief Supply Distribution');
 require_once __DIR__ . '/auth.php';
 
@@ -54,33 +54,34 @@ require_once __DIR__ . '/header.php';
 require_once __DIR__ . '/sidebar.php';
 ?>
 
-<div class="flex-1 flex flex-col min-w-0 bg-slate-950">
+<div class="flex-1 flex flex-col min-w-0 bg-[#f8fafc] min-h-screen overflow-y-auto">
     <?php require_once __DIR__ . '/navbar.php'; ?>
 
-    <main class="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
         
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <!-- HEADER BANNER -->
+        <section class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
-                    <span>Relief Supplies Distribution Ledger</span>
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Relief Supplies Distribution Ledger</h2>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 mono">
                         <?= number_format($totalItems) ?> Items Handed Out
                     </span>
-                </h2>
-                <p class="text-xs text-slate-400 mt-1">Audit log of drinking water bottles, food rations, hygiene kits, and blankets distributed to survivors</p>
+                </div>
+                <p class="text-xs text-slate-500 font-medium mt-1">Audit log of drinking water bottles, food rations, hygiene kits, and blankets distributed to survivors</p>
             </div>
-            <button type="button" onclick="openReliefModal()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2">
+            <button type="button" onclick="openReliefModal()" class="px-4 py-2.5 rounded-2xl bg-[#1d63d8] hover:bg-[#1553c7] text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
                 <i class="fa-solid fa-boxes-packing text-xs"></i>
                 <span>Log New Distribution</span>
             </button>
-        </div>
+        </section>
 
         <!-- Ledger Table Card -->
-        <div class="glass-panel rounded-3xl overflow-hidden shadow-xl">
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
+                <table class="w-full text-left text-xs border-collapse">
                     <thead>
-                        <tr class="border-b border-slate-800/80 bg-slate-900/40 text-slate-400 uppercase tracking-wider font-semibold">
+                        <tr class="border-b border-slate-200 bg-slate-50/80 text-slate-500 uppercase tracking-wider font-extrabold text-[10px] mono">
                             <th class="py-3.5 px-4 sm:px-6">Relief Item Description</th>
                             <th class="py-3.5 px-4">Quantity Distributed</th>
                             <th class="py-3.5 px-4">Distribution Sector</th>
@@ -88,41 +89,41 @@ require_once __DIR__ . '/sidebar.php';
                             <th class="py-3.5 px-4 sm:px-6 text-right">Logged At</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
                         <?php if (empty($suppliesList)): ?>
                             <tr>
                                 <td colspan="5" class="py-12 text-center text-slate-500">
-                                    <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 text-slate-600 flex items-center justify-center mx-auto mb-3 text-lg">
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center mx-auto mb-3 text-lg">
                                         <i class="fa-solid fa-box-open"></i>
                                     </div>
-                                    <p class="font-medium text-slate-400">No relief distributions logged yet.</p>
+                                    <p class="font-medium text-slate-500">No relief distributions logged yet.</p>
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($suppliesList as $s): ?>
-                                <tr class="hover:bg-slate-800/30 transition-colors">
-                                    <td class="py-4 px-4 sm:px-6 font-bold text-white flex items-center gap-2.5">
-                                        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs">
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="py-4 px-4 sm:px-6 font-extrabold text-slate-900 flex items-center gap-2.5">
+                                        <div class="w-8 h-8 rounded-xl bg-blue-50 text-[#1d63d8] flex items-center justify-center text-xs">
                                             <i class="fa-solid fa-box-tissue"></i>
                                         </div>
                                         <span><?= htmlspecialchars($s['item_name']) ?></span>
                                     </td>
                                     <td class="py-4 px-4">
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                                             <?= number_format($s['quantity']) ?> <?= htmlspecialchars($s['unit']) ?>
                                         </span>
                                     </td>
-                                    <td class="py-4 px-4 text-emerald-300 font-medium">
-                                        <i class="fa-solid fa-location-dot text-rose-400 mr-1 text-[11px]"></i><?= htmlspecialchars($s['location']) ?>
+                                    <td class="py-4 px-4 text-blue-700 font-bold">
+                                        <i class="fa-solid fa-location-dot text-red-500 mr-1 text-[11px]"></i><?= htmlspecialchars($s['location']) ?>
                                     </td>
-                                    <td class="py-4 px-4 text-slate-300">
+                                    <td class="py-4 px-4 text-slate-700">
                                         <div class="flex items-center gap-2">
-                                            <img src="<?= htmlspecialchars($s['volunteer_avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($s['volunteer_name']) . '&background=10b981&color=fff') ?>" 
-                                                 alt="Avatar" class="w-6 h-6 rounded-full object-cover">
-                                            <span><?= htmlspecialchars($s['volunteer_name']) ?></span>
+                                            <img src="<?= htmlspecialchars($s['volunteer_avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($s['volunteer_name']) . '&background=1d63d8&color=fff') ?>" 
+                                                 alt="Avatar" class="w-6 h-6 rounded-full border border-slate-200 object-cover">
+                                            <span class="font-medium"><?= htmlspecialchars($s['volunteer_name']) ?></span>
                                         </div>
                                     </td>
-                                    <td class="py-4 px-4 sm:px-6 text-right font-mono text-[11px] text-slate-500">
+                                    <td class="py-4 px-4 sm:px-6 text-right font-mono text-[11px] text-slate-400">
                                         <?= date('M d, H:i', strtotime($s['created_at'])) ?>
                                     </td>
                                 </tr>
@@ -137,20 +138,20 @@ require_once __DIR__ . '/sidebar.php';
 </div>
 
 <!-- LOG RELIEF MODAL -->
-<div id="reliefModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+<div id="reliefModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
         
-        <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-800">
+        <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-100">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-[#1d63d8] flex items-center justify-center">
                     <i class="fa-solid fa-boxes-packing text-base"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-white">Log Handed Out Aid</h3>
-                    <p class="text-xs text-slate-400">Record food, water bottles, and trauma kits</p>
+                    <h3 class="text-lg font-extrabold text-slate-900">Log Handed Out Aid</h3>
+                    <p class="text-xs text-slate-500 font-medium">Record food, water bottles, and trauma kits</p>
                 </div>
             </div>
-            <button type="button" onclick="closeReliefModal()" class="text-slate-400 hover:text-white p-2">
+            <button type="button" onclick="closeReliefModal()" class="text-slate-400 hover:text-slate-800 p-2 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
@@ -160,20 +161,20 @@ require_once __DIR__ . '/sidebar.php';
             <input type="hidden" name="action" value="log_supplies">
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Item Name *</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Item Name *</label>
                 <input type="text" name="item_name" required placeholder="e.g. Bottled Water 1L, Dry Ration Packs, Wool Blankets" 
-                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Quantity Distributed *</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Quantity Distributed *</label>
                     <input type="number" name="quantity" min="1" required placeholder="e.g. 500" 
-                           class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-bold">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Unit</label>
-                    <select name="unit" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Unit</label>
+                    <select name="unit" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-[#1d63d8]">
                         <option value="bottles">Bottles</option>
                         <option value="kits">Kits</option>
                         <option value="packets">Packets</option>
@@ -184,16 +185,16 @@ require_once __DIR__ . '/sidebar.php';
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Distribution Point / Sector *</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Distribution Point / Sector *</label>
                 <input type="text" name="location" required placeholder="e.g. Sector 3 Relief Depot, Community Center Tent 4" 
-                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium">
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800 mt-6">
-                <button type="button" onclick="closeReliefModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
+                <button type="button" onclick="closeReliefModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/30 transition-all">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#1d63d8] hover:bg-[#1553c7] text-white text-xs font-bold shadow-sm transition-all cursor-pointer">
                     Submit Supply Entry
                 </button>
             </div>

@@ -1,5 +1,5 @@
 <?php
-// roles.php - Dynamic Role Creation & Permission Management
+// roles.php - Dynamic Role Creation & Permission Management (Government Theme)
 define('PAGE_TITLE', 'Role Management');
 require_once __DIR__ . '/auth.php';
 
@@ -121,26 +121,26 @@ require_once __DIR__ . '/header.php';
 require_once __DIR__ . '/sidebar.php';
 ?>
 
-<div class="flex-1 flex flex-col min-w-0 bg-slate-950">
+<div class="flex-1 flex flex-col min-w-0 bg-[#f8fafc] min-h-screen overflow-y-auto">
     <?php require_once __DIR__ . '/navbar.php'; ?>
 
-    <main class="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
         
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <section class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
-                    <span>Role Management</span>
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Role Management</h2>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 mono">
                         <?= count($rolesList) ?> Roles Configured
                     </span>
-                </h2>
-                <p class="text-xs text-slate-400 mt-1">Configure global role identities and granted permissions matrix</p>
+                </div>
+                <p class="text-xs text-slate-500 font-medium mt-1">Configure global role identities and granted permissions matrix</p>
             </div>
-            <button type="button" onclick="openCreateRoleModal()" class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2">
+            <button type="button" onclick="openCreateRoleModal()" class="px-4 py-2.5 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
                 <i class="fa-solid fa-shield-plus text-xs"></i>
                 <span>Create New Role</span>
             </button>
-        </div>
+        </section>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach ($rolesList as $r): ?>
@@ -148,40 +148,40 @@ require_once __DIR__ . '/sidebar.php';
                     $perms = json_decode($r['permissions'] ?? '[]', true) ?: [];
                     $isSystemRoot = ($r['slug'] === 'superadmin');
                 ?>
-                <div class="glass-panel p-6 rounded-3xl flex flex-col justify-between relative group hover:border-purple-500/40 transition-all">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col justify-between relative group hover:border-slate-300 hover:shadow-sm transition-all">
                     
                     <div>
                         <div class="flex items-start justify-between gap-3 mb-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-2xl <?= $isSystemRoot ? 'bg-purple-500/20 text-purple-400' : 'bg-slate-800 text-indigo-400' ?> flex items-center justify-center text-lg shrink-0">
+                                <div class="w-10 h-10 rounded-2xl <?= $isSystemRoot ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-slate-50 text-[#1d63d8] border border-slate-200' ?> flex items-center justify-center text-lg shrink-0">
                                     <i class="fa-solid <?= $isSystemRoot ? 'fa-crown' : 'fa-user-shield' ?>"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-base font-bold text-white"><?= htmlspecialchars($r['name']) ?></h3>
-                                    <span class="text-[11px] font-mono text-slate-400"><?= htmlspecialchars($r['slug']) ?></span>
+                                    <h3 class="text-base font-extrabold text-slate-900"><?= htmlspecialchars($r['name']) ?></h3>
+                                    <span class="text-[11px] font-mono font-bold text-slate-500"><?= htmlspecialchars($r['slug']) ?></span>
                                 </div>
                             </div>
-                            <span class="px-2.5 py-1 text-[11px] font-bold rounded-full bg-slate-800 border border-slate-700 text-slate-300">
+                            <span class="px-2.5 py-1 text-[11px] font-bold rounded-full bg-slate-100 border border-slate-200 text-slate-700 mono">
                                 <?= $r['user_count'] ?> <?= $r['user_count'] == 1 ? 'User' : 'Users' ?>
                             </span>
                         </div>
 
-                        <p class="text-xs text-slate-400 mb-4 leading-relaxed line-clamp-2">
+                        <p class="text-xs text-slate-600 mb-4 leading-relaxed line-clamp-2 font-medium">
                             <?= htmlspecialchars($r['description'] ?: 'No description provided.') ?>
                         </p>
 
                         <div class="mb-4">
-                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Granted Permissions (<?= count($perms) ?>)</p>
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2 mono">Granted Permissions (<?= count($perms) ?>)</p>
                             <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
                                 <?php if ($isSystemRoot): ?>
-                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-800 border border-purple-200 mono">
                                         <i class="fa-solid fa-infinity text-[8px] mr-1"></i> Full Root Access (All Permissions)
                                     </span>
                                 <?php elseif (empty($perms)): ?>
-                                    <span class="text-[10px] text-slate-500 italic">No permissions assigned</span>
+                                    <span class="text-[10px] text-slate-400 italic">No permissions assigned</span>
                                 <?php else: ?>
                                     <?php foreach ($perms as $p): ?>
-                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-900 border border-slate-800 text-slate-300">
+                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-100 border border-slate-200 text-slate-700 mono">
                                             <?= htmlspecialchars(str_replace('_', ' ', $p)) ?>
                                         </span>
                                     <?php endforeach; ?>
@@ -190,26 +190,26 @@ require_once __DIR__ . '/sidebar.php';
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
-                        <span class="text-[10px] text-slate-500">
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-[10px] text-slate-400 font-mono">
                             Created: <?= date('M d, Y', strtotime($r['created_at'])) ?>
                         </span>
                         
                         <div class="flex items-center gap-1.5">
                             <button type="button" 
                                     onclick='openEditRoleModal(<?= json_encode($r, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>)'
-                                    class="p-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 transition-colors" title="Edit Role & Permissions">
+                                    class="p-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#1d63d8] border border-blue-200 transition-colors cursor-pointer" title="Edit Role & Permissions">
                                 <i class="fa-solid fa-pen-to-square text-xs"></i>
                             </button>
 
                             <?php if (!$isSystemRoot): ?>
                                 <button type="button" 
                                         onclick="confirmDeleteRole(<?= $r['id'] ?>, '<?= addslashes(htmlspecialchars($r['name'])) ?>', <?= $r['user_count'] ?>)"
-                                        class="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-colors" title="Delete Role">
+                                        class="p-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-colors cursor-pointer" title="Delete Role">
                                     <i class="fa-solid fa-trash-can text-xs"></i>
                                 </button>
                             <?php else: ?>
-                                <span class="p-2 rounded-lg bg-slate-800 text-slate-600 cursor-not-allowed opacity-50" title="System root role is protected">
+                                <span class="p-2 rounded-xl bg-slate-100 text-slate-400 cursor-not-allowed opacity-50" title="System root role is protected">
                                     <i class="fa-solid fa-shield-halved text-xs"></i>
                                 </span>
                             <?php endif; ?>
@@ -224,20 +224,20 @@ require_once __DIR__ . '/sidebar.php';
 </div>
 
 <!-- CREATE ROLE MODAL -->
-<div id="createRoleModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] flex flex-col animate-in fade-in zoom-in duration-200">
+<div id="createRoleModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] flex flex-col">
         
-        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800 shrink-0">
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 shrink-0">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center">
                     <i class="fa-solid fa-shield-plus text-base"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-white">Create New Role</h3>
-                    <p class="text-xs text-slate-400">Define role identity and assign default module permissions</p>
+                    <h3 class="text-lg font-extrabold text-slate-900">Create New Role</h3>
+                    <p class="text-xs text-slate-500 font-medium">Define role identity and assign default module permissions</p>
                 </div>
             </div>
-            <button type="button" onclick="closeCreateRoleModal()" class="text-slate-400 hover:text-white p-2">
+            <button type="button" onclick="closeCreateRoleModal()" class="text-slate-400 hover:text-slate-800 p-2 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
@@ -247,34 +247,34 @@ require_once __DIR__ . '/sidebar.php';
             <input type="hidden" name="action" value="create_role">
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Role Name *</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Role Name *</label>
                 <input type="text" name="name" required placeholder="e.g. Triage Coordinator, Logistics Officer" 
-                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-purple-600 focus:bg-white font-medium">
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Description</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Description</label>
                 <textarea name="description" rows="2" placeholder="Brief summary of duties and permissions for this role..." 
-                          class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"></textarea>
+                          class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-purple-600 focus:bg-white font-medium"></textarea>
             </div>
 
             <div>
                 <div class="flex items-center justify-between mb-2">
-                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Assign Default Permissions</label>
-                    <button type="button" onclick="selectAllCreatePerms()" class="text-[11px] text-purple-400 hover:text-purple-300 font-semibold">Select All</button>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mono">Assign Default Permissions</label>
+                    <button type="button" onclick="selectAllCreatePerms()" class="text-[11px] text-purple-700 hover:underline font-bold cursor-pointer">Select All</button>
                 </div>
 
-                <div class="space-y-4 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                <div class="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <?php foreach ($SYSTEM_PERMISSIONS as $category => $perms): ?>
                         <div>
-                            <p class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider mb-2"><?= htmlspecialchars($category) ?></p>
+                            <p class="text-[11px] font-extrabold text-blue-700 uppercase tracking-wider mb-2 mono"><?= htmlspecialchars($category) ?></p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                 <?php foreach ($perms as $permKey => $permDesc): ?>
-                                    <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-900/80 border border-slate-800/80 hover:border-purple-500/40 cursor-pointer transition-colors">
-                                        <input type="checkbox" name="permissions[]" value="<?= htmlspecialchars($permKey) ?>" class="create-perm-check mt-0.5 rounded bg-slate-800 border-slate-700 text-purple-600 focus:ring-purple-500">
+                                    <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-purple-300 cursor-pointer transition-colors shadow-2xs">
+                                        <input type="checkbox" name="permissions[]" value="<?= htmlspecialchars($permKey) ?>" class="create-perm-check mt-0.5 rounded bg-slate-50 border-slate-300 text-purple-600 focus:ring-purple-500">
                                         <div class="min-w-0">
-                                            <p class="text-xs font-semibold text-white"><?= htmlspecialchars(str_replace('_', ' ', $permKey)) ?></p>
-                                            <p class="text-[10px] text-slate-400 leading-tight"><?= htmlspecialchars($permDesc) ?></p>
+                                            <p class="text-xs font-bold text-slate-900"><?= htmlspecialchars(str_replace('_', ' ', $permKey)) ?></p>
+                                            <p class="text-[10px] text-slate-500 leading-tight font-medium"><?= htmlspecialchars($permDesc) ?></p>
                                         </div>
                                     </label>
                                 <?php endforeach; ?>
@@ -284,11 +284,11 @@ require_once __DIR__ . '/sidebar.php';
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800 shrink-0">
-                <button type="button" onclick="closeCreateRoleModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 shrink-0">
+                <button type="button" onclick="closeCreateRoleModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-lg shadow-purple-600/30 transition-all">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-bold shadow-sm transition-all cursor-pointer">
                     Create Role
                 </button>
             </div>
@@ -298,20 +298,20 @@ require_once __DIR__ . '/sidebar.php';
 </div>
 
 <!-- EDIT ROLE MODAL -->
-<div id="editRoleModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] flex flex-col animate-in fade-in zoom-in duration-200">
+<div id="editRoleModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] flex flex-col">
         
-        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800 shrink-0">
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 shrink-0">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-[#1d63d8] flex items-center justify-center">
                     <i class="fa-solid fa-pen-to-square text-base"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-white">Edit Role Configuration</h3>
-                    <p class="text-xs text-slate-400">Update role name and granted permissions</p>
+                    <h3 class="text-lg font-extrabold text-slate-900">Edit Role Configuration</h3>
+                    <p class="text-xs text-slate-500 font-medium">Update role name and granted permissions</p>
                 </div>
             </div>
-            <button type="button" onclick="closeEditRoleModal()" class="text-slate-400 hover:text-white p-2">
+            <button type="button" onclick="closeEditRoleModal()" class="text-slate-400 hover:text-slate-800 p-2 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
@@ -322,34 +322,34 @@ require_once __DIR__ . '/sidebar.php';
             <input type="hidden" name="role_id" id="edit_role_id">
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Role Name *</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Role Name *</label>
                 <input type="text" name="name" id="edit_role_name" required 
-                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium">
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Description</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Description</label>
                 <textarea name="description" id="edit_role_description" rows="2" 
-                          class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"></textarea>
+                          class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium"></textarea>
             </div>
 
             <div>
                 <div class="flex items-center justify-between mb-2">
-                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Granted Permissions</label>
-                    <button type="button" onclick="selectAllEditPerms()" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-semibold">Toggle All</button>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mono">Granted Permissions</label>
+                    <button type="button" onclick="selectAllEditPerms()" class="text-[11px] text-[#1d63d8] hover:underline font-bold cursor-pointer">Toggle All</button>
                 </div>
 
-                <div class="space-y-4 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                <div class="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <?php foreach ($SYSTEM_PERMISSIONS as $category => $perms): ?>
                         <div>
-                            <p class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider mb-2"><?= htmlspecialchars($category) ?></p>
+                            <p class="text-[11px] font-extrabold text-blue-700 uppercase tracking-wider mb-2 mono"><?= htmlspecialchars($category) ?></p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                 <?php foreach ($perms as $permKey => $permDesc): ?>
-                                    <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-900/80 border border-slate-800/80 hover:border-indigo-500/40 cursor-pointer transition-colors">
-                                        <input type="checkbox" name="permissions[]" value="<?= htmlspecialchars($permKey) ?>" id="edit_perm_<?= $permKey ?>" class="edit-perm-check mt-0.5 rounded bg-slate-800 border-slate-700 text-indigo-600 focus:ring-indigo-500">
+                                    <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-blue-300 cursor-pointer transition-colors shadow-2xs">
+                                        <input type="checkbox" name="permissions[]" value="<?= htmlspecialchars($permKey) ?>" id="edit_perm_<?= $permKey ?>" class="edit-perm-check mt-0.5 rounded bg-slate-50 border-slate-300 text-[#1d63d8] focus:ring-[#1d63d8]">
                                         <div class="min-w-0">
-                                            <p class="text-xs font-semibold text-white"><?= htmlspecialchars(str_replace('_', ' ', $permKey)) ?></p>
-                                            <p class="text-[10px] text-slate-400 leading-tight"><?= htmlspecialchars($permDesc) ?></p>
+                                            <p class="text-xs font-bold text-slate-900"><?= htmlspecialchars(str_replace('_', ' ', $permKey)) ?></p>
+                                            <p class="text-[10px] text-slate-500 leading-tight font-medium"><?= htmlspecialchars($permDesc) ?></p>
                                         </div>
                                     </label>
                                 <?php endforeach; ?>
@@ -359,11 +359,11 @@ require_once __DIR__ . '/sidebar.php';
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800 shrink-0">
-                <button type="button" onclick="closeEditRoleModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 shrink-0">
+                <button type="button" onclick="closeEditRoleModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#1d63d8] hover:bg-[#1553c7] text-white text-xs font-bold shadow-sm transition-all cursor-pointer">
                     Save Changes
                 </button>
             </div>
@@ -428,9 +428,7 @@ function confirmDeleteRole(roleId, roleName, userCount) {
             title: 'Cannot Delete Role',
             text: `There are currently ${userCount} user(s) assigned to '${roleName}'. Please reassign those users to another role first.`,
             icon: 'warning',
-            confirmButtonColor: '#6366f1',
-            background: '#1e293b',
-            color: '#f8fafc'
+            confirmButtonColor: '#1d63d8'
         });
         return;
     }
@@ -440,12 +438,10 @@ function confirmDeleteRole(roleId, roleName, userCount) {
         text: `Are you sure you want to delete '${roleName}'?`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#e11d48',
-        cancelButtonColor: '#334155',
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#64748b',
         confirmButtonText: 'Yes, delete role',
-        cancelButtonText: 'Cancel',
-        background: '#1e293b',
-        color: '#f8fafc'
+        cancelButtonText: 'Cancel'
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('delete_role_id').value = roleId;

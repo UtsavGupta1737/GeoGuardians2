@@ -1,5 +1,5 @@
 <?php
-// user/profile.php - User Account Profile & Security Settings
+// profile.php - User Account Profile & Security Settings (Government Theme)
 define('PAGE_TITLE', 'My Profile & Account Settings');
 require_once __DIR__ . '/auth.php';
 
@@ -73,38 +73,38 @@ require_once __DIR__ . '/header.php';
 require_once __DIR__ . '/sidebar.php';
 ?>
 
-<div class="flex-1 flex flex-col min-w-0 bg-slate-950">
+<div class="flex-1 flex flex-col min-w-0 bg-[#f8fafc] min-h-screen overflow-y-auto">
     <?php require_once __DIR__ . '/navbar.php'; ?>
 
-    <main class="flex-1 p-4 sm:p-8 max-w-4xl w-full mx-auto space-y-6">
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-4xl w-full mx-auto space-y-6">
         
         <div>
-            <h2 class="text-2xl font-extrabold text-white">Account Settings & Profile</h2>
-            <p class="text-xs text-slate-400 mt-1">Manage your identity, personal contact information, and security credentials</p>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Account Settings &amp; Profile</h2>
+            <p class="text-xs text-slate-500 font-medium mt-1">Manage your identity, personal contact information, and security credentials</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             
             <!-- Left: Avatar Card -->
-            <div class="md:col-span-4 glass-panel p-6 rounded-3xl flex flex-col items-center text-center space-y-4">
-                <img src="<?= htmlspecialchars($currentUser['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($currentUser['name']) . '&background=6366f1&color=fff') ?>" 
-                     alt="Avatar" class="w-24 h-24 rounded-3xl object-cover ring-4 ring-indigo-500/30 shadow-xl">
+            <div class="md:col-span-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col items-center text-center space-y-4">
+                <img src="<?= htmlspecialchars($currentUser['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($currentUser['name']) . '&background=1d63d8&color=fff') ?>" 
+                     alt="Avatar" class="w-24 h-24 rounded-3xl object-cover ring-4 ring-blue-100 shadow-sm">
                 <div>
-                    <h3 class="text-base font-bold text-white"><?= htmlspecialchars($currentUser['name']) ?></h3>
-                    <p class="text-xs text-slate-400"><?= htmlspecialchars($currentUser['email']) ?></p>
+                    <h3 class="text-base font-extrabold text-slate-900"><?= htmlspecialchars($currentUser['name']) ?></h3>
+                    <p class="text-xs text-slate-500 font-mono"><?= htmlspecialchars($currentUser['email']) ?></p>
                 </div>
-                <div class="w-full pt-3 border-t border-slate-800 space-y-2 text-xs">
-                    <div class="flex items-center justify-between text-slate-400">
+                <div class="w-full pt-3 border-t border-slate-100 space-y-2 text-xs">
+                    <div class="flex items-center justify-between text-slate-500">
                         <span>Role:</span>
-                        <strong class="text-indigo-300"><?= htmlspecialchars($currentUser['role_name']) ?></strong>
+                        <strong class="text-blue-700 font-bold"><?= htmlspecialchars($currentUser['role_name']) ?></strong>
                     </div>
-                    <div class="flex items-center justify-between text-slate-400">
+                    <div class="flex items-center justify-between text-slate-500">
                         <span>Account Status:</span>
-                        <span class="text-emerald-400 font-bold uppercase text-[10px]">Active</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 mono">Active</span>
                     </div>
-                    <div class="flex items-center justify-between text-slate-400">
+                    <div class="flex items-center justify-between text-slate-500">
                         <span>Joined:</span>
-                        <span class="text-slate-300"><?= date('M d, Y', strtotime($currentUser['created_at'])) ?></span>
+                        <span class="text-slate-700 font-mono"><?= date('M d, Y', strtotime($currentUser['created_at'])) ?></span>
                     </div>
                 </div>
             </div>
@@ -113,12 +113,12 @@ require_once __DIR__ . '/sidebar.php';
             <div class="md:col-span-8 space-y-6">
                 
                 <!-- Profile Info Form -->
-                <div class="glass-panel p-6 rounded-3xl space-y-4">
-                    <div class="flex items-center gap-3 pb-3 border-b border-slate-800">
-                        <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+                    <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+                        <div class="w-8 h-8 rounded-xl bg-blue-50 text-[#1d63d8] flex items-center justify-center text-sm">
                             <i class="fa-solid fa-user"></i>
                         </div>
-                        <h3 class="text-sm font-bold text-white">Personal Information</h3>
+                        <h3 class="text-sm font-extrabold text-slate-900">Personal Information</h3>
                     </div>
 
                     <form method="POST" action="profile.php" class="space-y-4">
@@ -126,32 +126,32 @@ require_once __DIR__ . '/sidebar.php';
                         <input type="hidden" name="action" value="update_profile">
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Full Name *</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Full Name *</label>
                             <input type="text" name="name" value="<?= htmlspecialchars($currentUser['name']) ?>" required 
-                                   class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Email Address</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Email Address</label>
                             <input type="email" value="<?= htmlspecialchars($currentUser['email']) ?>" disabled 
-                                   class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-500 cursor-not-allowed">
-                            <p class="text-[10px] text-slate-500 mt-1">Email is managed by the system administrator.</p>
+                                   class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500 cursor-not-allowed font-mono">
+                            <p class="text-[10px] text-slate-400 mt-1">Email is managed by the system administrator.</p>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Phone Number</label>
-                            <input type="text" name="phone" value="<?= htmlspecialchars($currentUser['phone'] ?? '') ?>" placeholder="+1 (555) 000-0000" 
-                                   class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Phone Number</label>
+                            <input type="text" name="phone" value="<?= htmlspecialchars($currentUser['phone'] ?? '') ?>" placeholder="+91 98765 43210" 
+                                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-mono font-medium">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Avatar Image URL</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Avatar Image URL</label>
                             <input type="url" name="avatar" value="<?= htmlspecialchars($currentUser['avatar'] ?? '') ?>" placeholder="https://example.com/avatar.jpg" 
-                                   class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium">
                         </div>
 
                         <div class="flex justify-end pt-2">
-                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all">
+                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#1d63d8] hover:bg-[#1553c7] text-white text-xs font-bold shadow-sm transition-all cursor-pointer">
                                 Save Profile Changes
                             </button>
                         </div>
@@ -159,12 +159,12 @@ require_once __DIR__ . '/sidebar.php';
                 </div>
 
                 <!-- Password Change Form -->
-                <div class="glass-panel p-6 rounded-3xl space-y-4">
-                    <div class="flex items-center gap-3 pb-3 border-b border-slate-800">
-                        <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+                    <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+                        <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center text-sm">
                             <i class="fa-solid fa-lock"></i>
                         </div>
-                        <h3 class="text-sm font-bold text-white">Security & Password Update</h3>
+                        <h3 class="text-sm font-extrabold text-slate-900">Security &amp; Password Update</h3>
                     </div>
 
                     <form method="POST" action="profile.php" class="space-y-4">
@@ -172,26 +172,26 @@ require_once __DIR__ . '/sidebar.php';
                         <input type="hidden" name="action" value="change_password">
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Current Password *</label>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Current Password *</label>
                             <input type="password" name="current_password" required placeholder="••••••••" 
-                                   class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium">
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">New Password *</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">New Password *</label>
                                 <input type="password" name="new_password" required minlength="6" placeholder="••••••••" 
-                                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Confirm New Password *</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Confirm New Password *</label>
                                 <input type="password" name="confirm_password" required minlength="6" placeholder="••••••••" 
-                                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium">
                             </div>
                         </div>
 
                         <div class="flex justify-end pt-2">
-                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-lg shadow-purple-600/30 transition-all">
+                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-bold shadow-sm transition-all cursor-pointer">
                                 Update Password
                             </button>
                         </div>

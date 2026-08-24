@@ -1,3 +1,0 @@
-# GeoGuardians DisasterSafe Frontend Environment Variables
-# Point this to your local WAMP Server Apache backend API path
-VITE_API_BASE_URL=http://localhost/DisasterSafe/backend/api

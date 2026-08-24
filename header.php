@@ -1,11 +1,11 @@
 <?php
-// header.php - Global Header, Typography, Design System & Leaflet GIS Assets
+// header.php - Global Header, Typography, Government Design System & Leaflet GIS Assets
 if (!defined('PAGE_TITLE')) {
     define('PAGE_TITLE', 'Command Center');
 }
 ?>
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#0a0f1d] text-slate-100">
+<html lang="en" class="h-full bg-[#f8fafc] text-slate-900">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,17 +28,28 @@ if (!defined('PAGE_TITLE')) {
                 extend: {
                     colors: {
                         navy: {
-                            950: '#060a14',
-                            900: '#0a0f1d',
-                            850: '#0f172a',
-                            800: '#131e36',
-                            700: '#1c2b4e',
-                            600: '#2a3d6b'
+                            950: '#0f172a',
+                            900: '#1e293b',
+                            850: '#334155',
+                            800: '#475569',
+                            700: '#64748b',
+                            600: '#94a3b8'
                         },
                         brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
                             500: '#3b82f6',
                             600: '#2563eb',
                             700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                        gov: {
+                            blue: '#1d63d8',
+                            navy: '#0f2942',
+                            red: '#dc2626',
+                            amber: '#d97706',
+                            green: '#16a34a'
                         },
                         alert: {
                             red: '#ba1a1a',
@@ -66,62 +77,93 @@ if (!defined('PAGE_TITLE')) {
     
     <style>
         :root {
-            --navy: #000a1e;
-            --muted: #586377;
-            --border: #243049;
-            --surface: #0a0f1d;
-            --panel: #11192e;
+            --surface: #f8fafc;
+            --panel: #ffffff;
+            --border: #e2e8f0;
+            --border-accent: #cbd5e1;
+            --primary-accent: #1d63d8;
+            --emerald-accent: #16a34a;
+            --amber-accent: #d97706;
+            --red-accent: #dc2626;
+            --muted: #64748b;
             --font-sans: 'Inter', system-ui, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
         body {
             font-family: var(--font-sans);
-            background: #0a0f1d;
-            color: #f1f5f9;
+            background: #f8fafc;
+            color: #0f172a;
         }
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #0a0f1d;
+            background: #f1f5f9;
         }
         ::-webkit-scrollbar-thumb {
-            background: #243049;
-            border-radius: 4px;
+            background: #cbd5e1;
+            border-radius: 6px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #3b82f6;
+            background: #94a3b8;
         }
+        
+        /* Top Sovereign Accent Line */
+        .top-accent-line {
+            height: 3px;
+            background: linear-gradient(90deg, #1d63d8 0%, #0284c7 35%, #059669 70%, #d97706 100%);
+            width: 100%;
+        }
+
         .glass-panel {
-            background: rgba(17, 25, 46, 0.85);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
+        
         .stat-card-accent {
-            background: rgba(17, 25, 46, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-top: 3px solid #1d63d8;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
             transition: all 0.2s ease;
         }
         .stat-card-accent:hover {
             transform: translateY(-2px);
-            border-color: rgba(59, 130, 246, 0.4);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            border-color: #cbd5e1;
+            border-top-color: #1d63d8;
+            box-shadow: 0 8px 16px -4px rgba(29, 99, 216, 0.12);
         }
+
+        .accent-card-red {
+            border-top: 3px solid #dc2626 !important;
+        }
+        .accent-card-emerald {
+            border-top: 3px solid #16a34a !important;
+        }
+        .accent-card-amber {
+            border-top: 3px solid #d97706 !important;
+        }
+        .accent-card-teal {
+            border-top: 3px solid #0d9488 !important;
+        }
+        .accent-card-purple {
+            border-top: 3px solid #7c3aed !important;
+        }
+
         .live-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
             background: #ba1a1a;
             display: inline-block;
-            box-shadow: 0 0 10px #ba1a1a;
+            box-shadow: 0 0 8px rgba(186, 26, 26, 0.5);
             animation: pulseDot 1.5s infinite;
         }
         @keyframes pulseDot {
             0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 14px #ba1a1a; }
+            50% { transform: scale(1.25); opacity: 1; box-shadow: 0 0 12px rgba(186, 26, 26, 0.8); }
             100% { transform: scale(0.95); opacity: 0.8; }
         }
         .radar-pulse-marker {
@@ -187,5 +229,5 @@ if (!defined('PAGE_TITLE')) {
         });
     </script>
 </head>
-<body class="h-full bg-[#0a0f1d] text-slate-100 antialiased overflow-hidden">
-<div class="h-screen flex flex-row w-full overflow-hidden">
+<body class="h-full bg-[#f8fafc] text-slate-800 antialiased overflow-hidden">
+<div class="h-screen flex flex-row w-full overflow-hidden bg-[#f8fafc]">

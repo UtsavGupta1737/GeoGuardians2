@@ -1,5 +1,5 @@
 <?php
-// activity_logs.php - Audit Trail & System Activity Logging
+// activity_logs.php - Audit Trail & System Activity Logging (Government Theme)
 define('PAGE_TITLE', 'System Audit & Activity Logs');
 require_once __DIR__ . '/auth.php';
 
@@ -52,46 +52,46 @@ require_once __DIR__ . '/header.php';
 require_once __DIR__ . '/sidebar.php';
 ?>
 
-<div class="flex-1 flex flex-col min-w-0 bg-slate-950">
+<div class="flex-1 flex flex-col min-w-0 bg-[#f8fafc] min-h-screen overflow-y-auto">
     <?php require_once __DIR__ . '/navbar.php'; ?>
 
-    <main class="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
         
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <section class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
-                    <span>System Audit Trail</span>
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">System Audit Trail</h2>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 mono">
                         <?= count($logs) ?> Events
                     </span>
-                </h2>
-                <p class="text-xs text-slate-400 mt-1">Immutable record of logins, user creations, role alterations, and disaster ops</p>
+                </div>
+                <p class="text-xs text-slate-500 font-medium mt-1">Immutable record of logins, user creations, role alterations, and disaster ops</p>
             </div>
             
             <form method="POST" action="activity_logs.php" onsubmit="return confirmClearLogs(event)" class="inline">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                 <input type="hidden" name="action" value="clear_logs">
-                <button type="submit" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-rose-500/20 border border-slate-700 hover:border-rose-500/30 text-slate-400 hover:text-rose-400 text-xs font-bold transition-all flex items-center gap-2">
+                <button type="submit" class="px-4 py-2.5 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer">
                     <i class="fa-solid fa-trash-can text-xs"></i>
                     <span>Purge Logs</span>
                 </button>
             </form>
-        </div>
+        </section>
 
         <!-- Filter Bar -->
-        <div class="glass-panel p-4 rounded-2xl">
+        <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-xs">
             <form method="GET" action="activity_logs.php" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                 <div class="sm:col-span-6 relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                         <i class="fa-solid fa-magnifying-glass text-xs"></i>
                     </div>
                     <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search by user, details, IP address..." 
-                           class="w-full pl-9 pr-4 py-2 bg-slate-900/90 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors">
+                           class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white transition-colors font-medium">
                 </div>
 
                 <div class="sm:col-span-4">
-                    <select name="action_filter" class="w-full py-2 px-3 bg-slate-900/90 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <select name="action_filter" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-[#1d63d8]">
                         <option value="">All Action Types</option>
                         <?php foreach ($actionsList as $act): ?>
                             <option value="<?= htmlspecialchars($act) ?>" <?= $filterAction === $act ? 'selected' : '' ?>>
@@ -102,12 +102,12 @@ require_once __DIR__ . '/sidebar.php';
                 </div>
 
                 <div class="sm:col-span-2 flex items-center gap-2">
-                    <button type="submit" class="w-full py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5">
+                    <button type="submit" class="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
                         <i class="fa-solid fa-filter text-[10px]"></i>
                         <span>Filter</span>
                     </button>
                     <?php if (!empty($search) || !empty($filterAction)): ?>
-                        <a href="activity_logs.php" class="p-2 bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl border border-slate-700 transition-colors" title="Clear Filters">
+                        <a href="activity_logs.php" class="p-2 bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 rounded-xl border border-slate-200 transition-colors" title="Clear Filters">
                             <i class="fa-solid fa-rotate-left text-xs"></i>
                         </a>
                     <?php endif; ?>
@@ -116,11 +116,11 @@ require_once __DIR__ . '/sidebar.php';
         </div>
 
         <!-- Logs Table Card -->
-        <div class="glass-panel rounded-3xl overflow-hidden shadow-xl">
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
+                <table class="w-full text-left text-xs border-collapse">
                     <thead>
-                        <tr class="border-b border-slate-800/80 bg-slate-900/40 text-slate-400 uppercase tracking-wider font-semibold">
+                        <tr class="border-b border-slate-200 bg-slate-50/80 text-slate-500 uppercase tracking-wider font-extrabold text-[10px] mono">
                             <th class="py-3.5 px-4 sm:px-6">Timestamp</th>
                             <th class="py-3.5 px-4">User</th>
                             <th class="py-3.5 px-4">Action</th>
@@ -128,43 +128,43 @@ require_once __DIR__ . '/sidebar.php';
                             <th class="py-3.5 px-4 text-right">IP Address</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
                         <?php if (empty($logs)): ?>
                             <tr>
                                 <td colspan="5" class="py-12 text-center text-slate-500">
-                                    <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 text-slate-600 flex items-center justify-center mx-auto mb-3 text-lg">
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center mx-auto mb-3 text-lg">
                                         <i class="fa-solid fa-clock-rotate-left"></i>
                                     </div>
-                                    <p class="font-medium text-slate-400">No activity logs recorded matching criteria</p>
+                                    <p class="font-medium text-slate-500">No activity logs recorded matching criteria</p>
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($logs as $log): ?>
                                 <?php
                                     $actionBadge = match(true) {
-                                        str_contains($log['action'], 'DELETE') => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-                                        str_contains($log['action'], 'CREATE') => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                        str_contains($log['action'], 'LOGIN') => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                        str_contains($log['action'], 'DISASTER') => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-                                        default => 'bg-slate-800 text-indigo-300 border-slate-700'
+                                        str_contains($log['action'], 'DELETE') => 'bg-red-50 text-red-800 border-red-200',
+                                        str_contains($log['action'], 'CREATE') => 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                                        str_contains($log['action'], 'LOGIN') => 'bg-blue-50 text-blue-800 border-blue-200',
+                                        str_contains($log['action'], 'DISASTER') => 'bg-amber-50 text-amber-800 border-amber-200',
+                                        default => 'bg-slate-100 text-slate-700 border-slate-200'
                                     };
                                 ?>
-                                <tr class="hover:bg-slate-800/30 transition-colors">
-                                    <td class="py-3.5 px-4 sm:px-6 text-slate-400 font-mono text-[11px] whitespace-nowrap">
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="py-3.5 px-4 sm:px-6 text-slate-500 font-mono text-[11px] whitespace-nowrap">
                                         <?= date('M d, Y H:i:s', strtotime($log['created_at'])) ?>
                                     </td>
-                                    <td class="py-3.5 px-4 font-semibold text-white whitespace-nowrap">
+                                    <td class="py-3.5 px-4 font-bold text-slate-900 whitespace-nowrap">
                                         <?= htmlspecialchars($log['user_name'] ?: 'System / Guest') ?>
                                     </td>
                                     <td class="py-3.5 px-4 whitespace-nowrap">
-                                        <span class="inline-block px-2.5 py-0.5 rounded-lg text-[10px] font-bold border <?= $actionBadge ?>">
+                                        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?= $actionBadge ?> mono">
                                             <?= htmlspecialchars($log['action']) ?>
                                         </span>
                                     </td>
-                                    <td class="py-3.5 px-4 sm:px-6 text-slate-300">
+                                    <td class="py-3.5 px-4 sm:px-6 text-slate-700 font-medium">
                                         <?= htmlspecialchars($log['details'] ?: 'No additional details') ?>
                                     </td>
-                                    <td class="py-3.5 px-4 text-right font-mono text-[11px] text-slate-500">
+                                    <td class="py-3.5 px-4 text-right font-mono text-[11px] text-slate-400">
                                         <?= htmlspecialchars($log['ip_address'] ?: '127.0.0.1') ?>
                                     </td>
                                 </tr>
@@ -186,12 +186,10 @@ function confirmClearLogs(e) {
         text: 'Are you sure you want to clear all system audit logs? This cannot be undone.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#e11d48',
-        cancelButtonColor: '#334155',
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#64748b',
         confirmButtonText: 'Yes, clear logs',
-        cancelButtonText: 'Cancel',
-        background: '#1e293b',
-        color: '#f8fafc'
+        cancelButtonText: 'Cancel'
     }).then((result) => {
         if (result.isConfirmed) {
             e.target.submit();

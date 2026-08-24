@@ -1,5 +1,5 @@
 <?php
-// disasters.php - Master Disaster Command & Operations Hub
+// disasters.php - Master Disaster Command & Operations Hub (Government Theme)
 define('PAGE_TITLE', 'Disaster Command Hub');
 require_once __DIR__ . '/auth.php';
 
@@ -110,62 +110,63 @@ require_once __DIR__ . '/header.php';
 require_once __DIR__ . '/sidebar.php';
 ?>
 
-<div class="flex-1 flex flex-col min-w-0 bg-slate-950">
+<div class="flex-1 flex flex-col min-w-0 bg-[#f8fafc] min-h-screen overflow-y-auto">
     <?php require_once __DIR__ . '/navbar.php'; ?>
 
-    <main class="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
         
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <!-- HEADER BANNER -->
+        <section class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
-                    <span>Disaster Command Hub</span>
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Disaster Command Hub</h2>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 mono">
                         <?= count($disasters) ?> Incidents Logged
                     </span>
-                </h2>
-                <p class="text-xs text-slate-400 mt-1">Declare disaster emergencies, mobilize field units, and dispatch volunteer/police operations</p>
+                </div>
+                <p class="text-xs text-slate-500 font-medium mt-1">Declare disaster emergencies, mobilize field units, and dispatch volunteer/police operations</p>
             </div>
-            <button type="button" onclick="openCreateDisasterModal()" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all shadow-lg shadow-amber-600/30 flex items-center justify-center gap-2">
+            <button type="button" onclick="openCreateDisasterModal()" class="px-4 py-2.5 rounded-2xl bg-[#d97706] hover:bg-[#b45309] text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
                 <i class="fa-solid fa-triangle-exclamation text-xs"></i>
                 <span>Declare Disaster Event</span>
             </button>
-        </div>
+        </section>
 
         <!-- Disasters Grid -->
         <div class="space-y-4">
             <?php foreach ($disasters as $d): ?>
                 <?php
                     $sevBadge = match($d['severity']) {
-                        'Critical' => 'bg-rose-500/10 text-rose-400 border-rose-500/30',
-                        'High' => 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-                        'Moderate' => 'bg-yellow-500/10 text-yellow-300 border-yellow-500/30',
-                        default => 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                        'Critical' => 'bg-red-50 text-red-800 border-red-200',
+                        'High' => 'bg-amber-50 text-amber-800 border-amber-200',
+                        'Moderate' => 'bg-yellow-50 text-yellow-800 border-yellow-200',
+                        default => 'bg-blue-50 text-blue-800 border-blue-200'
                     };
                     $tasksCount = $pdo->query("SELECT COUNT(*) FROM volunteer_tasks WHERE disaster_id = {$d['id']}")->fetchColumn();
                     $deployCount = $pdo->query("SELECT COUNT(*) FROM police_deployments WHERE disaster_id = {$d['id']}")->fetchColumn();
                     $sosCount = $pdo->query("SELECT COUNT(*) FROM emergency_sos WHERE disaster_id = {$d['id']}")->fetchColumn();
                 ?>
-                <div class="glass-panel p-6 rounded-3xl border border-slate-800/80 hover:border-amber-500/40 transition-all space-y-4">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs hover:border-slate-300 hover:shadow-sm transition-all space-y-4">
                     
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                         <div class="flex items-start gap-3.5">
-                            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center text-xl shrink-0">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center text-xl shrink-0">
                                 <i class="fa-solid <?= $d['type'] === 'Flood' ? 'fa-water' : ($d['type'] === 'Cyclone' ? 'fa-tornado' : ($d['type'] === 'Earthquake' ? 'fa-house-crack' : 'fa-triangle-exclamation')) ?>"></i>
                             </div>
                             <div>
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <h3 class="text-base font-bold text-white"><?= htmlspecialchars($d['title']) ?></h3>
-                                    <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold border <?= $sevBadge ?>">
+                                    <h3 class="text-base font-extrabold text-slate-900"><?= htmlspecialchars($d['title']) ?></h3>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?= $sevBadge ?> mono">
                                         <?= htmlspecialchars($d['severity']) ?> SEVERITY
                                     </span>
-                                    <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-slate-900 border border-slate-800 text-slate-300">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 border border-slate-200 text-slate-700 mono">
                                         <?= htmlspecialchars($d['status']) ?>
                                     </span>
                                 </div>
-                                <p class="text-xs text-amber-300 font-medium mt-1 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-location-dot text-rose-400"></i>
+                                <p class="text-xs text-amber-700 font-bold mt-1 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-location-dot text-red-500"></i>
                                     <span><?= htmlspecialchars($d['location']) ?></span>
-                                    <span class="text-slate-500">&bull; Type: <?= htmlspecialchars($d['type']) ?></span>
+                                    <span class="text-slate-500 font-normal">&bull; Type: <?= htmlspecialchars($d['type']) ?></span>
                                 </p>
                             </div>
                         </div>
@@ -173,47 +174,47 @@ require_once __DIR__ . '/sidebar.php';
                         <div class="flex items-center gap-2">
                             <button type="button" 
                                     onclick='openAddTaskModal(<?= $d['id'] ?>, "<?= addslashes(htmlspecialchars($d['title'])) ?>")'
-                                    class="px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white text-xs font-bold border border-emerald-500/30 transition-all flex items-center gap-1.5">
+                                    class="px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 transition-all flex items-center gap-1.5 cursor-pointer">
                                 <i class="fa-solid fa-plus text-[10px]"></i> Dispatch Task
                             </button>
                             <button type="button" 
                                     onclick='openEditDisasterModal(<?= json_encode($d, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>)'
-                                    class="p-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 transition-colors" title="Edit Incident">
+                                    class="p-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#1d63d8] border border-blue-200 transition-colors cursor-pointer" title="Edit Incident">
                                 <i class="fa-solid fa-pen-to-square text-xs"></i>
                             </button>
                             <button type="button" 
                                     onclick="confirmDeleteDisaster(<?= $d['id'] ?>, '<?= addslashes(htmlspecialchars($d['title'])) ?>')"
-                                    class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-colors" title="Delete Incident">
+                                    class="p-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-colors cursor-pointer" title="Delete Incident">
                                 <i class="fa-solid fa-trash-can text-xs"></i>
                             </button>
                         </div>
                     </div>
 
-                    <p class="text-xs text-slate-300 leading-relaxed bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80">
+                    <p class="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-2xl border border-slate-200 font-medium">
                         <?= nl2br(htmlspecialchars($d['description'])) ?>
                     </p>
 
                     <!-- Stats Row -->
                     <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
-                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                            <p class="text-[10px] uppercase font-bold text-slate-500">Casualties</p>
-                            <p class="text-sm font-bold text-rose-400 font-mono mt-0.5"><?= $d['casualties'] ?></p>
+                        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mono">Casualties</p>
+                            <p class="text-sm font-extrabold text-red-700 font-mono mt-0.5"><?= $d['casualties'] ?></p>
                         </div>
-                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                            <p class="text-[10px] uppercase font-bold text-slate-500">Displaced People</p>
-                            <p class="text-sm font-bold text-amber-400 font-mono mt-0.5"><?= number_format($d['displaced_people']) ?></p>
+                        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mono">Displaced People</p>
+                            <p class="text-sm font-extrabold text-amber-700 font-mono mt-0.5"><?= number_format($d['displaced_people']) ?></p>
                         </div>
-                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                            <p class="text-[10px] uppercase font-bold text-slate-500">Volunteer Missions</p>
-                            <p class="text-sm font-bold text-emerald-400 font-mono mt-0.5"><?= $tasksCount ?> Tasks</p>
+                        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mono">Volunteer Missions</p>
+                            <p class="text-sm font-extrabold text-emerald-700 font-mono mt-0.5"><?= $tasksCount ?> Tasks</p>
                         </div>
-                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                            <p class="text-[10px] uppercase font-bold text-slate-500">Police Squads</p>
-                            <p class="text-sm font-bold text-blue-400 font-mono mt-0.5"><?= $deployCount ?> Units</p>
+                        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mono">Police Squads</p>
+                            <p class="text-sm font-extrabold text-blue-700 font-mono mt-0.5"><?= $deployCount ?> Units</p>
                         </div>
-                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                            <p class="text-[10px] uppercase font-bold text-slate-500">Distress SOS</p>
-                            <p class="text-sm font-bold text-purple-400 font-mono mt-0.5"><?= $sosCount ?> Calls</p>
+                        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 mono">Distress SOS</p>
+                            <p class="text-sm font-extrabold text-purple-700 font-mono mt-0.5"><?= $sosCount ?> Calls</p>
                         </div>
                     </div>
 
@@ -225,20 +226,20 @@ require_once __DIR__ . '/sidebar.php';
 </div>
 
 <!-- CREATE DISASTER MODAL -->
-<div id="createDisasterModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+<div id="createDisasterModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative">
         
-        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
                     <i class="fa-solid fa-triangle-exclamation text-base"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-white">Declare Disaster Emergency</h3>
-                    <p class="text-xs text-slate-400">Post a live crisis zone to mobilize response units</p>
+                    <h3 class="text-lg font-extrabold text-slate-900">Declare Disaster Emergency</h3>
+                    <p class="text-xs text-slate-500 font-medium">Post a live crisis zone to mobilize response units</p>
                 </div>
             </div>
-            <button type="button" onclick="closeCreateDisasterModal()" class="text-slate-400 hover:text-white p-2">
+            <button type="button" onclick="closeCreateDisasterModal()" class="text-slate-400 hover:text-slate-800 p-2 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
@@ -248,15 +249,15 @@ require_once __DIR__ . '/sidebar.php';
             <input type="hidden" name="action" value="create_disaster">
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Disaster Incident Title *</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Disaster Incident Title *</label>
                 <input type="text" name="title" required placeholder="e.g. Category 4 Coastal Cyclone - Sector Alpha" 
-                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-600 focus:bg-white font-medium">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Incident Type *</label>
-                    <select name="type" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Incident Type *</label>
+                    <select name="type" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-600">
                         <option value="Flood">Flash Flood</option>
                         <option value="Cyclone">Cyclone / Hurricane</option>
                         <option value="Earthquake">Earthquake</option>
@@ -265,8 +266,8 @@ require_once __DIR__ . '/sidebar.php';
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Severity Level *</label>
-                    <select name="severity" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Severity Level *</label>
+                    <select name="severity" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-600">
                         <option value="Critical">Critical (Red Alert)</option>
                         <option value="High">High Severity</option>
                         <option value="Moderate">Moderate Severity</option>
@@ -276,35 +277,35 @@ require_once __DIR__ . '/sidebar.php';
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Affected Location / Sector *</label>
-                <input type="text" name="location" required placeholder="e.g. Coastal Bay District & Shoreline Towns" 
-                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Affected Location / Sector *</label>
+                <input type="text" name="location" required placeholder="e.g. Coastal Bay District &amp; Shoreline Towns" 
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-600 focus:bg-white font-medium">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Casualties Count</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Casualties Count</label>
                     <input type="number" name="casualties" min="0" value="0" 
-                           class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500">
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-600 focus:bg-white">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Displaced Citizens</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Displaced Citizens</label>
                     <input type="number" name="displaced_people" min="0" value="0" 
-                           class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-amber-500">
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-600 focus:bg-white">
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Situation Brief & Directives</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Situation Brief &amp; Directives</label>
                 <textarea name="description" rows="3" placeholder="Brief situation overview, relief requirements, evacuation orders..." 
-                          class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"></textarea>
+                          class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-600 focus:bg-white font-medium"></textarea>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800 mt-6">
-                <button type="button" onclick="closeCreateDisasterModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
+                <button type="button" onclick="closeCreateDisasterModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-lg shadow-amber-600/30 transition-all">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#d97706] hover:bg-[#b45309] text-white text-xs font-bold shadow-sm transition-all cursor-pointer">
                     Declare Disaster
                 </button>
             </div>
@@ -314,20 +315,20 @@ require_once __DIR__ . '/sidebar.php';
 </div>
 
 <!-- EDIT DISASTER MODAL -->
-<div id="editDisasterModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+<div id="editDisasterModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative">
         
-        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-[#1d63d8] flex items-center justify-center">
                     <i class="fa-solid fa-pen-to-square text-base"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-white">Update Disaster Record</h3>
-                    <p class="text-xs text-slate-400">Modify casualty counts, severity, and status</p>
+                    <h3 class="text-lg font-extrabold text-slate-900">Update Disaster Record</h3>
+                    <p class="text-xs text-slate-500 font-medium">Modify casualty counts, severity, and status</p>
                 </div>
             </div>
-            <button type="button" onclick="closeEditDisasterModal()" class="text-slate-400 hover:text-white p-2">
+            <button type="button" onclick="closeEditDisasterModal()" class="text-slate-400 hover:text-slate-800 p-2 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
@@ -338,15 +339,15 @@ require_once __DIR__ . '/sidebar.php';
             <input type="hidden" name="disaster_id" id="edit_disaster_id">
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Disaster Incident Title *</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Disaster Incident Title *</label>
                 <input type="text" name="title" id="edit_title" required 
-                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium">
             </div>
 
             <div class="grid grid-cols-3 gap-3">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Type</label>
-                    <select name="type" id="edit_type" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Type</label>
+                    <select name="type" id="edit_type" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-[#1d63d8]">
                         <option value="Flood">Flood</option>
                         <option value="Cyclone">Cyclone</option>
                         <option value="Earthquake">Earthquake</option>
@@ -355,8 +356,8 @@ require_once __DIR__ . '/sidebar.php';
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Severity</label>
-                    <select name="severity" id="edit_severity" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Severity</label>
+                    <select name="severity" id="edit_severity" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-[#1d63d8]">
                         <option value="Critical">Critical</option>
                         <option value="High">High</option>
                         <option value="Moderate">Moderate</option>
@@ -364,8 +365,8 @@ require_once __DIR__ . '/sidebar.php';
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Status</label>
-                    <select name="status" id="edit_status" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Status</label>
+                    <select name="status" id="edit_status" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-[#1d63d8]">
                         <option value="Active">Active</option>
                         <option value="Under Control">Under Control</option>
                         <option value="Resolved">Resolved</option>
@@ -374,35 +375,35 @@ require_once __DIR__ . '/sidebar.php';
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Location *</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Location *</label>
                 <input type="text" name="location" id="edit_location" required 
-                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Casualties</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Casualties</label>
                     <input type="number" name="casualties" id="edit_casualties" min="0" 
-                           class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-[#1d63d8] focus:bg-white">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Displaced</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Displaced</label>
                     <input type="number" name="displaced_people" id="edit_displaced_people" min="0" 
-                           class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-[#1d63d8] focus:bg-white">
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Situation Description</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Situation Description</label>
                 <textarea name="description" id="edit_description" rows="3" 
-                          class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"></textarea>
+                          class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-medium"></textarea>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800 mt-6">
-                <button type="button" onclick="closeEditDisasterModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
+                <button type="button" onclick="closeEditDisasterModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#1d63d8] hover:bg-[#1553c7] text-white text-xs font-bold shadow-sm transition-all cursor-pointer">
                     Save Changes
                 </button>
             </div>
@@ -412,20 +413,20 @@ require_once __DIR__ . '/sidebar.php';
 </div>
 
 <!-- ADD VOLUNTEER TASK MODAL -->
-<div id="addTaskModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+<div id="addTaskModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
         
-        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
                     <i class="fa-solid fa-list-check text-base"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-white">Post Volunteer Task</h3>
-                    <p class="text-xs text-slate-400">Target Incident: <strong class="text-emerald-300" id="task_disaster_title"></strong></p>
+                    <h3 class="text-lg font-extrabold text-slate-900">Post Volunteer Task</h3>
+                    <p class="text-xs text-slate-500 font-medium">Target Incident: <strong class="text-emerald-700" id="task_disaster_title"></strong></p>
                 </div>
             </div>
-            <button type="button" onclick="closeAddTaskModal()" class="text-slate-400 hover:text-white p-2">
+            <button type="button" onclick="closeAddTaskModal()" class="text-slate-400 hover:text-slate-800 p-2 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
@@ -436,46 +437,46 @@ require_once __DIR__ . '/sidebar.php';
             <input type="hidden" name="disaster_id" id="task_disaster_id">
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Mission Title *</label>
-                <input type="text" name="title" required placeholder="e.g. Distribute Clean Drinking Water & Dry Rations" 
-                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Mission Title *</label>
+                <input type="text" name="title" required placeholder="e.g. Distribute Clean Drinking Water &amp; Dry Rations" 
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white font-medium">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Mission Category *</label>
-                    <select name="category" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <option value="Search & Rescue">Search & Rescue Support</option>
-                        <option value="Medical Aid">Medical First Aid & Triage</option>
-                        <option value="Food & Water">Food & Water Distribution</option>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Mission Category *</label>
+                    <select name="category" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-emerald-600">
+                        <option value="Search & Rescue">Search &amp; Rescue Support</option>
+                        <option value="Medical Aid">Medical First Aid &amp; Triage</option>
+                        <option value="Food & Water">Food &amp; Water Distribution</option>
                         <option value="Shelter Management">Shelter Management</option>
-                        <option value="Logistics">Logistics & Transport</option>
+                        <option value="Logistics">Logistics &amp; Transport</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Volunteers Needed *</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Volunteers Needed *</label>
                     <input type="number" name="required_volunteers" min="1" value="5" required 
-                           class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-emerald-600 focus:bg-white">
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Mission Location / Sector *</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Mission Location / Sector *</label>
                 <input type="text" name="location" required placeholder="e.g. Sector 3 Community Center" 
-                       class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white font-medium">
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Instructions for Volunteers</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 mono">Instructions for Volunteers</label>
                 <textarea name="description" rows="2" placeholder="Tasks to perform, assembly point, protective gear required..." 
-                          class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"></textarea>
+                          class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white font-medium"></textarea>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800 mt-6">
-                <button type="button" onclick="closeAddTaskModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
+                <button type="button" onclick="closeAddTaskModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/30 transition-all">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-bold shadow-sm transition-all cursor-pointer">
                     Publish to Volunteer Board
                 </button>
             </div>
@@ -531,12 +532,10 @@ function confirmDeleteDisaster(disasterId, title) {
         text: `Are you sure you want to remove '${title}'? All associated tasks and assignments will be removed.`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#e11d48',
-        cancelButtonColor: '#334155',
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#64748b',
         confirmButtonText: 'Yes, delete record',
-        cancelButtonText: 'Cancel',
-        background: '#1e293b',
-        color: '#f8fafc'
+        cancelButtonText: 'Cancel'
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('delete_disaster_id').value = disasterId;
