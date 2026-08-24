@@ -6,7 +6,7 @@ require_once __DIR__ . '/auth.php';
 if (isLoggedIn()) {
     $user = getCurrentUser($pdo);
     if ($user) {
-        header("Location: dashboard.php");
+        header("Location: " . getRoleHomeUrl($user));
         exit;
     }
 }
@@ -29,7 +29,7 @@ if (isset($_GET['quick_login']) && !empty($_GET['quick_login'])) {
 
         logActivity($pdo, 'LOGIN_SUCCESS', "Quick demo login as {$user['name']} ({$user['email']})");
         setFlash('success', "Welcome back, {$user['name']}!");
-        header("Location: dashboard.php");
+        header("Location: " . getRoleHomeUrl($user['role_slug']));
         exit;
     }
 }
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 logActivity($pdo, 'LOGIN_SUCCESS', "User {$user['name']} logged in successfully");
                 setFlash('success', "Welcome back, {$user['name']}!");
-                header("Location: dashboard.php");
+                header("Location: " . getRoleHomeUrl($user['role_slug']));
                 exit;
             }
         } else {

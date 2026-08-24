@@ -123,8 +123,21 @@ function isPolice($user) {
     return hasPermission($user, 'access_police');
 }
 
-function isVolunteer($user) {
-    return hasPermission($user, 'access_volunteer');
+// Determine the home dashboard URL for a given user or role slug
+function getRoleHomeUrl($userOrSlug) {
+    $roleSlug = is_array($userOrSlug) ? ($userOrSlug['role_slug'] ?? 'user') : (string)$userOrSlug;
+    return match ($roleSlug) {
+        'volunteer', 'ngo' => 'volunteer.php',
+        'user', 'citizen', 'victim' => 'citizen.php',
+        default => 'dashboard.php'
+    };
+}
+
+// Check if user is a citizen/victim
+function isCitizen($user) {
+    if (!$user) return false;
+    $slug = $user['role_slug'] ?? '';
+    return in_array($slug, ['user', 'citizen', 'victim']);
 }
 
 // Auth guards for pages
@@ -159,7 +172,7 @@ function requirePermissionGuard($pdo, $permission) {
     $user = getCurrentUser($pdo);
     if (!hasPermission($user, $permission)) {
         setFlash('error', "Access Denied: You do not have permission for this module ({$permission}).");
-        header("Location: dashboard.php");
+        header("Location: " . getRoleHomeUrl($user));
         exit;
     }
     return $user;

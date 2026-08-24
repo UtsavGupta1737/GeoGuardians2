@@ -360,10 +360,101 @@ function initializeDatabase(PDO $pdo) {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );");
 
-    // Self-healing column checks for volunteers table
+    // 19. Volunteer Live Locations table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS volunteer_locations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL UNIQUE,
+        latitude REAL NOT NULL,
+        longitude REAL NOT NULL,
+        status TEXT DEFAULT 'available',
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );");
+
+    // 20. Mission Assignments table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS assignments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sos_request_id INTEGER,
+        team_id INTEGER,
+        vehicle_id INTEGER,
+        resource_id INTEGER,
+        assigned_to_user_id INTEGER,
+        task_notes TEXT DEFAULT 'Emergency rescue and relief deployment',
+        status TEXT DEFAULT 'assigned', -- 'assigned', 'en_route', 'on_scene', 'completed', 'reassigned'
+        assigned_by INTEGER DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );");
+
+    // 21. Assignment Checklist Items table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS assignment_checklist_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        assignment_id INTEGER NOT NULL,
+        label TEXT NOT NULL,
+        is_checked INTEGER NOT NULL DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );");
+
+    // 22. Coordinator Comms Messages table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS comms_messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sender_id INTEGER NOT NULL,
+        channel TEXT NOT NULL DEFAULT 'ops',
+        message TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );");
+
+    // 23. Victim-Volunteer Direct Messages table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS victim_volunteer_chats (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sos_id INTEGER NOT NULL,
+        sender_id INTEGER NOT NULL,
+        sender_name TEXT NOT NULL,
+        sender_role TEXT NOT NULL DEFAULT 'volunteer', -- 'victim', 'volunteer', 'authority'
+        message TEXT NOT NULL,
+        message_type TEXT NOT NULL DEFAULT 'text',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );");
+
+    // 24. Direct Requests table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS direct_requests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sos_request_id INTEGER NOT NULL,
+        victim_lat REAL NOT NULL,
+        victim_lng REAL NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );");
+
+    // 25. Direct Request Offers table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS direct_request_offers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        direct_request_id INTEGER NOT NULL,
+        volunteer_id INTEGER NOT NULL,
+        distance_km REAL NOT NULL DEFAULT 0.00,
+        offer_status TEXT NOT NULL DEFAULT 'pending',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );");
+
+    // Self-healing column checks for volunteers & emergency_sos tables
     try {
         $pdo->exec("ALTER TABLE volunteers ADD COLUMN organization TEXT DEFAULT 'DisasterSafe Relief Volunteers'");
     } catch (Exception $e) {}
+    try {
+        $pdo->exec("ALTER TABLE emergency_sos ADD COLUMN assigned_unit TEXT;");
+    } catch (Exception $e) {}
+    try {
+        $pdo->exec("ALTER TABLE emergency_sos ADD COLUMN eta_minutes INTEGER;");
+    } catch (Exception $e) {}
+    try {
+        $pdo->exec("ALTER TABLE emergency_sos ADD COLUMN responder_name TEXT;");
+    } catch (Exception $e) {}
+    try {
+        $pdo->exec("ALTER TABLE emergency_sos ADD COLUMN responder_phone TEXT;");
+    } catch (Exception $e) {}
+    try {
+        $pdo->exec("ALTER TABLE emergency_sos ADD COLUMN response_vehicle TEXT;");
+    } catch (Exception $e) {}
+
 
     // Define Standardized 7-Tier Role Permission Sets
     $rolesToEnsure = [
@@ -1519,6 +1610,44 @@ function initializeDatabase(PDO $pdo) {
         foreach ($distributions as $dst) {
             $distStmt->execute($dst);
         }
+    }
+
+    // Seed Volunteer Assignments & Checklists if empty
+    $asgCount = $pdo->query("SELECT COUNT(*) FROM assignments")->fetchColumn();
+    if ($asgCount == 0) {
+        $volUser = $pdo->query("SELECT id FROM users WHERE email = 'volunteer@disaster.local'")->fetchColumn() ?: 3;
+        $pdo->prepare("
+            INSERT INTO assignments (sos_request_id, assigned_to_user_id, task_notes, status) 
+            VALUES (1, ?, 'Deliver trauma first aid kits and water rations to Sector 4 Community Shelter', 'assigned')
+        ")->execute([$volUser]);
+        $asgId = $pdo->lastInsertId();
+
+        $checklists = [
+            ['assignment_id' => $asgId, 'label' => 'Trauma First Aid Kits (50 Kits)', 'is_checked' => 1],
+            ['assignment_id' => $asgId, 'label' => 'Potable Mineral Water (200 Litres)', 'is_checked' => 0],
+            ['assignment_id' => $asgId, 'label' => 'Thermal Blankets & Ground Mats (100 Pcs)', 'is_checked' => 0],
+            ['assignment_id' => $asgId, 'label' => 'High-Intensity LED Emergency Torches', 'is_checked' => 0]
+        ];
+        $clStmt = $pdo->prepare("INSERT INTO assignment_checklist_items (assignment_id, label, is_checked) VALUES (:assignment_id, :label, :is_checked)");
+        foreach ($checklists as $cl) {
+            $clStmt->execute($cl);
+        }
+
+        // Seed initial comms messages
+        $pdo->prepare("INSERT INTO comms_messages (sender_id, channel, message) VALUES (?, 'ops', ?)")
+            ->execute([1, 'Tactical HQ: Sector 4 road is cleared for emergency volunteer vehicles. Proceed with medical drops.']);
+        $pdo->prepare("INSERT INTO comms_messages (sender_id, channel, message) VALUES (?, 'ops', ?)")
+            ->execute([$volUser, 'Elena (Volunteer): Copy that HQ. Arriving at Sector 4 shelter in approx 8 minutes with medical supplies.']);
+
+        // Seed initial direct chat for SOS #1
+        $pdo->prepare("INSERT INTO victim_volunteer_chats (sos_id, sender_id, sender_name, sender_role, message) VALUES (1, 10, 'Aarav Patel', 'victim', 'We are 4 family members trapped on 2nd floor balcony. Water level is rising.')")
+            ->execute();
+        $pdo->prepare("INSERT INTO victim_volunteer_chats (sos_id, sender_id, sender_name, sender_role, message) VALUES (1, ?, 'Elena Rostova', 'volunteer', 'Hang on Aarav! Our volunteer team and rescue van are en route with life vests and emergency rations. ETA 8 mins.')")
+            ->execute([$volUser]);
+
+        // Seed volunteer location
+        $pdo->prepare("INSERT OR REPLACE INTO volunteer_locations (user_id, latitude, longitude, status) VALUES (?, 28.5850, 77.2250, 'available')")
+            ->execute([$volUser]);
     }
 }
 
