@@ -154,6 +154,7 @@ if (!function_exists('getRoleHomeUrl')) {
         return match ($roleSlug) {
             'volunteer', 'ngo' => 'volunteer.php',
             'user', 'citizen', 'victim' => 'citizen.php',
+            'fire' => 'fire_hub.php',
             default => 'dashboard.php'
         };
     }
