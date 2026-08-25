@@ -86,8 +86,8 @@ $currentScript = basename($_SERVER['PHP_SELF']);
             </nav>
         </div>
 
-        <!-- Citizen Safety Portal (Direct Lifeline) -->
-        <?php if (isCitizen($currentUser) || $isSuperAdmin): ?>
+        <!-- Citizen Safety Portal (Direct Lifeline - Only shown to Citizens/Victims) -->
+        <?php if (isCitizen($currentUser)): ?>
             <div>
                 <div class="px-3 mb-1.5 text-[10px] font-black uppercase tracking-wider text-red-600 mono flex items-center justify-between">
                     <span>Citizen Safety Portal</span>
