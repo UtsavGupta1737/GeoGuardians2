@@ -12,6 +12,9 @@ try {
     $pdo = new PDO("sqlite:" . $db_file);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $pdo->exec("PRAGMA busy_timeout = 10000;");
+    $pdo->exec("PRAGMA journal_mode = WAL;");
+    $pdo->exec("PRAGMA synchronous = NORMAL;");
     $pdo->exec("PRAGMA foreign_keys = ON;");
 } catch (PDOException $e) {
     die("Database Connection Error: " . htmlspecialchars($e->getMessage()));
@@ -644,8 +647,8 @@ function initializeDatabase(PDO $pdo) {
     ];
 
     // Clean up old obsolete users & reset external avatars
-    $pdo->exec("DELETE FROM users WHERE email IN ('alex.admin@system.local', 'sarah.manager@system.local', 'david.user@system.local')");
     try {
+        $pdo->exec("DELETE FROM users WHERE email IN ('alex.admin@system.local', 'sarah.manager@system.local', 'david.user@system.local')");
         $pdo->exec("UPDATE users SET avatar = '' WHERE avatar LIKE 'http%';");
         $pdo->exec("UPDATE volunteers SET avatar = '' WHERE avatar LIKE 'http%';");
     } catch (Exception $e) {}
@@ -1684,5 +1687,13 @@ function initializeDatabase(PDO $pdo) {
     }
 }
 
-// Run DB initialization
-initializeDatabase($pdo);
+// Run DB initialization only if tables don't exist yet
+try {
+    $tableCheck = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='roles'")->fetch();
+    if (!$tableCheck) {
+        initializeDatabase($pdo);
+    }
+} catch (Exception $e) {
+    // If concurrent request is already creating schema, safely continue
+    error_log("DB auto-init notice: " . $e->getMessage());
+}
