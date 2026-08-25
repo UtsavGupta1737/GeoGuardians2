@@ -31,16 +31,16 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
     <!-- Main Navigation Header -->
     <header class="navbar">
         <div class="brand-container" onclick="window.location.href='index.php'">
-            <div class="brand-logo-icon">🛡️</div>
+            <div class="brand-logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
             <div class="brand-text">
                 <h1>Disaster<span>Safe</span> <span class="brand-badge">NDRF</span></h1>
             </div>
         </div>
 
         <nav class="nav-links">
-            <a href="dashboard.php" class="nav-link <?= $currentPage === 'dashboard' ? 'active' : '' ?>">🏛️ Command Map</a>
-            <a href="citizen.php" class="nav-link <?= $currentPage === 'citizen' ? 'active' : '' ?>">🚨 Citizen SOS</a>
-            <a href="volunteer.php" class="nav-link <?= $currentPage === 'volunteer' ? 'active' : '' ?>">🤝 Volunteer Grid</a>
+            <a href="dashboard.php" class="nav-link <?= $currentPage === 'dashboard' ? 'active' : '' ?>"><i class="fa-solid fa-gauge-high"></i> Command Map</a>
+            <a href="citizen.php" class="nav-link <?= $currentPage === 'citizen' ? 'active' : '' ?>"><i class="fa-solid fa-tower-broadcast"></i> Citizen SOS</a>
+            <a href="volunteer.php" class="nav-link <?= $currentPage === 'volunteer' ? 'active' : '' ?>"><i class="fa-solid fa-users"></i> Volunteer Grid</a>
         </nav>
 
         <div class="nav-controls">
@@ -50,21 +50,21 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
             </div>
 
             <button class="btn btn-secondary btn-sm" id="btnAudioToggle" onclick="toggleAudioAlerts()" title="Toggle SOS Siren Sound">
-                🔊 Siren
+                <i class="fa-solid fa-volume-high"></i> Siren
             </button>
             <button class="btn btn-secondary btn-sm" id="btnThemeToggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-                🌙 Theme
+                <i class="fa-solid fa-moon"></i> Theme
             </button>
 
             <?php if (isAuthenticated()): ?>
                 <span class="badge-role badge-<?= getUserRole() ?>">
-                    👤 <?= htmlspecialchars(getUserName()) ?> (<?= ucfirst(getUserRole()) ?>)
+                    <i class="fa-solid fa-user"></i> <?= htmlspecialchars(getUserName()) ?> (<?= ucfirst(getUserRole()) ?>)
                 </span>
-                <button class="btn btn-secondary btn-sm" onclick="logoutUser()">🚪 Logout</button>
+                <button class="btn btn-secondary btn-sm" onclick="logoutUser()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
             <?php else: ?>
-                <a href="login.php" class="btn btn-primary btn-sm">🔑 Login</a>
+                <a href="login.php" class="btn btn-primary btn-sm"><i class="fa-solid fa-key"></i> Login</a>
             <?php endif; ?>
 
-            <a href="citizen.php" class="btn btn-danger btn-sm">🚨 Instant SOS</a>
+            <a href="citizen.php" class="btn btn-danger btn-sm"><i class="fa-solid fa-tower-broadcast"></i> Instant SOS</a>
         </div>
     </header>

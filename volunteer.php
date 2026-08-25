@@ -178,12 +178,12 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
       <!-- Multi-Language Selector Dropdown -->
       <div class="relative flex items-center">
         <select id="languageSelect" onchange="changeLanguage(this.value)" class="bg-[#f8fafc] hover:bg-[#f1f5f9] text-[#111827] text-xs font-bold rounded-xl px-2.5 py-1.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1d63d8] transition-all cursor-pointer shadow-xs">
-          <option value="en">🇬🇧 English</option>
-          <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
-          <option value="bn">🇮🇳 বাংলা (Bengali)</option>
-          <option value="ta">🇮🇳 தமிழ் (Tamil)</option>
-          <option value="te">🇮🇳 తెలుగు (Telugu)</option>
-          <option value="mr">🇮🇳 मराठी (Marathi)</option>
+          <option value="en">English</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="bn">বাংলা (Bengali)</option>
+          <option value="ta">தமிழ் (Tamil)</option>
+          <option value="te">తెలుగు (Telugu)</option>
+          <option value="mr">मराठी (Marathi)</option>
         </select>
       </div>
 
@@ -483,19 +483,19 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                 <!-- Quick Preset Resource Adder Pills -->
                 <div class="flex gap-1.5 overflow-x-auto custom-scroll pb-2 mb-2">
                   <button type="button" onclick="addChecklistPreset('Burn Trauma Treatment Kits (x25)')" class="text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 px-2 py-0.5 rounded-full shrink-0 transition-colors cursor-pointer">
-                    + 🩹 Burn Kits
+                    + Burn Kits
                   </button>
                   <button type="button" onclick="addChecklistPreset('Portable Emergency Oxygen Cylinder (10L)')" class="text-[10px] font-bold bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 px-2 py-0.5 rounded-full shrink-0 transition-colors cursor-pointer">
-                    + 🫁 Oxygen 10L
+                    + O2 10L
                   </button>
                   <button type="button" onclick="addChecklistPreset('Mineral Water 20L Cans & Packs')" class="text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full shrink-0 transition-colors cursor-pointer">
-                    + 💧 Water 20L
+                    + Water 20L
                   </button>
                   <button type="button" onclick="addChecklistPreset('Emergency Vacuum Splints & Collar')" class="text-[10px] font-bold bg-red-50 hover:bg-red-100 text-red-800 border border-red-200 px-2 py-0.5 rounded-full shrink-0 transition-colors cursor-pointer">
-                    + 🩺 Trauma Kit
+                    + Trauma Kit
                   </button>
                   <button type="button" onclick="addChecklistPreset('Portable Backup Battery Inverter')" class="text-[10px] font-bold bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 px-2 py-0.5 rounded-full shrink-0 transition-colors cursor-pointer">
-                    + 🔋 Inverter
+                    + Inverter
                   </button>
                 </div>
 
@@ -632,14 +632,14 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
 
               <!-- Quick Presets -->
               <div class="flex gap-1.5 overflow-x-auto custom-scroll pt-0.5">
-                <button onclick="sendDirectVictimMsg('🚗 I am approaching in a white rescue vehicle, ETA 2 mins.')" class="text-[10px] font-bold bg-blue-50 hover:bg-blue-100 text-[#1d63d8] border border-blue-200 px-2 py-0.5 rounded-full whitespace-nowrap transition-colors cursor-pointer shrink-0" data-i18n="preset_eta">
-                  🚗 ETA 2 Mins
+                <button onclick="sendDirectVictimMsg('I am approaching in a white rescue vehicle, ETA 2 mins.')" class="text-[10px] font-bold bg-blue-50 hover:bg-blue-100 text-[#1d63d8] border border-blue-200 px-2 py-0.5 rounded-full whitespace-nowrap transition-colors cursor-pointer shrink-0" data-i18n="preset_eta">
+                  ETA 2 Mins
                 </button>
-                <button onclick="sendDirectVictimMsg('🚨 Stay inside and keep warm. Rescue squad is right outside.')" class="text-[10px] font-bold bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-2 py-0.5 rounded-full whitespace-nowrap transition-colors cursor-pointer shrink-0" data-i18n="preset_stay_inside">
-                  🚨 Stay Inside
+                <button onclick="sendDirectVictimMsg('Stay inside and keep warm. Rescue squad is right outside.')" class="text-[10px] font-bold bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-2 py-0.5 rounded-full whitespace-nowrap transition-colors cursor-pointer shrink-0" data-i18n="preset_stay_inside">
+                  Stay Inside
                 </button>
-                <button onclick="sendDirectVictimMsg('🚪 If safe, wave a light/cloth from the nearest open window/balcony.')" class="text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full whitespace-nowrap transition-colors cursor-pointer shrink-0" data-i18n="preset_signal_window">
-                  🚪 Signal Window
+                <button onclick="sendDirectVictimMsg('If safe, wave a light/cloth from the nearest open window/balcony.')" class="text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full whitespace-nowrap transition-colors cursor-pointer shrink-0" data-i18n="preset_signal_window">
+                  Signal Window
                 </button>
               </div>
 
@@ -678,7 +678,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                   #Ops
                 </button>
                 <button onclick="switchCommsChannel('alerts')" id="comms-tab-alerts" class="flex-1 py-1 text-[11px] font-bold rounded-md text-[#64748b] hover:text-[#111827] transition-all text-center flex items-center justify-center gap-1">
-                  ⚡ Flash
+                  Flash
                 </button>
               </div>
             </div>
@@ -690,17 +690,17 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
 
             <!-- Quick Dispatch Shortcut Pills -->
             <div class="px-2.5 pt-2 pb-1.5 bg-white border-t border-[#e5e7eb] flex gap-1.5 overflow-x-auto custom-scroll">
-              <button onclick="sendCommsMessage('🫡 Roger that Command, message received.')" class="text-[10px] font-bold bg-[#f1f5f9] hover:bg-[#dce6fe] hover:text-[#1e3a8a] text-[#475569] px-2 py-0.5 rounded-full whitespace-nowrap transition-colors">
-                🫡 Roger
+              <button onclick="sendCommsMessage('Roger that Command, message received.')" class="text-[10px] font-bold bg-[#f1f5f9] hover:bg-[#dce6fe] hover:text-[#1e3a8a] text-[#475569] px-2 py-0.5 rounded-full whitespace-nowrap transition-colors">
+                Roger
               </button>
-              <button onclick="sendCommsMessage('📍 Unit arrived on scene safely. Establishing triage.')" class="text-[10px] font-bold bg-[#f1f5f9] hover:bg-[#dce6fe] hover:text-[#1e3a8a] text-[#475569] px-2 py-0.5 rounded-full whitespace-nowrap transition-colors">
-                📍 On Scene
+              <button onclick="sendCommsMessage('Unit arrived on scene safely. Establishing triage.')" class="text-[10px] font-bold bg-[#f1f5f9] hover:bg-[#dce6fe] hover:text-[#1e3a8a] text-[#475569] px-2 py-0.5 rounded-full whitespace-nowrap transition-colors">
+                On Scene
               </button>
-              <button onclick="sendCommsMessage('🚑 Need immediate EMS / Ambulance backup at target location!', 'urgent')" class="text-[10px] font-bold bg-[#f1f5f9] hover:bg-red-100 hover:text-red-800 text-[#475569] px-2 py-0.5 rounded-full whitespace-nowrap transition-colors">
-                🚑 Need EMS
+              <button onclick="sendCommsMessage('Need immediate EMS / Ambulance backup at target location!', 'urgent')" class="text-[10px] font-bold bg-[#f1f5f9] hover:bg-red-100 hover:text-red-800 text-[#475569] px-2 py-0.5 rounded-full whitespace-nowrap transition-colors">
+                Need EMS
               </button>
-              <button onclick="sendCommsMessage('📦 Field supplies delivered. Transporting victims to triage shelter.')" class="text-[10px] font-bold bg-[#f1f5f9] hover:bg-green-100 hover:text-green-800 text-[#475569] px-2 py-0.5 rounded-full whitespace-nowrap transition-colors">
-                ✅ Task Done
+              <button onclick="sendCommsMessage('Field supplies delivered. Transporting victims to triage shelter.')" class="text-[10px] font-bold bg-[#f1f5f9] hover:bg-green-100 hover:text-green-800 text-[#475569] px-2 py-0.5 rounded-full whitespace-nowrap transition-colors">
+                Task Done
               </button>
             </div>
 
@@ -714,8 +714,8 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                 <!-- Priority Selector -->
                 <select id="chatPrioritySelect" class="bg-[#f1f5f9] text-[#475569] text-[10px] font-bold rounded-lg px-2 py-2 border-0 focus:ring-1 focus:ring-[#1d63d8] cursor-pointer">
                   <option value="normal">Normal</option>
-                  <option value="urgent">🚨 Urgent</option>
-                  <option value="flash">⚡ Flash</option>
+                  <option value="urgent">Urgent</option>
+                  <option value="flash">Flash</option>
                 </select>
 
                 <input type="text" id="volunteerChatInput" class="flex-1 bg-[#f8fafc] border border-gray-200 rounded-xl px-3.5 py-2 text-xs text-[#111827] focus:outline-none focus:border-[#1d63d8] focus:ring-1 focus:ring-[#1d63d8] font-medium" placeholder="Send to all units..." data-i18n-placeholder="input_send_all" required />
@@ -746,7 +746,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
           </div>
           <div class="flex gap-2">
             <button onclick="centerOnVolunteer()" class="px-4 py-2 bg-[#1d63d8] text-white rounded-lg text-xs font-bold hover:bg-[#1553c7] transition-colors shadow">
-              🎯 Center on My Location
+               Center on My Location
             </button>
           </div>
         </div>
@@ -843,7 +843,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               <p class="text-xs text-[#64748b] mt-0.5">Recipient: <strong id="reqVictimName">Sunita Rao</strong> • Incident: <span id="reqEmergencyType">Burn Care Supplies Depleted</span></p>
             </div>
             <span class="px-3 py-1 bg-emerald-100 text-emerald-900 font-extrabold text-xs rounded-full mono border border-emerald-300 self-start sm:self-auto">
-              ✅ ALL REQUIRED SUPPLIES LOADED
+              ALL REQUIRED SUPPLIES LOADED
             </span>
           </div>
 
@@ -853,7 +853,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <div class="p-4 bg-emerald-50/70 border-2 border-emerald-400 rounded-2xl flex flex-col justify-between gap-3">
               <div class="flex items-start justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="text-2xl">💊</span>
+                  <span class="text-2xl"></span>
                   <div>
                     <h4 class="font-bold text-[#111827] text-xs">Burn Trauma Kits</h4>
                     <span class="text-[10px] text-emerald-800 font-semibold mono">50/50 KITS LOADED</span>
@@ -870,7 +870,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <div class="p-4 bg-emerald-50/70 border-2 border-emerald-400 rounded-2xl flex flex-col justify-between gap-3">
               <div class="flex items-start justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="text-2xl">🍞</span>
+                  <span class="text-2xl"></span>
                   <div>
                     <h4 class="font-bold text-[#111827] text-xs">Mineral Water &amp; Rations</h4>
                     <span class="text-[10px] text-emerald-800 font-semibold mono">25/25 PACKS LOADED</span>
@@ -887,7 +887,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <div class="p-4 bg-white border border-gray-200 rounded-2xl flex flex-col justify-between gap-3">
               <div class="flex items-start justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="text-2xl">🩸</span>
+                  <span class="text-2xl"></span>
                   <div>
                     <h4 class="font-bold text-[#111827] text-xs">Universal O- Blood</h4>
                     <span class="text-[10px] text-[#64748b] font-semibold mono">24 Units Available</span>
@@ -904,7 +904,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <div class="p-4 bg-white border border-gray-200 rounded-2xl flex flex-col justify-between gap-3">
               <div class="flex items-start justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="text-2xl">🦺</span>
+                  <span class="text-2xl"></span>
                   <div>
                     <h4 class="font-bold text-[#111827] text-xs">Thermal Space Blankets</h4>
                     <span class="text-[10px] text-[#64748b] font-semibold mono">400 Packs Available</span>
@@ -1020,22 +1020,22 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                 All Depots (12)
               </button>
               <button onclick="filterResources('food_water', this)" class="res-filter-btn px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-[#475569] border border-gray-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                🍞 Food &amp; Water
+                Food &amp; Water
               </button>
               <button onclick="filterResources('medical_supplies', this)" class="res-filter-btn px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-[#475569] border border-gray-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                💊 Medical &amp; Trauma
+                Medical &amp; Trauma
               </button>
               <button onclick="filterResources('blood', this)" class="res-filter-btn px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-[#475569] border border-gray-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                🩸 Blood Bank
+                Blood Bank
               </button>
               <button onclick="filterResources('safety_equipment', this)" class="res-filter-btn px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-[#475569] border border-gray-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                🦺 Rescue &amp; Life Vests
+                Rescue &amp; Life Vests
               </button>
               <button onclick="filterResources('medical_equipment', this)" class="res-filter-btn px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-[#475569] border border-gray-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                🏥 Heavy Rescue Tools
+                Heavy Rescue Tools
               </button>
               <button onclick="filterResources('power_supply', this)" class="res-filter-btn px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-[#475569] border border-gray-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                ⚡ Generators &amp; Power
+                Generators &amp; Power
               </button>
             </div>
           </div>
@@ -1128,19 +1128,19 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                 All Guidelines (22)
               </button>
               <button onclick="filterSafetyGuides('disaster_safety', this)" class="sop-filter-btn px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                🌊 Disaster Safety Guides (5)
+                Disaster Safety Guides (5)
               </button>
               <button onclick="filterSafetyGuides('rescue_guidelines', this)" class="sop-filter-btn px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                🏗️ Rescue Guidelines (4)
+                Rescue Guidelines (4)
               </button>
               <button onclick="filterSafetyGuides('first_aid', this)" class="sop-filter-btn px-3.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-800 border border-red-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                🚑 First-Aid Guide (5)
+                First-Aid Guide (5)
               </button>
               <button onclick="filterSafetyGuides('volunteer_safety', this)" class="sop-filter-btn px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                🛡️ Volunteer Safety (4)
+                Volunteer Safety (4)
               </button>
               <button onclick="filterSafetyGuides('dos_donts', this)" class="sop-filter-btn px-3.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 rounded-xl text-xs font-bold transition-all cursor-pointer">
-                ⚖️ Do's &amp; Don'ts (4)
+                Do's &amp; Don'ts (4)
               </button>
             </div>
           </div>
@@ -1154,7 +1154,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               <div>
                 <div class="flex items-center gap-2">
                   <span class="font-extrabold text-amber-950 uppercase tracking-wider text-[11px] mono">Mission Intelligence Auto-Match</span>
-                  <span id="smartMatchPill" class="bg-amber-200 text-amber-900 font-bold px-2 py-0.5 rounded-full text-[10px] mono">🔥 FIRE &amp; BURNS</span>
+                  <span id="smartMatchPill" class="bg-amber-200 text-amber-900 font-bold px-2 py-0.5 rounded-full text-[10px] mono">FIRE &amp; BURNS</span>
                 </div>
                 <p id="smartMatchDesc" class="text-[#451a03] font-medium mt-0.5">
                   Your active task involves <strong id="smartTaskName">Burn Care Supplies Depleted (Sunita Rao)</strong>. Thermal burn stabilization and triage SOPs have been auto-prioritized.
@@ -1164,7 +1164,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
 
             <div class="flex items-center gap-2 shrink-0">
               <span id="smartVolunteerSpeciality" class="bg-white border border-amber-200 text-amber-900 font-bold px-3 py-1.5 rounded-lg text-[11px] shadow-xs">
-                ⭐ Speciality: First Aid &amp; Trauma Care
+                Speciality: First Aid &amp; Trauma Care
               </span>
             </div>
           </div>
@@ -1191,10 +1191,10 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               <span class="text-[11px] font-bold text-[#64748b] uppercase mono">1. Ability to Walk?</span>
               <div class="flex gap-2">
                 <button onclick="setTriageStep('walk', true)" id="triageBtnWalkYes" class="flex-1 py-2 bg-emerald-600 text-white font-bold text-xs rounded-lg shadow-xs hover:bg-emerald-700 transition-colors cursor-pointer">
-                  🚶 Yes (Minor)
+                  Yes (Minor)
                 </button>
                 <button onclick="setTriageStep('walk', false)" id="triageBtnWalkNo" class="flex-1 py-2 bg-gray-100 text-[#334155] font-bold text-xs rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
-                  ❌ No (Proceed)
+                  No (Proceed)
                 </button>
               </div>
             </div>
@@ -1204,10 +1204,10 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               <span class="text-[11px] font-bold text-[#64748b] uppercase mono">2. Spontaneous Breathing?</span>
               <div class="flex gap-2">
                 <button onclick="setTriageStep('resp', 'normal')" id="triageBtnRespNorm" class="flex-1 py-2 bg-gray-100 text-[#334155] font-bold text-xs rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
-                  🫁 10-30 / min
+                  10-30 / min
                 </button>
                 <button onclick="setTriageStep('resp', 'critical')" id="triageBtnRespCrit" class="flex-1 py-2 bg-red-600 text-white font-bold text-xs rounded-lg shadow-xs hover:bg-red-700 transition-colors cursor-pointer">
-                  🚨 &lt;10 or &gt;30 (Red)
+                  &lt;10 or &gt;30 (Red)
                 </button>
               </div>
             </div>
@@ -1217,10 +1217,10 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               <span class="text-[11px] font-bold text-[#64748b] uppercase mono">3. Radial Pulse / Perfusion?</span>
               <div class="flex gap-2">
                 <button onclick="setTriageStep('pulse', 'present')" id="triageBtnPulsePres" class="flex-1 py-2 bg-gray-100 text-[#334155] font-bold text-xs rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
-                  💓 Present (Yellow)
+                   Present (Yellow)
                 </button>
                 <button onclick="setTriageStep('pulse', 'absent')" id="triageBtnPulseAbs" class="flex-1 py-2 bg-red-600 text-white font-bold text-xs rounded-lg shadow-xs hover:bg-red-700 transition-colors cursor-pointer">
-                  ⚠️ Absent (Red)
+                   Absent (Red)
                 </button>
               </div>
             </div>
@@ -1243,27 +1243,27 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             </div>
             <div class="flex flex-col gap-1.5">
               <a href="tel:112" class="flex items-center justify-between bg-white p-2 rounded-lg border border-red-100 hover:bg-red-50 transition-colors">
-                <span class="text-xs font-bold text-red-800">🆘 National Emergency</span>
+                <span class="text-xs font-bold text-red-800">National Emergency</span>
                 <span class="text-sm font-extrabold text-red-600 mono">112</span>
               </a>
               <a href="tel:108" class="flex items-center justify-between bg-white p-2 rounded-lg border border-red-100 hover:bg-red-50 transition-colors">
-                <span class="text-xs font-bold text-red-800">🚑 Ambulance</span>
+                <span class="text-xs font-bold text-red-800">Ambulance</span>
                 <span class="text-sm font-extrabold text-red-600 mono">108</span>
               </a>
               <a href="tel:101" class="flex items-center justify-between bg-white p-2 rounded-lg border border-red-100 hover:bg-red-50 transition-colors">
-                <span class="text-xs font-bold text-red-800">🔥 Fire Brigade</span>
+                <span class="text-xs font-bold text-red-800">Fire Brigade</span>
                 <span class="text-sm font-extrabold text-red-600 mono">101</span>
               </a>
               <a href="tel:1078" class="flex items-center justify-between bg-white p-2 rounded-lg border border-red-100 hover:bg-red-50 transition-colors">
-                <span class="text-xs font-bold text-red-800">🛡️ NDRF Helpline</span>
+                <span class="text-xs font-bold text-red-800">NDRF Helpline</span>
                 <span class="text-sm font-extrabold text-red-600 mono">1078</span>
               </a>
               <a href="tel:100" class="flex items-center justify-between bg-white p-2 rounded-lg border border-red-100 hover:bg-red-50 transition-colors">
-                <span class="text-xs font-bold text-red-800">🚔 Police Control</span>
+                <span class="text-xs font-bold text-red-800">Police Control</span>
                 <span class="text-sm font-extrabold text-red-600 mono">100</span>
               </a>
               <a href="tel:1070" class="flex items-center justify-between bg-white p-2 rounded-lg border border-red-100 hover:bg-red-50 transition-colors">
-                <span class="text-xs font-bold text-red-800">🏥 Disaster Mgmt</span>
+                <span class="text-xs font-bold text-red-800">Disaster Mgmt</span>
                 <span class="text-sm font-extrabold text-red-600 mono">1070</span>
               </a>
             </div>
@@ -1321,35 +1321,35 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             </div>
             <div class="flex flex-col gap-1.5">
               <div class="flex items-start gap-2.5 bg-white p-2.5 rounded-lg border border-amber-100">
-                <span class="text-lg shrink-0">📢</span>
+                <span class="text-lg shrink-0"></span>
                 <div>
                   <strong class="text-xs text-amber-800 block">3 Whistle Blasts</strong>
                   <span class="text-[10px] text-gray-500">Universal SOS signal. Repeat every 60 seconds.</span>
                 </div>
               </div>
               <div class="flex items-start gap-2.5 bg-white p-2.5 rounded-lg border border-amber-100">
-                <span class="text-lg shrink-0">🪞</span>
+                <span class="text-lg shrink-0"><i class="fa-solid fa-circle-half-stroke text-amber-500"></i></span>
                 <div>
                   <strong class="text-xs text-amber-800 block">Mirror Flash (3 pulses)</strong>
                   <span class="text-[10px] text-gray-500">Daytime aerial rescue signal. Aim at aircraft.</span>
                 </div>
               </div>
               <div class="flex items-start gap-2.5 bg-white p-2.5 rounded-lg border border-amber-100">
-                <span class="text-lg shrink-0">🙋</span>
+                <span class="text-lg shrink-0"></span>
                 <div>
                   <strong class="text-xs text-amber-800 block">Both Arms Raised (Y-shape)</strong>
                   <span class="text-[10px] text-gray-500">"YES — Need Help!" Ground-to-air body signal.</span>
                 </div>
               </div>
               <div class="flex items-start gap-2.5 bg-white p-2.5 rounded-lg border border-amber-100">
-                <span class="text-lg shrink-0">🔦</span>
+                <span class="text-lg shrink-0"></span>
                 <div>
                   <strong class="text-xs text-amber-800 block">SOS Flashlight (· · · — — — · · ·)</strong>
                   <span class="text-[10px] text-gray-500">Morse code SOS via torch/flashlight at night.</span>
                 </div>
               </div>
               <div class="flex items-start gap-2.5 bg-white p-2.5 rounded-lg border border-amber-100">
-                <span class="text-lg shrink-0">🔥</span>
+                <span class="text-lg shrink-0"></span>
                 <div>
                   <strong class="text-xs text-amber-800 block">Triangle Fire Signal</strong>
                   <span class="text-[10px] text-gray-500">3 fires in triangle formation = ground emergency.</span>
@@ -1418,7 +1418,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <!-- Check 1: PPE Verification -->
             <label class="premission-check flex flex-col items-center gap-2.5 p-4 bg-[#f8fafc] border-2 border-gray-200 rounded-xl cursor-pointer hover:border-[#1d63d8]/40 transition-all text-center relative">
               <input type="checkbox" onchange="updatePreMissionChecklist()" class="premission-cb hidden" />
-              <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl premission-icon transition-all">🪖</div>
+              <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl premission-icon transition-all"><i class="fa-solid fa-helmet-safety text-blue-600"></i></div>
               <strong class="text-xs text-[#111827] font-bold">PPE Equipment</strong>
               <span class="text-[10px] text-[#64748b] leading-tight">Helmet, gloves, high-vis vest, safety boots, N95 mask verified</span>
               <div class="premission-stamp hidden absolute top-2 right-2 bg-emerald-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
@@ -1429,7 +1429,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <!-- Check 2: Communication Equipment -->
             <label class="premission-check flex flex-col items-center gap-2.5 p-4 bg-[#f8fafc] border-2 border-gray-200 rounded-xl cursor-pointer hover:border-[#1d63d8]/40 transition-all text-center relative">
               <input type="checkbox" onchange="updatePreMissionChecklist()" class="premission-cb hidden" />
-              <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-2xl premission-icon transition-all">📻</div>
+              <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-2xl premission-icon transition-all"></div>
               <strong class="text-xs text-[#111827] font-bold">Comms Check</strong>
               <span class="text-[10px] text-[#64748b] leading-tight">Radio charged, phone battery >80%, GPS active, emergency contacts saved</span>
               <div class="premission-stamp hidden absolute top-2 right-2 bg-emerald-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
@@ -1440,7 +1440,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <!-- Check 3: Medical Kit -->
             <label class="premission-check flex flex-col items-center gap-2.5 p-4 bg-[#f8fafc] border-2 border-gray-200 rounded-xl cursor-pointer hover:border-[#1d63d8]/40 transition-all text-center relative">
               <input type="checkbox" onchange="updatePreMissionChecklist()" class="premission-cb hidden" />
-              <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-2xl premission-icon transition-all">🩺</div>
+              <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-2xl premission-icon transition-all"></div>
               <strong class="text-xs text-[#111827] font-bold">Medical Kit</strong>
               <span class="text-[10px] text-[#64748b] leading-tight">Bandages, tourniquet, ORS, antiseptic, burn gel, splints verified</span>
               <div class="premission-stamp hidden absolute top-2 right-2 bg-emerald-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
@@ -1451,7 +1451,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <!-- Check 4: Buddy System -->
             <label class="premission-check flex flex-col items-center gap-2.5 p-4 bg-[#f8fafc] border-2 border-gray-200 rounded-xl cursor-pointer hover:border-[#1d63d8]/40 transition-all text-center relative">
               <input type="checkbox" onchange="updatePreMissionChecklist()" class="premission-cb hidden" />
-              <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl premission-icon transition-all">🤝</div>
+              <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl premission-icon transition-all"></div>
               <strong class="text-xs text-[#111827] font-bold">Buddy Confirmed</strong>
               <span class="text-[10px] text-[#64748b] leading-tight">Partner assigned, comms channel synced, 15-min check-in protocol set</span>
               <div class="premission-stamp hidden absolute top-2 right-2 bg-emerald-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
@@ -1462,7 +1462,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <!-- Check 5: Exit Route Identified -->
             <label class="premission-check flex flex-col items-center gap-2.5 p-4 bg-[#f8fafc] border-2 border-gray-200 rounded-xl cursor-pointer hover:border-[#1d63d8]/40 transition-all text-center relative">
               <input type="checkbox" onchange="updatePreMissionChecklist()" class="premission-cb hidden" />
-              <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-2xl premission-icon transition-all">🚪</div>
+              <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-2xl premission-icon transition-all"></div>
               <strong class="text-xs text-[#111827] font-bold">Exit Route</strong>
               <span class="text-[10px] text-[#64748b] leading-tight">Primary & secondary evacuation routes identified and communicated</span>
               <div class="premission-stamp hidden absolute top-2 right-2 bg-emerald-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
@@ -1478,12 +1478,12 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                 <span class="material-symbols-outlined text-xl">shield_with_heart</span>
               </div>
               <div>
-                <strong class="text-sm text-emerald-900 block">✅ FIELD READY — All Safety Checks Passed</strong>
+                <strong class="text-sm text-emerald-900 block"> FIELD READY — All Safety Checks Passed</strong>
                 <span id="fieldReadyTimestamp" class="text-[10px] text-emerald-700 mono font-bold"></span>
               </div>
             </div>
             <div class="bg-emerald-600 text-white font-extrabold text-xs px-4 py-2 rounded-xl mono shadow-sm">
-              CERTIFIED ✓
+              CERTIFIED 
             </div>
           </div>
         </div>
@@ -1511,13 +1511,13 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               <label class="text-[11px] font-bold text-[#64748b] uppercase mono tracking-wider">Hazard Type</label>
               <select id="hazardType" onchange="calculateHazardRisk()" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-xs font-bold text-[#111827] bg-[#f8fafc] focus:ring-2 focus:ring-[#1d63d8] focus:border-[#1d63d8] outline-none cursor-pointer">
                 <option value="">Select Hazard...</option>
-                <option value="fire">🔥 Active Fire / Explosion</option>
-                <option value="flood">🌊 Flood / Water Inundation</option>
-                <option value="collapse">🏚️ Building Collapse / Debris</option>
-                <option value="chemical">☣️ Chemical / HazMat Spill</option>
-                <option value="earthquake">🌋 Earthquake Aftershock Zone</option>
-                <option value="electrical">⚡ Live Electrical Hazard</option>
-                <option value="crowd">👥 Crowd Crush / Stampede</option>
+                <option value="fire"> Active Fire / Explosion</option>
+                <option value="flood"> Flood / Water Inundation</option>
+                <option value="collapse"> Building Collapse / Debris</option>
+                <option value="chemical"> Chemical / HazMat Spill</option>
+                <option value="earthquake"> Earthquake Aftershock Zone</option>
+                <option value="electrical"> Live Electrical Hazard</option>
+                <option value="crowd"> Crowd Crush / Stampede</option>
               </select>
             </div>
 
@@ -1526,10 +1526,10 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               <label class="text-[11px] font-bold text-[#64748b] uppercase mono tracking-wider">Proximity to Danger</label>
               <select id="hazardProximity" onchange="calculateHazardRisk()" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-xs font-bold text-[#111827] bg-[#f8fafc] focus:ring-2 focus:ring-[#1d63d8] focus:border-[#1d63d8] outline-none cursor-pointer">
                 <option value="">Select Distance...</option>
-                <option value="inside">🔴 Inside Danger Zone (0-50m)</option>
-                <option value="near">🟠 Near Perimeter (50-200m)</option>
-                <option value="moderate">🟡 Moderate Distance (200-500m)</option>
-                <option value="far">🟢 Safe Distance (500m+)</option>
+                <option value="inside"> Inside Danger Zone (0-50m)</option>
+                <option value="near"> Near Perimeter (50-200m)</option>
+                <option value="moderate"> Moderate Distance (200-500m)</option>
+                <option value="far"> Safe Distance (500m+)</option>
               </select>
             </div>
 
@@ -1691,7 +1691,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
           <div class="bg-white p-5 rounded-2xl border border-[#e5e7eb] shadow-sm flex flex-col">
             <span class="text-[11px] font-bold text-[#64748b] uppercase mono">Responder Rating</span>
             <div class="text-2xl font-extrabold text-amber-500 mono mt-1 flex items-center gap-1">
-              4.9 <span class="text-base text-amber-400">★</span>
+              4.9 <span class="text-base text-amber-400"></span>
             </div>
             <span class="text-[10px] text-[#94a3b8] mt-0.5">HQ Certified performance</span>
           </div>
@@ -1772,9 +1772,9 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                   Operational Status
                 </label>
                 <select id="profStatus" class="w-full bg-[#f8fafc] border border-gray-200 focus:border-[#1d63d8] focus:bg-white rounded-xl px-4 py-2.5 text-xs text-[#111827] font-semibold focus:outline-none focus:ring-1 focus:ring-[#1d63d8] transition-all cursor-pointer">
-                  <option value="available">🟢 Available for Immediate Dispatch</option>
-                  <option value="on_duty">🟡 Currently On Duty / Deployed</option>
-                  <option value="off_duty">⚪ Off Duty / Rest Cycle</option>
+                  <option value="available"> Available for Immediate Dispatch</option>
+                  <option value="on_duty"> Currently On Duty / Deployed</option>
+                  <option value="off_duty"> Off Duty / Rest Cycle</option>
                 </select>
               </div>
 
@@ -1885,7 +1885,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <p class="text-xs text-[#64748b]">On-scene incident registration for citizens in immediate distress.</p>
           </div>
         </div>
-        <button type="button" onclick="closeProxySosModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer">✕</button>
+        <button type="button" onclick="closeProxySosModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer"></button>
       </div>
 
       <!-- Form with Exact Requested Inputs -->
@@ -1921,10 +1921,10 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               Emergency type <span class="text-red-500">*</span>
             </label>
             <select id="proxyEmergencyType" required class="w-full bg-[#f8fafc] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-[#111827] focus:outline-none focus:border-red-500 font-semibold cursor-pointer">
-              <option value="Medical" selected>🏥 Medical</option>
-              <option value="Rescue">🛶 Rescue</option>
-              <option value="Food/Water">🍞 Food/Water</option>
-              <option value="Fire">🔥 Fire</option>
+              <option value="Medical" selected> Medical</option>
+              <option value="Rescue"> Rescue</option>
+              <option value="Food/Water"> Food/Water</option>
+              <option value="Fire"> Fire</option>
             </select>
           </div>
         </div>
@@ -2063,8 +2063,8 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <div>
               <label class="block text-[11px] font-bold text-[#334155] uppercase tracking-wider mb-1 mono">Priority</label>
               <select id="fieldPhotoPriority" class="w-full bg-[#f8fafc] border border-gray-200 rounded-xl px-3 py-2 text-xs text-[#111827] font-semibold cursor-pointer">
-                <option value="urgent">🚨 Urgent Attention</option>
-                <option value="flash">⚡ Flash Critical</option>
+                <option value="urgent">Urgent Attention</option>
+                <option value="flash">Flash Critical</option>
                 <option value="normal">Normal Ops</option>
               </select>
             </div>
@@ -2072,7 +2072,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               <label class="block text-[11px] font-bold text-[#334155] uppercase tracking-wider mb-1 mono">Comms Channel</label>
               <select id="fieldPhotoChannel" class="w-full bg-[#f8fafc] border border-gray-200 rounded-xl px-3 py-2 text-xs text-[#111827] font-semibold cursor-pointer">
                 <option value="ops">#Ops Channel</option>
-                <option value="alerts">⚡ Flash Alerts</option>
+                <option value="alerts">Flash Alerts</option>
                 <option value="all">All Net Broadcast</option>
               </select>
             </div>
@@ -2265,7 +2265,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               <span class="material-symbols-outlined text-xl text-purple-600 shrink-0 mt-0.5">forum</span>
               <div>
                 <strong class="text-xs text-purple-800 block font-bold">3. Coordinator Comms Channel</strong>
-                <p class="text-xs text-purple-700 mt-0.5">Use quick dispatch buttons (📍 On Scene, 🚑 Need EMS, ✅ Task Done) to keep HQ updated in real time.</p>
+                <p class="text-xs text-purple-700 mt-0.5">Use quick dispatch buttons (On Scene, Need EMS, Task Done) to keep HQ updated in real time.</p>
               </div>
             </div>
           </div>
@@ -2757,8 +2757,8 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
     }
 
     function categoryIcon(cat) {
-      const map = { food_water: '🍞', medical_supplies: '💊', blood: '🩸', medical_equipment: '🏥', vehicles: '🚑', safety_equipment: '🦺', power_supply: '⚡' };
-      return map[cat] || '📦';
+      const map = { food_water: '', medical_supplies: '', blood: '', medical_equipment: '', vehicles: '', safety_equipment: '', power_supply: '' };
+      return map[cat] || '';
     }
 
     function guideIcon(cat) {
@@ -2779,16 +2779,16 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
 
     function categoryLabel(cat) {
       const map = {
-        disaster_safety: '🌊 Disaster Safety',
-        rescue_guidelines: '🏗️ Rescue Guidelines',
-        first_aid: '🚑 First-Aid Guide',
-        volunteer_safety: '🛡️ Volunteer Safety',
-        dos_donts: "⚖️ Do's & Don'ts",
-        fire: '🔥 Fire & Burns',
-        flood: '🌊 Flood & Water',
-        earthquake: '🏚️ Structural Quake',
-        cyclone: '🌀 Cyclone & Storm',
-        general: '📋 General Protocol'
+        disaster_safety: 'Disaster Safety',
+        rescue_guidelines: 'Rescue Guidelines',
+        first_aid: 'First-Aid Guide',
+        volunteer_safety: 'Volunteer Safety',
+        dos_donts: "Do's & Don'ts",
+        fire: 'Fire & Burns',
+        flood: 'Flood & Water',
+        earthquake: 'Structural Quake',
+        cyclone: 'Cyclone & Storm',
+        general: 'General Protocol'
       };
       return map[cat] || cat;
     }
@@ -3107,10 +3107,10 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             <div>
               <label class="block font-bold text-[#111827] mb-1.5 uppercase mono text-[10px]">Select Reason:</label>
               <select id="declineReasonSelect" class="w-full bg-[#f8fafc] border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold text-[#111827] focus:outline-none focus:border-red-500">
-                <option value="😴 Responder Fatigue / Taking Mandatory 30-min Shift Rest">😴 Responder Fatigue / Taking Mandatory 30-min Shift Rest</option>
-                <option value="🧯 Specialized Equipment Required (HazMat / Boats / Heavy Cutter)">🧯 Specialized Equipment Required (HazMat / Boats / Heavy Cutter)</option>
-                <option value="🚧 Blocked Road / Inaccessible Evacuation Route">🚧 Blocked Road / Inaccessible Evacuation Route</option>
-                <option value="🩺 Currently Assisting High-Risk Citizen On-Site">🩺 Currently Assisting High-Risk Citizen On-Site</option>
+                <option value=" Responder Fatigue / Taking Mandatory 30-min Shift Rest"> Responder Fatigue / Taking Mandatory 30-min Shift Rest</option>
+                <option value=" Specialized Equipment Required (HazMat / Boats / Heavy Cutter)"> Specialized Equipment Required (HazMat / Boats / Heavy Cutter)</option>
+                <option value=" Blocked Road / Inaccessible Evacuation Route"> Blocked Road / Inaccessible Evacuation Route</option>
+                <option value=" Currently Assisting High-Risk Citizen On-Site"> Currently Assisting High-Risk Citizen On-Site</option>
               </select>
             </div>
           </div>
@@ -3280,7 +3280,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
 
     function createVictimIcon(name, priority, type) {
       const pColor = priority === 'critical' ? '#dc2626' : priority === 'high' ? '#ea580c' : '#2563eb';
-      const icon = type === 'Fire' ? '🔥' : type === 'Medical' ? '🚑' : type === 'Rescue' ? '🛶' : '🍞';
+      const icon = type === 'Fire' ? '' : type === 'Medical' ? '' : type === 'Rescue' ? '' : '';
       return L.divIcon({
         className: 'custom-victim-marker',
         html: `<div style="display:flex; flex-direction:column; align-items:center;">
@@ -3297,7 +3297,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
       return L.divIcon({
         className: 'custom-shelter-marker',
         html: `<div style="display:flex; flex-direction:column; align-items:center;">
-          <div style="width:26px; height:26px; background:#15803d; border:2px solid white; border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.35);">⛺</div>
+          <div style="width:26px; height:26px; background:#15803d; border:2px solid white; border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-size:9px; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.35);">S</div>
           <span style="background:#f0fdf4; font-size:9.5px; font-weight:800; padding:1.5px 6px; border-radius:4px; margin-top:2px; box-shadow:0 1px 4px rgba(0,0,0,0.2); color:#14532d; border:1px solid #86efac; max-width:105px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${name}</span>
         </div>`,
         iconSize: [60, 45], iconAnchor: [30, 22]
@@ -3308,7 +3308,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
       return L.divIcon({
         className: 'custom-resource-marker',
         html: `<div style="display:flex; flex-direction:column; align-items:center;">
-          <div style="width:24px; height:24px; background:#1d63d8; border:2px solid white; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.3);">📦</div>
+          <div style="width:24px; height:24px; background:#1d63d8; border:2px solid white; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:9px; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.3);">R</div>
           <span style="background:white; font-size:9.5px; font-weight:700; padding:1.5px 5px; border-radius:4px; margin-top:2px; box-shadow:0 1px 4px rgba(0,0,0,0.2); color:#1e3a8a; border:1px solid #bfdbfe; max-width:95px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${name}</span>
         </div>`,
         iconSize: [55, 45], iconAnchor: [27, 22]
@@ -3370,8 +3370,8 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                   </div>
                   ${c.description ? `<div style="font-size:10.5px; background:#f8fafc; border-left:3px solid #dc2626; padding:4px 6px; border-radius:3px; margin-bottom:6px; color:#334155;">${escapeHtml(c.description)}</div>` : ''}
                   <div style="display:flex; gap:4px; margin-top:6px;">
-                    <a href="tel:${escapeHtml(c.phone)}" style="flex:1; background:#10b981; color:white; text-align:center; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:bold; text-decoration:none;">📞 Call</a>
-                    <button onclick="window.mapInstance.flyTo([${lat}, ${lng}], 16)" style="flex:1; background:#1d63d8; color:white; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;">📍 Zoom</button>
+                    <a href="tel:${escapeHtml(c.phone)}" style="flex:1; background:#10b981; color:white; text-align:center; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:bold; text-decoration:none;"> Call</a>
+                    <button onclick="window.mapInstance.flyTo([${lat}, ${lng}], 16)" style="flex:1; background:#1d63d8; color:white; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;"> Zoom</button>
                   </div>
                 </div>
               `;
@@ -3394,7 +3394,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               const shelterPopup = `
                 <div style="font-family:sans-serif; min-width:230px; padding:2px;">
                   <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
-                    <span style="font-size:16px;">⛺</span>
+                    <span style="font-size:16px;"></span>
                     <strong style="font-size:12.5px; color:#14532d;">${escapeHtml(s.name)}</strong>
                   </div>
                   <div style="font-size:11px; color:#475569; margin-bottom:6px;">
@@ -3412,7 +3412,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                   <div style="font-size:10.5px; background:#f0fdf4; border:1px solid #bbf7d0; padding:4px 6px; border-radius:6px; color:#166534; margin-bottom:6px;">
                     ${escapeHtml(s.facilities)}
                   </div>
-                  <a href="tel:${escapeHtml(s.contact_phone)}" style="display:block; background:#16a34a; color:white; text-align:center; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:bold; text-decoration:none;">📞 Call Shelter HQ (${escapeHtml(s.contact_phone)})</a>
+                  <a href="tel:${escapeHtml(s.contact_phone)}" style="display:block; background:#16a34a; color:white; text-align:center; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:bold; text-decoration:none;"> Call Shelter HQ (${escapeHtml(s.contact_phone)})</a>
                 </div>
               `;
 
@@ -3433,7 +3433,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               const depotPopup = `
                 <div style="font-family:sans-serif; min-width:210px; padding:2px;">
                   <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
-                    <span style="font-size:16px;">📦</span>
+                    <span style="font-size:16px;"></span>
                     <strong style="font-size:12.5px; color:#1e3a8a;">${escapeHtml(d.location_name)}</strong>
                   </div>
                   <div style="font-size:11px; color:#475569; margin-bottom:6px;">
@@ -3442,7 +3442,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                   <div style="font-size:10.5px; background:#eff6ff; border:1px solid #bfdbfe; padding:4px 6px; border-radius:6px; color:#1e40af; margin-bottom:6px;">
                     ${escapeHtml(d.items_summary || 'Trauma Kits, ORS, Water, Blankets')}
                   </div>
-                  <button onclick="switchVolunteerTab('resources')" style="width:100%; background:#1d63d8; color:white; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;">📦 Claim Supplies from Depot</button>
+                  <button onclick="switchVolunteerTab('resources')" style="width:100%; background:#1d63d8; color:white; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;"> Claim Supplies from Depot</button>
                 </div>
               `;
 
@@ -3466,7 +3466,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
               const hazardPopup = `
                 <div style="font-family:sans-serif; min-width:220px; padding:2px;">
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                    <strong style="font-size:12px; color:#991b1b;">⚠️ ${escapeHtml(h.title)}</strong>
+                    <strong style="font-size:12px; color:#991b1b;"> ${escapeHtml(h.title)}</strong>
                     <span style="background:${isCrit ? '#fee2e2' : '#fef3c7'}; color:${isCrit ? '#991b1b' : '#92400e'}; font-weight:800; font-size:9px; padding:1px 5px; border-radius:4px;">${h.risk_level.toUpperCase()}</span>
                   </div>
                   <p style="font-size:11px; color:#334155; margin-bottom:6px; line-height:1.4;">${escapeHtml(h.description)}</p>
@@ -3518,7 +3518,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
         <div style="display:flex; flex-direction:column; align-items:center;">
           <div style="position:relative; width:34px; height:34px; display:flex; align-items:center; justify-content:center;">
             <div style="position:absolute; inset:0; background:#dc2626; border-radius:50%; opacity:0.45; animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
-            <div style="width:28px; height:28px; background:#dc2626; border:2.5px solid white; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:bold; box-shadow:0 3px 10px rgba(220,38,38,0.7); z-index:2;">🎯</div>
+            <div style="width:28px; height:28px; background:#dc2626; border:2.5px solid white; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:bold; box-shadow:0 3px 10px rgba(220,38,38,0.7); z-index:2;"></div>
           </div>
           <div style="background:#111827; color:white; font-size:10px; font-weight:800; padding:2px 7px; border-radius:6px; margin-top:2px; box-shadow:0 2px 6px rgba(0,0,0,0.35); white-space:nowrap; border:1px solid #374151;">
             TARGET: ${escapeHtml(targetName)}
@@ -3537,7 +3537,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
       const midLng = (volunteerLng + vLng) / 2;
       const midHtml = `
         <div style="background:#1d63d8; color:white; font-size:10px; font-weight:800; padding:2.5px 9px; border-radius:20px; box-shadow:0 3px 10px rgba(29,99,216,0.6); white-space:nowrap; border:1.5px solid white; display:flex; align-items:center; gap:4px;">
-          <span>🚗 Convoy Corridor</span> • <span style="color:#93c5fd;">${distStr}</span> • <span style="color:#fde047;">ETA ~${etaMin}m</span>
+          <span> Convoy Corridor</span> • <span style="color:#93c5fd;">${distStr}</span> • <span style="color:#fde047;">ETA ~${etaMin}m</span>
         </div>
       `;
       const midIcon = L.divIcon({
@@ -3567,7 +3567,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
         // Target Pin
         L.marker([vLat, vLng], { icon: targetIcon, zIndexOffset: 1000 }).addTo(lg).bindPopup(`
           <div style="font-family:sans-serif; min-width:210px; padding:3px;">
-            <strong style="font-size:13px; color:#dc2626;">🎯 Active Target: ${escapeHtml(targetName)}</strong>
+            <strong style="font-size:13px; color:#dc2626;"> Active Target: ${escapeHtml(targetName)}</strong>
             <div style="font-size:11px; color:#475569; margin-top:4px; line-height:1.4;">
               <strong>Emergency:</strong> ${escapeHtml(emergencyType)}<br>
               <strong>Distance:</strong> ${distStr} • <strong>ETA:</strong> ~${etaMin} mins
@@ -3583,7 +3583,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
       const navBanner = document.getElementById('mapActiveNavBanner');
       const navText = document.getElementById('navBannerText');
       if (navBanner && navText) {
-        navText.innerHTML = `Active Route: <strong>Alexander Vance (You)</strong> ➔ <strong>${escapeHtml(targetName)}</strong> (${distStr} • ETA ~${etaMin}m)`;
+        navText.innerHTML = `Active Route: <strong>Alexander Vance (You)</strong>  <strong>${escapeHtml(targetName)}</strong> (${distStr} • ETA ~${etaMin}m)`;
         navBanner.classList.remove('hidden');
       }
     }
@@ -3892,7 +3892,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
             card.className = `bg-white p-6 rounded-2xl ${borderClass} flex flex-col justify-between gap-5 fade-in-up relative overflow-hidden`;
 
             card.innerHTML = `
-              ${isMissionMatch ? '<div class="absolute top-0 right-0 bg-amber-500 text-white font-bold text-[9px] px-3 py-0.5 rounded-bl-lg uppercase mono tracking-wider shadow-xs">⚡ REQUIRED FOR ACTIVE MISSION #3</div>' : ''}
+              ${isMissionMatch ? '<div class="absolute top-0 right-0 bg-amber-500 text-white font-bold text-[9px] px-3 py-0.5 rounded-bl-lg uppercase mono tracking-wider shadow-xs"> REQUIRED FOR ACTIVE MISSION #3</div>' : ''}
 
               <!-- Top Content -->
               <div class="flex flex-col gap-3">
@@ -4083,7 +4083,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
         
         if (val === true) {
           resBadge.className = 'bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs px-3.5 py-1.5 rounded-xl mono flex items-center gap-1.5 shadow-sm';
-          resBadge.innerHTML = '🟢 <strong>GREEN ZONE (MINOR)</strong> — Walking Wounded. Direct to secondary staging.';
+          resBadge.innerHTML = ' <strong>GREEN ZONE (MINOR)</strong> — Walking Wounded. Direct to secondary staging.';
           return;
         }
       }
@@ -4094,7 +4094,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
         
         if (val === 'critical') {
           resBadge.className = 'bg-red-100 text-red-900 border border-red-300 font-bold text-xs px-3.5 py-1.5 rounded-xl mono flex items-center gap-1.5 shadow-sm';
-          resBadge.innerHTML = '🔴 <strong>RED ZONE (IMMEDIATE)</strong> — Critical Airway/Respiration. Immediate extraction!';
+          resBadge.innerHTML = ' <strong>RED ZONE (IMMEDIATE)</strong> — Critical Airway/Respiration. Immediate extraction!';
           return;
         }
       }
@@ -4105,11 +4105,11 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
         
         if (val === 'absent') {
           resBadge.className = 'bg-red-100 text-red-900 border border-red-300 font-bold text-xs px-3.5 py-1.5 rounded-xl mono flex items-center gap-1.5 shadow-sm';
-          resBadge.innerHTML = '🔴 <strong>RED ZONE (IMMEDIATE)</strong> — Absent Pulse / Hemorrhage Shock!';
+          resBadge.innerHTML = ' <strong>RED ZONE (IMMEDIATE)</strong> — Absent Pulse / Hemorrhage Shock!';
           return;
         } else if (val === 'present') {
           resBadge.className = 'bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs px-3.5 py-1.5 rounded-xl mono flex items-center gap-1.5 shadow-sm';
-          resBadge.innerHTML = '🟡 <strong>YELLOW ZONE (DELAYED)</strong> — Stable Hemodynamics. Evacuate within 1-2 hours.';
+          resBadge.innerHTML = ' <strong>YELLOW ZONE (DELAYED)</strong> — Stable Hemodynamics. Evacuate within 1-2 hours.';
           return;
         }
       }
@@ -4185,7 +4185,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
 
       if (checked === 5) {
         badge.className = 'bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs px-4 py-2 rounded-xl mono flex items-center gap-1.5 self-start sm:self-auto transition-all shadow-sm';
-        text.textContent = '✅ FIELD READY — 5/5 Verified';
+        text.textContent = ' FIELD READY — 5/5 Verified';
         cert.classList.remove('hidden');
         document.getElementById('fieldReadyTimestamp').textContent = `Certified at ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })} on ${new Date().toLocaleDateString('en-IN')}`;
         showToast({ title: 'Field Ready Certified', message: 'All 5 pre-mission safety checks passed. You are cleared for ground zero deployment.', type: 'success' });
@@ -4237,33 +4237,33 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
         riskBadge.textContent = `RISK SCORE: ${score} / 10 — LOW`;
         panel.className = 'p-5 rounded-xl border-2 border-emerald-300 bg-emerald-50 flex flex-col sm:flex-row items-center justify-between gap-4 fade-in-up';
         circle.className = 'w-16 h-16 rounded-full flex items-center justify-center font-extrabold text-2xl mono text-white shadow-md shrink-0 bg-emerald-600';
-        verdict.textContent = '🟢 SAFE TO PROCEED';
+        verdict.textContent = ' SAFE TO PROCEED';
         verdict.className = 'text-sm block font-extrabold text-emerald-900';
         advice.textContent = 'Low risk environment. Standard PPE sufficient. Proceed with normal caution and maintain 15-min comms check-ins with buddy.';
         advice.className = 'text-xs mt-0.5 leading-relaxed font-medium text-emerald-800';
-        actionBtns.innerHTML = '<button onclick="switchVolunteerTab(\'assignments\')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm cursor-pointer">✅ Proceed to Mission</button>';
+        actionBtns.innerHTML = '<button onclick="switchVolunteerTab(\'assignments\')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm cursor-pointer"> Proceed to Mission</button>';
       } else if (score <= 6) {
         // YELLOW — Proceed with Caution
         riskBadge.className = 'bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs px-4 py-2 rounded-xl mono flex items-center gap-1.5 self-start sm:self-auto transition-all shadow-sm';
         riskBadge.textContent = `RISK SCORE: ${score} / 10 — MODERATE`;
         panel.className = 'p-5 rounded-xl border-2 border-amber-300 bg-amber-50 flex flex-col sm:flex-row items-center justify-between gap-4 fade-in-up';
         circle.className = 'w-16 h-16 rounded-full flex items-center justify-center font-extrabold text-2xl mono text-white shadow-md shrink-0 bg-amber-500';
-        verdict.textContent = '🟡 PROCEED WITH EXTREME CAUTION';
+        verdict.textContent = ' PROCEED WITH EXTREME CAUTION';
         verdict.className = 'text-sm block font-extrabold text-amber-900';
         advice.textContent = 'Elevated risk detected. Ensure full PPE, activate buddy system, establish comms with HQ before entry. Have evacuation route confirmed.';
         advice.className = 'text-xs mt-0.5 leading-relaxed font-medium text-amber-800';
-        actionBtns.innerHTML = '<button onclick="switchVolunteerTab(\'assignments\')" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow-sm cursor-pointer">⚠️ Accept & Proceed Cautiously</button>';
+        actionBtns.innerHTML = '<button onclick="switchVolunteerTab(\'assignments\')" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow-sm cursor-pointer"> Accept & Proceed Cautiously</button>';
       } else {
         // RED — Do Not Enter
         riskBadge.className = 'bg-red-100 text-red-900 border border-red-300 font-bold text-xs px-4 py-2 rounded-xl mono flex items-center gap-1.5 self-start sm:self-auto transition-all shadow-sm';
         riskBadge.textContent = `RISK SCORE: ${score} / 10 — CRITICAL`;
         panel.className = 'p-5 rounded-xl border-2 border-red-400 bg-red-50 flex flex-col sm:flex-row items-center justify-between gap-4 fade-in-up';
         circle.className = 'w-16 h-16 rounded-full flex items-center justify-center font-extrabold text-2xl mono text-white shadow-md shrink-0 bg-red-600 animate-pulse';
-        verdict.textContent = '🔴 DO NOT ENTER — Request Specialized Backup';
+        verdict.textContent = ' DO NOT ENTER — Request Specialized Backup';
         verdict.className = 'text-sm block font-extrabold text-red-900';
         advice.textContent = 'DANGER: Extremely high risk environment. Do NOT enter without NDRF/Fire/HazMat specialized team. Your safety is the top priority. Call for backup immediately.';
         advice.className = 'text-xs mt-0.5 leading-relaxed font-medium text-red-800';
-        actionBtns.innerHTML = '<button onclick="switchVolunteerTab(\'comms\')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-sm cursor-pointer animate-pulse">🚨 Request NDRF Backup Now</button>';
+        actionBtns.innerHTML = '<button onclick="switchVolunteerTab(\'comms\')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-sm cursor-pointer animate-pulse">Request NDRF Backup Now</button>';
       }
     }
 
@@ -4402,7 +4402,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
         if (timerEl) timerEl.textContent = `${remaining}s`;
         if (remaining <= 0) {
           clearInterval(procSimTimers[stepIdx]);
-          if (timerEl) timerEl.textContent = '⏰';
+          if (timerEl) timerEl.textContent = '';
         }
       }, 1000);
     }
@@ -4422,7 +4422,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
       if (stepEl) {
         stepEl.className = 'proc-step p-4 bg-emerald-50 border-2 border-emerald-300 rounded-xl flex items-start gap-3.5 transition-all';
         const num = stepEl.querySelector('.proc-step-num');
-        if (num) { num.className = 'w-8 h-8 rounded-lg bg-emerald-600 text-white font-extrabold text-sm flex items-center justify-center mono proc-step-num'; num.textContent = '✓'; }
+        if (num) { num.className = 'w-8 h-8 rounded-lg bg-emerald-600 text-white font-extrabold text-sm flex items-center justify-center mono proc-step-num'; num.textContent = ''; }
         const timer = stepEl.querySelector('.proc-step-timer');
         if (timer) { timer.className = 'text-[10px] font-bold mono text-emerald-600 proc-step-timer'; timer.textContent = `${procSimStepTimes[stepIdx]}s`; }
         const btn = document.getElementById(`procDoneBtn_${stepIdx}`);
@@ -4454,7 +4454,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
         const stepsReport = document.getElementById('procSimReportSteps');
         stepsReport.innerHTML = proc.steps.map((s, i) => `
           <div class="flex items-center gap-2 p-1.5 bg-white rounded-lg border border-emerald-100">
-            <span class="w-5 h-5 rounded bg-emerald-500 text-white font-bold text-[10px] flex items-center justify-center shrink-0">✓</span>
+            <span class="w-5 h-5 rounded bg-emerald-500 text-white font-bold text-[10px] flex items-center justify-center shrink-0"></span>
             <span class="flex-1 text-[#334155] font-medium">${escapeHtml(s.title)}</span>
             <span class="text-emerald-700 font-bold mono text-[10px]">${procSimStepTimes[i]}s</span>
           </div>
@@ -4477,11 +4477,11 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
           if (ctx) {
             if (ctx.active_emergency) {
               document.getElementById('smartTaskName').textContent = `${ctx.active_emergency} (${ctx.victim_name || 'Active Task'})`;
-              document.getElementById('smartMatchPill').textContent = `⚡ PRIORITY: ${ctx.recommended_category.toUpperCase()}`;
+              document.getElementById('smartMatchPill').textContent = ` PRIORITY: ${ctx.recommended_category.toUpperCase()}`;
               document.getElementById('smartContextBanner').classList.remove('hidden');
             }
             if (ctx.speciality) {
-              document.getElementById('smartVolunteerSpeciality').textContent = `⭐ Speciality: ${ctx.speciality}`;
+              document.getElementById('smartVolunteerSpeciality').textContent = ` Speciality: ${ctx.speciality}`;
             }
           }
 
@@ -4721,7 +4721,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
       const match = rawText.match(photoRegex);
       if (match) {
         const photoUrl = match[1];
-        const caption = rawText.replace(photoRegex, '').replace(/^📸\s*/, '').trim();
+        const caption = rawText.replace(photoRegex, '').replace(/^\s*/, '').trim();
         return `
           <div class="flex flex-col gap-2">
             ${caption ? `<div class="font-medium">${escapeHtml(caption)}</div>` : ''}
@@ -4775,12 +4775,12 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                 <div class="rounded-xl border ${isFlash ? 'border-red-500 bg-red-950 text-white shadow-md' : 'border-amber-400/80 bg-slate-900 text-slate-100 shadow-sm'} p-3 flex flex-col gap-1.5">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-1.5">
-                      <span class="w-5 h-5 rounded-md ${isFlash ? 'bg-red-600' : 'bg-amber-500'} text-white flex items-center justify-center text-xs">🛡️</span>
+                      <span class="w-5 h-5 rounded-md ${isFlash ? 'bg-red-600' : 'bg-amber-500'} text-white flex items-center justify-center text-xs"></span>
                       <span class="text-[11px] font-extrabold ${isFlash ? 'text-red-200' : 'text-amber-400'} tracking-wide uppercase">COMMAND HQ</span>
                       <span class="text-[10px] ${isFlash ? 'text-red-300' : 'text-slate-400'}">• ${escapeHtml(m.sender_name)}</span>
                     </div>
                     <span class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase mono ${isFlash ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-400/20 text-amber-300'}">
-                      ${isFlash ? '⚡ FLASH ORDER' : 'DIRECTIVE'}
+                      ${isFlash ? ' FLASH ORDER' : 'DIRECTIVE'}
                     </span>
                   </div>
                   <div class="text-xs leading-relaxed font-medium ${isFlash ? 'text-red-50 font-bold' : 'text-slate-200'}">
@@ -4890,12 +4890,12 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
         confirmText: 'Broadcast MAYDAY SOS',
         bodyHtml: `
           <div class="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-950 font-medium leading-relaxed">
-            🚨 <strong>ACTIVATE VOLUNTEER DISTRESS BEACON?</strong><br/>
+            <strong>ACTIVATE VOLUNTEER DISTRESS BEACON?</strong><br/>
             Your live GPS location (<span class="mono font-bold">${volunteerLat.toFixed(5)}, ${volunteerLng.toFixed(5)}</span>) will be immediately transmitted as an emergency broadcast to NDRF Command Center and nearest tactical squads.
           </div>
         `,
         onConfirm: () => {
-          sendCommsMessage('🚨 EMERGENCY MAYDAY — Volunteer in distress at GPS ' + volunteerLat.toFixed(6) + ', ' + volunteerLng.toFixed(6) + '! Requesting immediate tactical escort!');
+          sendCommsMessage('EMERGENCY MAYDAY — Volunteer in distress at GPS ' + volunteerLat.toFixed(6) + ', ' + volunteerLng.toFixed(6) + '! Requesting immediate tactical escort!');
           showToast({
             title: 'Distress Beacon Live',
             message: 'NDRF Command & Police PCR notified for emergency extraction.',
@@ -4998,7 +4998,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                 <div class="overflow-hidden flex-1">
                   <div class="flex items-center justify-between gap-1">
                     <strong class="text-xs font-bold truncate block leading-tight ${isSelected ? 'text-[#1d63d8]' : 'text-[#111827]'}">${escapeHtml(t.victim_name)}</strong>
-                    ${isSelected ? '<span class="text-[7px] bg-[#1d63d8] text-white font-extrabold px-1 rounded uppercase mono shrink-0">ACTIVE</span>' : t.is_assigned == 1 ? '<span class="text-[8px] bg-amber-200 text-amber-900 font-extrabold px-1 rounded mono shrink-0">⭐</span>' : ''}
+                    ${isSelected ? '<span class="text-[7px] bg-[#1d63d8] text-white font-extrabold px-1 rounded uppercase mono shrink-0">ACTIVE</span>' : t.is_assigned == 1 ? '<span class="text-[8px] bg-amber-200 text-amber-900 font-extrabold px-1 rounded mono shrink-0"></span>' : ''}
                   </div>
                   <span class="text-[10px] ${isSelected ? 'text-[#1e3a8a]' : 'text-gray-500'} truncate block mt-0.5 font-medium leading-none">${escapeHtml(t.last_message || t.emergency_type)}</span>
                 </div>
@@ -5065,7 +5065,7 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
                 bubble.className = 'flex flex-col items-start max-w-[92%] fade-in-up';
                 bubble.innerHTML = `
                   <div class="flex items-center gap-1 mb-0.5 ml-0.5">
-                    <span class="text-[9px] bg-red-100 text-red-800 font-bold px-1 rounded uppercase mono">🆘 ${escapeHtml(info ? info.victim_name : 'VICTIM')}</span>
+                    <span class="text-[9px] bg-red-100 text-red-800 font-bold px-1 rounded uppercase mono"> ${escapeHtml(info ? info.victim_name : 'VICTIM')}</span>
                     <span class="text-[9px] text-[#64748b] mono">• ${timeStr}</span>
                   </div>
                   <div class="bg-white border-2 border-red-300 text-red-950 p-2.5 rounded-xl rounded-tl-xs shadow-xs font-semibold leading-tight text-[11px]">

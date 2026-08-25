@@ -31,7 +31,7 @@ require_once __DIR__ . '/sidebar.php';
                 <div class="space-y-1.5">
                     <div class="flex items-center gap-2.5">
                         <span class="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-black text-base shadow-inner">
-                            ⚙️
+                            <i class="fa-solid fa-gear"></i>
                         </span>
                         <div>
                             <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-400">Hardware & System Settings</span>
@@ -203,7 +203,7 @@ require_once __DIR__ . '/sidebar.php';
                             <div class="p-4 rounded-xl bg-[#0c1326] border border-[#243049] border-l-4 border-l-rose-500 hover:border-slate-500 transition-all text-xs space-y-2.5 shadow-md">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
-                                        <span class="font-extrabold text-white text-sm">👤 <?= htmlspecialchars($sos['sender_name']) ?></span>
+                                        <span class="font-extrabold text-white text-sm"><i class="fa-solid fa-user"></i> <?= htmlspecialchars($sos['sender_name']) ?></span>
                                         <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-950 text-rose-300 border border-rose-800">
                                             <?= htmlspecialchars($sos['emergency_type']) ?>
                                         </span>
@@ -215,7 +215,7 @@ require_once __DIR__ . '/sidebar.php';
 
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[#11192e] p-2.5 rounded-lg border border-[#243049]/60 text-[11px]">
                                     <div><span class="text-slate-400 block text-[9px]">PHONE</span><b><?= htmlspecialchars($sos['sender_phone']) ?></b></div>
-                                    <div><span class="text-slate-400 block text-[9px]">GPS COORDINATES</span><b><?= number_format($sos['gps_lat'], 4) ?>°, <?= number_format($sos['gps_lng'], 4) ?>°</b></div>
+                                    <div><span class="text-slate-400 block text-[9px]">GPS COORDINATES</span><b><?= number_format($sos['gps_lat'], 4) ?>, <?= number_format($sos['gps_lng'], 4) ?></b></div>
                                     <div><span class="text-slate-400 block text-[9px]">BLOOD GROUP</span><b><?= htmlspecialchars($sos['blood_type'] ?: 'Unknown') ?></b></div>
                                     <div><span class="text-slate-400 block text-[9px]">ASSIGNED UNIT</span><b class="text-blue-400"><?= htmlspecialchars($sos['dispatch_agency'] ?: 'Pending') ?></b></div>
                                 </div>
@@ -384,7 +384,7 @@ window.updateSettingsSerialUI = function(isConnected, portInfo = '') {
         }
         if (badge) {
             badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800";
-            badge.innerText = "🟢 Connected (115200)";
+            badge.innerText = "Connected (115200)";
         }
         if (lblPort) lblPort.innerText = "ESP32 USB Active (Persistent)";
     } else {
@@ -446,7 +446,7 @@ function renderEsp32Card(data, dbId) {
         voiceHtml = `
             <div class="bg-[#11192e] p-2.5 rounded-lg border border-rose-500/40 space-y-2 mt-2">
                 <div class="flex justify-between items-center text-[10px] text-rose-300 font-extrabold uppercase">
-                    <span>🎙️ Emergency Voice SOS Recording</span>
+                    <span>Emergency Voice SOS Recording</span>
                     <span>${duration ? duration + 's' : 'Audio Attached'}</span>
                 </div>
                 <audio id="audio-${cardId}" src="${data.voice_note}" preload="metadata"></audio>
@@ -465,20 +465,20 @@ function renderEsp32Card(data, dbId) {
     card.innerHTML = `
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <span class="font-extrabold text-white text-sm">👤 ${escapeHtml(name)}</span>
+                <span class="font-extrabold text-white text-sm"><i class="fa-solid fa-user"></i> ${escapeHtml(name)}</span>
                 <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-950 text-rose-300 border border-rose-800">
                     ${escapeHtml(type)}
                 </span>
-                ${hasVoice ? '<span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-rose-500 text-white animate-pulse">🎙️ VOICE SOS</span>' : ''}
+                ${hasVoice ? '<span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-rose-500 text-white animate-pulse">VOICE SOS</span>' : ''}
             </div>
             <span class="px-2 py-0.5 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono text-[10px] font-extrabold">
-                ${dbId ? `✔ DB Synced #${dbId}` : 'Incoming Telemetry'}
+                ${dbId ? `DB Synced #${dbId}` : 'Incoming Telemetry'}
             </span>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[#11192e] p-2.5 rounded-lg border border-[#243049]/60 text-[11px]">
             <div><span class="text-slate-400 block text-[9px]">PHONE</span><b>${escapeHtml(phone)}</b></div>
-            <div><span class="text-slate-400 block text-[9px]">GPS COORDINATES</span><b>${lat.toFixed(4)}°, ${lng.toFixed(4)}°</b></div>
+            <div><span class="text-slate-400 block text-[9px]">GPS COORDINATES</span><b>${lat.toFixed(4)}, ${lng.toFixed(4)}</b></div>
             <div><span class="text-slate-400 block text-[9px]">BLOOD GROUP</span><b>${escapeHtml(blood)}</b></div>
             <div><span class="text-slate-400 block text-[9px]">PRIORITY</span><b class="text-rose-400">${escapeHtml(priority)}</b></div>
         </div>

@@ -235,22 +235,22 @@ $contacts = [
                     All Services (<?= count($contacts) ?>)
                 </button>
                 <button type="button" onclick="setCategoryFilter('national')" class="cat-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-[#eee7db] text-[#1c1917] border border-[#d8d0c5] transition-all cursor-pointer" data-cat="national">
-                    🚨 National Emergency
+                    National Emergency
                 </button>
                 <button type="button" onclick="setCategoryFilter('disaster')" class="cat-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-[#eee7db] text-[#1c1917] border border-[#d8d0c5] transition-all cursor-pointer" data-cat="disaster">
-                    🌊 NDRF & Disaster
+                    NDRF & Disaster
                 </button>
                 <button type="button" onclick="setCategoryFilter('medical')" class="cat-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-[#eee7db] text-[#1c1917] border border-[#d8d0c5] transition-all cursor-pointer" data-cat="medical">
-                    🚑 Medical / EMS
+                    Medical / EMS
                 </button>
                 <button type="button" onclick="setCategoryFilter('police')" class="cat-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-[#eee7db] text-[#1c1917] border border-[#d8d0c5] transition-all cursor-pointer" data-cat="police">
-                    👮 Police & Cordons
+                    Police & Cordons
                 </button>
                 <button type="button" onclick="setCategoryFilter('fire')" class="cat-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-[#eee7db] text-[#1c1917] border border-[#d8d0c5] transition-all cursor-pointer" data-cat="fire">
-                    🔥 Fire & Rescue
+                    Fire & Rescue
                 </button>
                 <button type="button" onclick="setCategoryFilter('women')" class="cat-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-[#eee7db] text-[#1c1917] border border-[#d8d0c5] transition-all cursor-pointer" data-cat="women">
-                    🛡️ Women Safety
+                    Women Safety
                 </button>
             </div>
         </section>

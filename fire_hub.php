@@ -549,12 +549,12 @@ $readyHydrantsCount = count(array_filter($hydrants, fn($h) => $h['status'] === '
                 <div>
                     <label class="block text-slate-400 font-bold uppercase tracking-wider text-[10px] mb-1">Incident Categorization *</label>
                     <select name="fire_type" required class="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-rose-500">
-                        <option value="Structure Fire">🏢 Structure Fire (Residential / Commercial / Industrial)</option>
-                        <option value="Wildfire & Brush Fire">🌲 Wildfire &amp; Brush Fire</option>
-                        <option value="Chemical / Hazmat / Gas Leak">☣️ Chemical / Hazmat / Gas Leak</option>
-                        <option value="Electrical & Transformer Fire">⚡ Electrical &amp; Transformer Fire</option>
-                        <option value="Vehicle & Tanker Crash Fire">🚗 Vehicle &amp; Tanker Crash Fire</option>
-                        <option value="Search & Technical Rescue (USAR)">🏗️ Search &amp; Technical Rescue (USAR)</option>
+                        <option value="Structure Fire">Structure Fire (Residential / Commercial / Industrial)</option>
+                        <option value="Wildfire & Brush Fire">Wildfire &amp; Brush Fire</option>
+                        <option value="Chemical / Hazmat / Gas Leak">Chemical / Hazmat / Gas Leak</option>
+                        <option value="Electrical & Transformer Fire">Electrical &amp; Transformer Fire</option>
+                        <option value="Vehicle & Tanker Crash Fire">Vehicle &amp; Tanker Crash Fire</option>
+                        <option value="Search & Technical Rescue (USAR)">Search &amp; Technical Rescue (USAR)</option>
                     </select>
                 </div>
 
@@ -660,7 +660,7 @@ $readyHydrantsCount = count(array_filter($hydrants, fn($h) => $h['status'] === '
                 <label class="block text-slate-400 font-bold uppercase tracking-wider text-[10px]">2. Cross-Window Listener (Parent Javascript)</label>
                 <textarea readonly rows="3" class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-300 select-all">window.addEventListener('message', (e) => {
     if (e.data && e.data.type === 'FIRE_INCIDENT_REPORTED') {
-        console.log('🚨 Live Fire Alarm Paged:', e.data.incident);
+        console.log('Live Fire Alarm Paged:', e.data.incident);
     }
 });</textarea>
             </div>

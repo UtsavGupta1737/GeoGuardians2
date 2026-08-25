@@ -315,7 +315,7 @@
   <div class="container">
 
     <div class="header">
-      <div class="header-badge">🚨 EMERGENCY MESH LINK</div>
+      <div class="header-badge">EMERGENCY MESH LINK</div>
       <h1>EMERGENCY SOS</h1>
       <p>Direct Connection to Local Search & Rescue Beacon</p>
     </div>
@@ -323,7 +323,7 @@
     <!-- SOS DISPATCH FORM -->
     <form id="sosForm" onsubmit="submitSOS(event)">
       
-      <div class="section-title">👤 Incident & Contact Details</div>
+      <div class="section-title">Incident & Contact Details</div>
 
       <div class="form-group">
         <label for="victim_name">Full Name / Caller Name</label>
@@ -338,22 +338,22 @@
       <div class="form-group">
         <label for="emergency_type">Crisis / Emergency Type</label>
         <select id="emergency_type" name="emergency_type">
-          <option value="General Emergency" selected>⚠️ General Emergency</option>
-          <option value="Flood">🌊 Flood</option>
-          <option value="Earthquake">🏚️ Earthquake</option>
-          <option value="Fire">🔥 Fire</option>
-          <option value="Chemical Leak">☣️ Chemical Leak</option>
-          <option value="Building Collapse">🏢 Building Collapse</option>
-          <option value="Medical Trauma">🩺 Medical Trauma</option>
+          <option value="General Emergency" selected>General Emergency</option>
+          <option value="Flood">Flood</option>
+          <option value="Earthquake">Earthquake</option>
+          <option value="Fire">Fire</option>
+          <option value="Chemical Leak">Chemical Leak</option>
+          <option value="Building Collapse">Building Collapse</option>
+          <option value="Medical Trauma">Medical Trauma</option>
         </select>
       </div>
 
       <!-- AUTO PRE-LOADED NODE GPS LOCATION -->
-      <div class="section-title">📍 Emergency Location (Beacon GPS Fixed)</div>
+      <div class="section-title">Emergency Location (Beacon GPS Fixed)</div>
       
       <div class="gps-lock-card">
         <div class="gps-lock-header">
-          <span>📡 Beacon GPS Locked</span>
+          <span>Beacon GPS Locked</span>
           <span style="font-size:0.7rem; background:#10b981; color:#0b0f19; padding:2px 6px; border-radius:4px;">AUTO-PINNED</span>
         </div>
         <div class="gps-lock-coords" id="displayCoords">
@@ -369,16 +369,16 @@
       <input type="hidden" id="gps_lng" name="gps_lng" value="77.209000">
 
       <!-- SPECIFIC AID / QUICK NEEDS -->
-      <div class="section-title">🩹 Specific Aid / Quick Needs</div>
+      <div class="section-title">Specific Aid / Quick Needs</div>
 
       <div class="form-group">
         <div class="chip-container">
-          <div class="chip" onclick="toggleChip(this, 'Ambulance')">🚑 Ambulance</div>
-          <div class="chip" onclick="toggleChip(this, 'Oxygen')">🫁 Oxygen</div>
-          <div class="chip" onclick="toggleChip(this, 'Boat Rescue')">🚤 Boat Rescue</div>
-          <div class="chip" onclick="toggleChip(this, 'Clean Water')">💧 Clean Water</div>
-          <div class="chip" onclick="toggleChip(this, 'Rope Team')">🧗 Rope Team</div>
-          <div class="chip" onclick="toggleChip(this, 'Burn Care')">🩹 Burn Care</div>
+          <div class="chip" onclick="toggleChip(this, 'Ambulance')">Ambulance</div>
+          <div class="chip" onclick="toggleChip(this, 'Oxygen')">Oxygen</div>
+          <div class="chip" onclick="toggleChip(this, 'Boat Rescue')">Boat Rescue</div>
+          <div class="chip" onclick="toggleChip(this, 'Clean Water')">Clean Water</div>
+          <div class="chip" onclick="toggleChip(this, 'Rope Team')">Rope Team</div>
+          <div class="chip" onclick="toggleChip(this, 'Burn Care')">Burn Care</div>
         </div>
         <input type="hidden" id="quick_needs" name="quick_needs" value="">
       </div>
@@ -412,7 +412,7 @@
 
       <div class="sos-button-wrapper">
         <button type="submit" id="submitBtn" class="sos-btn">
-          <span>🆘 BROADCAST SOS ALERT</span>
+          <span>BROADCAST SOS ALERT</span>
           <span class="subtext">TRANSMIT TO COMMAND CENTER</span>
         </button>
       </div>
@@ -423,7 +423,7 @@
   <!-- Confirmation Modal -->
   <div id="confirmationOverlay" class="overlay">
     <div class="overlay-card">
-      <div class="overlay-icon">✅</div>
+      <div class="overlay-icon">&#10003;</div>
       <div class="overlay-title" id="confirmTitle">SOS TRANSMITTED!</div>
       <div class="overlay-desc" id="confirmDesc">
         Your distress report and beacon GPS coordinates have been registered and transmitted to the rescue command network. Stay in a safe position.
@@ -450,7 +450,7 @@
       event.preventDefault();
       const btn = document.getElementById('submitBtn');
       btn.disabled = true;
-      btn.innerHTML = '<span>⏳ TRANSMITTING SOS...</span>';
+      btn.innerHTML = '<span>TRANSMITTING SOS...</span>';
 
       const callerName = document.getElementById('victim_name').value.trim() || "Emergency Caller";
       const phone = document.getElementById('phone').value.trim() || "N/A";
@@ -483,14 +483,14 @@
         document.getElementById('confirmDesc').innerText = 'Your distress report and beacon GPS coordinates have been registered and transmitted to the rescue command network. Stay in a safe position.';
         document.getElementById('confirmationOverlay').style.display = 'flex';
         btn.disabled = false;
-        btn.innerHTML = '<span>🆘 BROADCAST SOS ALERT</span><span class="subtext">TRANSMIT TO COMMAND CENTER</span>';
+        btn.innerHTML = '<span>BROADCAST SOS ALERT</span><span class="subtext">TRANSMIT TO COMMAND CENTER</span>';
       })
       .catch(err => {
         document.getElementById('confirmTitle').innerText = 'SOS TRANSMITTED!';
         document.getElementById('confirmDesc').innerText = 'Your distress report and beacon GPS coordinates have been registered and transmitted to the rescue command network. Stay in a safe position.';
         document.getElementById('confirmationOverlay').style.display = 'flex';
         btn.disabled = false;
-        btn.innerHTML = '<span>🆘 BROADCAST SOS ALERT</span><span class="subtext">TRANSMIT TO COMMAND CENTER</span>';
+        btn.innerHTML = '<span>BROADCAST SOS ALERT</span><span class="subtext">TRANSMIT TO COMMAND CENTER</span>';
       });
     }
 

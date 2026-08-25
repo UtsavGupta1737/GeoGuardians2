@@ -51,7 +51,7 @@ window.DisasterSafeSerial = (function() {
                 if (navBtn) navBtn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-xs font-bold text-emerald-800 transition-all shadow-xs cursor-pointer";
             } else {
                 navDot.className = "w-2 h-2 rounded-full bg-slate-400";
-                navText.innerText = "🔌 ESP32: Connect";
+                navText.innerText = "<i class='fa-solid fa-plug'></i> ESP32: Connect";
                 if (navBtn) navBtn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-slate-700 transition-all shadow-xs cursor-pointer";
             }
         }
@@ -187,13 +187,13 @@ window.DisasterSafeSerial = (function() {
                             inSosBlock = true;
                             sosLines = [];
                             if (typeof window.logSettingsTerminal === 'function') {
-                                window.logSettingsTerminal('🚨 [FRAME] ---SOS_START--- Received', 'yellow');
+                                window.logSettingsTerminal('[FRAME] ---SOS_START--- Received', 'yellow');
                             }
                             continue;
                         } else if (line === "---SOS_END---") {
                             inSosBlock = false;
                             if (typeof window.logSettingsTerminal === 'function') {
-                                window.logSettingsTerminal('📦 [FRAME] ---SOS_END---. Ingesting alert...', 'indigo');
+                                window.logSettingsTerminal('[FRAME] ---SOS_END---. Ingesting alert...', 'indigo');
                             }
                             try {
                                 const payload = JSON.parse(sosLines.join(""));
@@ -247,7 +247,7 @@ window.DisasterSafeSerial = (function() {
                 dbId = resJson.sos_id;
                 console.log(`[ESP32 SERIAL] Ingested into database successfully as SOS #${dbId}`);
                 if (typeof window.logSettingsTerminal === 'function') {
-                    window.logSettingsTerminal(`✔ Saved to Database as SOS #${dbId}!`, 'emerald');
+                    window.logSettingsTerminal(`Saved to Database as SOS #${dbId}!`, 'emerald');
                 }
             } else {
                 console.warn("[ESP32 SERIAL] Ingest response warning:", resJson.message);
@@ -275,13 +275,13 @@ window.DisasterSafeSerial = (function() {
 
         if (typeof Swal !== 'undefined') {
             Swal.fire({
-                title: '🚨 ESP32 SOS ALERT RECEIVED!',
+                title: 'ESP32 SOS ALERT RECEIVED!',
                 html: `
                     <div style="text-align:left; font-size:13px; line-height:1.6; color:#1e293b;">
                         <b>Victim:</b> <span style="font-size:14px; font-weight:800; color:#0f172a;">${vName}</span><br/>
                         <b>Emergency:</b> <span style="color:#dc2626; font-weight:700;">${eType}</span><br/>
-                        <b>GPS:</b> <span style="font-family:monospace;">${lat.toFixed(4)}°, ${lng.toFixed(4)}°</span><br/>
-                        <b>Status:</b> <span style="color:#16a34a; font-weight:800;">✔ Added to Database ${dbId ? '(ID #' + dbId + ')' : ''}</span>
+                        <b>GPS:</b> <span style="font-family:monospace;">${lat.toFixed(4)}, ${lng.toFixed(4)}</span><br/>
+                        <b>Status:</b> <span style="color:#16a34a; font-weight:800;">Added to Database ${dbId ? '(ID #' + dbId + ')' : ''}</span>
                     </div>
                 `,
                 icon: 'warning',

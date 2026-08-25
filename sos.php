@@ -163,111 +163,82 @@ require_once __DIR__ . '/sidebar.php';
         <!-- Header & Action Row -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-                <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                    <span class="p-2.5 rounded-2xl bg-red-50 border border-red-200 text-red-600 shadow-2xs">
-                        <i class="fa-solid fa-tower-broadcast"></i>
-                    </span>
-                    <span>Universal SOS Alerts &amp; Triage Hub</span>
+                <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                    SOS Alerts &amp; Triage Hub
                 </h1>
-                <p class="text-xs text-slate-500 mt-1 font-medium">
-                    Multi-agency emergency distress queue across Delhi-NCR (NDRF, Police, Fire, EMS, and Volunteer Corps).
+                <p class="text-xs text-slate-400 mt-1">
+                    Multi-agency emergency distress queue across Delhi-NCR
                 </p>
             </div>
 
             <div class="flex items-center gap-3">
-                <button type="button" onclick="document.getElementById('manualSosModal').classList.remove('hidden')" class="px-4 py-2.5 rounded-2xl bg-[#dc2626] hover:bg-[#b91c1c] text-white font-extrabold text-xs shadow-sm flex items-center gap-2 transition-all cursor-pointer">
-                    <i class="fa-solid fa-plus"></i>
+                <button type="button" onclick="document.getElementById('manualSosModal').classList.remove('hidden')" class="px-4 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-200 hover:border-slate-300 flex items-center gap-2 transition-colors cursor-pointer">
+                    <i class="fa-solid fa-plus text-slate-400"></i>
                     <span>Log Distress Call</span>
                 </button>
             </div>
         </div>
 
-        <!-- Compact Metric KPI Cards with Accent Contrast -->
-        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div class="bg-white border border-slate-200 border-l-4 border-l-slate-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
-                <div>
-                    <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mono">Total Recorded SOS</p>
-                    <h3 class="text-xl sm:text-2xl font-black text-slate-900 mt-0.5 leading-tight"><?= $totalSos ?></h3>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700">
-                    <i class="fa-solid fa-tower-broadcast text-xs"></i>
-                </div>
-            </div>
-
-            <div class="bg-white border border-red-200 border-l-4 border-l-red-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
-                <div>
-                    <p class="text-[10px] font-extrabold text-red-700 uppercase tracking-wider mono">Pending Critical</p>
-                    <h3 class="text-xl sm:text-2xl font-black text-red-700 mt-0.5 leading-tight"><?= $pendingCount ?></h3>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-red-100 border border-red-300 flex items-center justify-center text-red-700 animate-pulse">
-                    <i class="fa-solid fa-bell text-xs"></i>
-                </div>
-            </div>
-
-            <div class="bg-white border border-blue-200 border-l-4 border-l-blue-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
-                <div>
-                    <p class="text-[10px] font-extrabold text-blue-700 uppercase tracking-wider mono">Responders Dispatched</p>
-                    <h3 class="text-xl sm:text-2xl font-black text-blue-700 mt-0.5 leading-tight"><?= $dispatchedCount ?></h3>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
-                    <i class="fa-solid fa-truck-fast text-xs"></i>
-                </div>
-            </div>
-
-            <div class="bg-white border border-emerald-200 border-l-4 border-l-emerald-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
-                <div>
-                    <p class="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider mono">Rescued &amp; Safe</p>
-                    <h3 class="text-xl sm:text-2xl font-black text-emerald-700 mt-0.5 leading-tight"><?= $resolvedCount ?></h3>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
-                    <i class="fa-solid fa-circle-check text-xs"></i>
-                </div>
-            </div>
+        <!-- SOS Status Filter Bar -->
+        <?php $activeCount = $totalSos - $resolvedCount; ?>
+        <section class="flex items-center gap-1.5 overflow-x-auto pb-1">
+            <a href="sos.php<?= $search ? '?search=' . urlencode($search) : '' ?>" class="shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all <?= (!$statusFilter && !$priorityFilter) ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-700' ?>">
+                All <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] <?= (!$statusFilter && !$priorityFilter) ? 'bg-white/15 text-white/80' : 'bg-slate-100 text-slate-400' ?>"><?= $totalSos ?></span>
+            </a>
+            <a href="sos.php?status=Pending<?= $search ? '&search=' . urlencode($search) : '' ?>" class="shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all <?= $statusFilter === 'Pending' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-700' ?>">
+                SOS <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] <?= $statusFilter === 'Pending' ? 'bg-white/15 text-white/80' : 'bg-slate-100 text-slate-400' ?>"><?= $pendingCount ?></span>
+            </a>
+            <a href="sos.php?status=active<?= $search ? '&search=' . urlencode($search) : '' ?>" class="shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all <?= $statusFilter === 'active' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-700' ?>">
+                Active <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] <?= $statusFilter === 'active' ? 'bg-white/15 text-white/80' : 'bg-slate-100 text-slate-400' ?>"><?= $activeCount ?></span>
+            </a>
+            <a href="sos.php?status=Resolved<?= $search ? '&search=' . urlencode($search) : '' ?>" class="shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all <?= $statusFilter === 'Resolved' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-700' ?>">
+                Rescued <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] <?= $statusFilter === 'Resolved' ? 'bg-white/15 text-white/80' : 'bg-slate-100 text-slate-400' ?>"><?= $resolvedCount ?></span>
+            </a>
         </section>
 
         <!-- Compact Search & Filter Controls -->
-        <section class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
-            <form method="GET" action="sos.php" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 text-xs">
+        <section class="bg-white p-3 rounded-xl border border-slate-200">
+            <form method="GET" action="sos.php" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 text-xs">
                 
                 <!-- Search Keyword -->
                 <div class="lg:col-span-2 relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-slate-400"></i>
-                    <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search victim name, phone, agency, crisis type..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-[#1d63d8] focus:bg-white text-xs font-medium">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-[10px]"></i>
+                    <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search victim name, phone, agency, crisis type..." class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#1d63d8] focus:bg-white text-xs">
                 </div>
 
                 <!-- Status Filter -->
                 <div>
-                    <select name="status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-bold text-xs">
+                    <select name="status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:border-[#1d63d8] focus:bg-white text-xs">
                         <option value="">Status: All (<?= $totalSos ?>)</option>
-                        <option value="Pending" <?= $statusFilter === 'Pending' ? 'selected' : '' ?>>🔴 Pending Critical</option>
-                        <option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>⚡ All Active Rescues</option>
-                        <option value="NDRF Dispatched" <?= $statusFilter === 'NDRF Dispatched' ? 'selected' : '' ?>>🚤 NDRF Dispatched</option>
-                        <option value="Police Dispatched" <?= $statusFilter === 'Police Dispatched' ? 'selected' : '' ?>>🚓 Police Dispatched</option>
-                        <option value="Fire Dispatched" <?= $statusFilter === 'Fire Dispatched' ? 'selected' : '' ?>>🚒 Fire Dispatched</option>
-                        <option value="EMS Dispatched" <?= $statusFilter === 'EMS Dispatched' ? 'selected' : '' ?>>🚑 EMS Dispatched</option>
-                        <option value="Volunteer Responding" <?= $statusFilter === 'Volunteer Responding' ? 'selected' : '' ?>>🤝 Volunteer Assigned</option>
-                        <option value="Resolved" <?= $statusFilter === 'Resolved' ? 'selected' : '' ?>>✅ Resolved / Rescued</option>
+                        <option value="Pending" <?= $statusFilter === 'Pending' ? 'selected' : '' ?>>Pending Critical</option>
+                        <option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>All Active Rescues</option>
+                        <option value="NDRF Dispatched" <?= $statusFilter === 'NDRF Dispatched' ? 'selected' : '' ?>>NDRF Dispatched</option>
+                        <option value="Police Dispatched" <?= $statusFilter === 'Police Dispatched' ? 'selected' : '' ?>>Police Dispatched</option>
+                        <option value="Fire Dispatched" <?= $statusFilter === 'Fire Dispatched' ? 'selected' : '' ?>>Fire Dispatched</option>
+                        <option value="EMS Dispatched" <?= $statusFilter === 'EMS Dispatched' ? 'selected' : '' ?>>EMS Dispatched</option>
+                        <option value="Volunteer Responding" <?= $statusFilter === 'Volunteer Responding' ? 'selected' : '' ?>>Volunteer Assigned</option>
+                        <option value="Resolved" <?= $statusFilter === 'Resolved' ? 'selected' : '' ?>>Resolved / Rescued</option>
                     </select>
                 </div>
 
                 <!-- Priority Filter -->
                 <div>
-                    <select name="priority" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-[#1d63d8] focus:bg-white font-bold text-xs">
+                    <select name="priority" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:border-[#1d63d8] focus:bg-white text-xs">
                         <option value="">Priority: All</option>
-                        <option value="Critical" <?= $priorityFilter === 'Critical' ? 'selected' : '' ?>>🔴 Critical Priority</option>
-                        <option value="High" <?= $priorityFilter === 'High' ? 'selected' : '' ?>>🟠 High Priority</option>
-                        <option value="Medium" <?= $priorityFilter === 'Medium' ? 'selected' : '' ?>>🟡 Medium Priority</option>
+                        <option value="Critical" <?= $priorityFilter === 'Critical' ? 'selected' : '' ?>>Critical Priority</option>
+                        <option value="High" <?= $priorityFilter === 'High' ? 'selected' : '' ?>>High Priority</option>
+                        <option value="Medium" <?= $priorityFilter === 'Medium' ? 'selected' : '' ?>>Medium Priority</option>
                     </select>
                 </div>
 
                 <!-- Submit / Reset Buttons -->
                 <div class="flex items-center gap-1.5">
-                    <button type="submit" class="flex-1 py-2 px-3 rounded-xl bg-[#1d63d8] hover:bg-[#1553c7] text-white font-extrabold text-xs transition-colors cursor-pointer shadow-2xs">
+                    <button type="submit" class="flex-1 py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors cursor-pointer">
                         Filter
                     </button>
                     <?php if ($search || $statusFilter || $priorityFilter || $categoryFilter): ?>
-                        <a href="sos.php" class="py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors text-center text-xs" title="Clear Filters">
-                            <i class="fa-solid fa-rotate-left"></i>
+                        <a href="sos.php" class="py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors text-center text-xs" title="Clear Filters">
+                            <i class="fa-solid fa-rotate-left text-[10px]"></i>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -275,104 +246,95 @@ require_once __DIR__ . '/sidebar.php';
         </section>
 
         <!-- COMPACT HIGH-DENSITY SOS INCIDENT FEED -->
-        <section class="space-y-2.5">
+        <section class="space-y-2">
             <?php if (empty($sosList)): ?>
-                <div class="bg-white p-8 text-center rounded-2xl border border-slate-200 text-slate-500 shadow-2xs">
-                    <i class="fa-solid fa-bell-slash text-3xl mb-2 text-slate-400 block"></i>
-                    <h3 class="text-sm font-bold text-slate-800">No SOS Alerts Found</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Try clearing your search query or status filter.</p>
+                <div class="bg-white p-8 text-center rounded-xl border border-slate-200 text-slate-400">
+                    <i class="fa-solid fa-bell-slash text-2xl mb-2 text-slate-300 block"></i>
+                    <h3 class="text-sm font-semibold text-slate-600">No SOS Alerts Found</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Try clearing your search query or status filter.</p>
                 </div>
             <?php endif; ?>
 
             <?php foreach ($sosList as $sos): ?>
                 <?php 
                     $priorityColor = match($sos['priority'] ?? 'Critical') {
-                        'Critical' => 'bg-red-50 text-red-800 border-red-200',
-                        'High' => 'bg-amber-50 text-amber-800 border-amber-200',
-                        'Medium' => 'bg-blue-50 text-blue-800 border-blue-200',
-                        default => 'bg-slate-100 text-slate-700 border-slate-200'
+                        'Critical' => 'bg-red-50 text-red-700 border-red-200',
+                        'High' => 'bg-amber-50 text-amber-700 border-amber-200',
+                        'Medium' => 'bg-slate-100 text-slate-600 border-slate-200',
+                        default => 'bg-slate-100 text-slate-600 border-slate-200'
                     };
                     $borderColor = match($sos['status']) {
-                        'Pending' => 'border-l-[#dc2626]',
-                        'Police Dispatched' => 'border-l-[#2563eb]',
-                        'Fire Dispatched' => 'border-l-[#ea580c]',
-                        'EMS Dispatched' => 'border-l-[#0d9488]',
-                        'Volunteer Responding' => 'border-l-[#d97706]',
-                        'Resolved' => 'border-l-[#16a34a]',
-                        default => 'border-l-[#1d63d8]'
+                        'Pending' => 'border-l-red-400',
+                        'Police Dispatched' => 'border-l-slate-400',
+                        'Fire Dispatched' => 'border-l-slate-400',
+                        'EMS Dispatched' => 'border-l-slate-400',
+                        'Volunteer Responding' => 'border-l-slate-400',
+                        'Resolved' => 'border-l-emerald-400',
+                        default => 'border-l-slate-300'
                     };
                     $statusBadge = match($sos['status']) {
-                        'Pending' => 'bg-red-50 text-red-800 border-red-200 animate-pulse',
-                        'Resolved' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
-                        default => 'bg-blue-50 text-blue-800 border-blue-200'
+                        'Pending' => 'bg-red-50 text-red-700 border-red-200',
+                        'Resolved' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                        default => 'bg-slate-100 text-slate-600 border-slate-200'
                     };
-                    $typeIcon = match($sos['emergency_type']) {
-                        'Flood' => '🌊',
-                        'Fire' => '🔥',
-                        'Earthquake' => '🌋',
-                        'Building Collapse' => '🏚️',
-                        'Medical Trauma' => '🚑',
-                        'Cyclone / Storm' => '🌪️',
-                        default => '⚠️'
-                    };
+                    $typeIcon = '';
                 ?>
-                <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 border-l-4 <?= $borderColor ?> shadow-2xs hover:shadow-xs hover:border-slate-300 transition-all cursor-pointer group" onclick="openSosModal(<?= htmlspecialchars(json_encode($sos)) ?>)">
+                <div class="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200 border-l-[3px] <?= $borderColor ?> hover:border-slate-300 transition-colors cursor-pointer group" onclick="openSosModal(<?= htmlspecialchars(json_encode($sos)) ?>)">
                     
                     <!-- Row 1: Badges, Caller, Phone, GPS, Persons & Quick Dispatch Strip -->
-                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2">
                         
                         <!-- Left: Badges, Identification & Coordinates -->
-                        <div class="flex flex-wrap items-center gap-2 text-xs">
-                            <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border <?= $priorityColor ?> mono">
+                        <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs">
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border <?= $priorityColor ?>">
                                 <?= htmlspecialchars($sos['priority'] ?? 'CRITICAL') ?>
                             </span>
-                            <span class="text-[11px] font-black text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200 font-mono">
+                            <span class="text-[11px] font-mono font-bold text-slate-500">
                                 #<?= $sos['id'] ?>
                             </span>
-                            <span class="text-xs font-extrabold text-slate-900 flex items-center gap-1">
-                                <span><?= $typeIcon ?></span>
-                                <span><?= htmlspecialchars($sos['emergency_type']) ?></span>
+                            <span class="text-xs font-semibold text-slate-900">
+                                <?= htmlspecialchars($sos['emergency_type']) ?>
                             </span>
 
-                            <div class="h-3 w-px bg-slate-200 hidden sm:block"></div>
+                            <span class="text-slate-300">|</span>
 
                             <!-- Caller Name -->
-                            <span class="text-xs font-bold text-slate-900 flex items-center gap-1">
-                                <i class="fa-solid fa-user text-[10px] text-[#1d63d8]"></i>
+                            <span class="text-xs text-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-user text-[9px] text-slate-400"></i>
                                 <?= htmlspecialchars($sos['sender_name']) ?>
                             </span>
 
                             <!-- Phone & WhatsApp -->
                             <div class="flex items-center gap-1" onclick="event.stopPropagation()">
-                                <a href="tel:<?= urlencode($sos['sender_phone']) ?>" class="text-[11px] font-mono font-bold text-[#1d63d8] hover:underline flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-                                    <i class="fa-solid fa-phone text-[8px]"></i> <?= htmlspecialchars($sos['sender_phone']) ?>
+                                <a href="tel:<?= urlencode($sos['sender_phone']) ?>" class="text-[11px] font-mono text-slate-600 hover:text-[#1d63d8] hover:underline flex items-center gap-1">
+                                    <i class="fa-solid fa-phone text-[8px] text-slate-400"></i> <?= htmlspecialchars($sos['sender_phone']) ?>
                                 </a>
-                                <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $sos['sender_phone']) ?>" target="_blank" class="text-emerald-600 hover:text-emerald-700 p-1" title="Open WhatsApp Chat">
-                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $sos['sender_phone']) ?>" target="_blank" class="text-slate-400 hover:text-slate-600 p-0.5" title="Open WhatsApp Chat">
+                                    <i class="fa-brands fa-whatsapp text-xs"></i>
                                 </a>
                             </div>
 
                             <!-- GPS Pill -->
-                            <a href="https://maps.google.com/?q=<?= $sos['gps_lat'] ?>,<?= $sos['gps_lng'] ?>" target="_blank" class="text-[10px] font-mono font-bold text-teal-800 hover:underline flex items-center gap-1 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200 transition-colors" onclick="event.stopPropagation()" title="Open in Google Maps">
-                                <i class="fa-solid fa-location-crosshairs text-[9px] text-teal-600"></i>
-                                <?= number_format((float)$sos['gps_lat'], 4) ?>°, <?= number_format((float)$sos['gps_lng'], 4) ?>°
+                            <a href="https://maps.google.com/?q=<?= $sos['gps_lat'] ?>,<?= $sos['gps_lng'] ?>" target="_blank" class="text-[10px] font-mono text-slate-500 hover:text-[#1d63d8] hover:underline flex items-center gap-1" onclick="event.stopPropagation()" title="Open in Google Maps">
+                                <i class="fa-solid fa-location-crosshairs text-[9px] text-slate-400"></i>
+                                <?= number_format((float)$sos['gps_lat'], 4) ?>, <?= number_format((float)$sos['gps_lng'], 4) ?>
                             </a>
 
                             <!-- Persons Range -->
-                            <span class="text-[10px] font-bold text-red-800 bg-red-50 px-2 py-0.5 rounded-full border border-red-200 flex items-center gap-1 mono">
-                                <i class="fa-solid fa-users text-[9px]"></i> <?= htmlspecialchars($sos['persons_count'] ?? '1 - 4') ?>
+                            <span class="text-[10px] font-semibold text-slate-600 flex items-center gap-1">
+                                <i class="fa-solid fa-users text-[8px] text-slate-400"></i> <?= htmlspecialchars($sos['persons_count'] ?? '1 - 4') ?>
                             </span>
 
                             <?php if (!empty($sos['blood_type']) && $sos['blood_type'] !== 'Unknown'): ?>
-                                <span class="text-[10px] font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded-full border border-red-200 mono">
-                                    🩸 <?= htmlspecialchars($sos['blood_type']) ?>
+                                <span class="text-[10px] font-semibold text-slate-500">
+                                    <?= htmlspecialchars($sos['blood_type']) ?>
                                 </span>
                             <?php endif; ?>
                         </div>
 
                         <!-- Right: Status Badge & Quick 1-Click Dispatch Buttons -->
                         <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
-                            <span class="px-2.5 py-0.5 rounded-full font-extrabold text-[10px] border <?= $statusBadge ?> mono">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold border <?= $statusBadge ?> uppercase tracking-wide">
                                 <?= htmlspecialchars($sos['status']) ?>
                             </span>
 
@@ -382,34 +344,34 @@ require_once __DIR__ . '/sidebar.php';
                                 <input type="hidden" name="sos_id" value="<?= $sos['id'] ?>">
 
                                 <?php if ($sos['status'] === 'Pending'): ?>
-                                    <button type="submit" name="status" value="NDRF Dispatched" class="px-2.5 py-1 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-[10px] shadow-2xs transition-colors cursor-pointer" title="Dispatch NDRF">
-                                        🚤 NDRF
+                                    <button type="submit" name="status" value="NDRF Dispatched" class="px-2 py-1 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-semibold text-[10px] transition-colors cursor-pointer" title="Dispatch NDRF">
+                                        NDRF
                                     </button>
-                                    <button type="submit" name="status" value="Police Dispatched" class="px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] shadow-2xs transition-colors cursor-pointer" title="Dispatch Police">
-                                        🚓 Police
+                                    <button type="submit" name="status" value="Police Dispatched" class="px-2 py-1 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-semibold text-[10px] transition-colors cursor-pointer" title="Dispatch Police">
+                                        Police
                                     </button>
-                                    <button type="submit" name="status" value="Fire Dispatched" class="px-2.5 py-1 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] shadow-2xs transition-colors cursor-pointer" title="Dispatch Fire">
-                                        🚒 Fire
+                                    <button type="submit" name="status" value="Fire Dispatched" class="px-2 py-1 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-semibold text-[10px] transition-colors cursor-pointer" title="Dispatch Fire">
+                                        Fire
                                     </button>
-                                    <button type="submit" name="status" value="EMS Dispatched" class="px-2.5 py-1 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-[10px] shadow-2xs transition-colors cursor-pointer" title="Dispatch EMS">
-                                        🚑 EMS
+                                    <button type="submit" name="status" value="EMS Dispatched" class="px-2 py-1 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-semibold text-[10px] transition-colors cursor-pointer" title="Dispatch EMS">
+                                        EMS
                                     </button>
-                                    <button type="submit" name="status" value="Volunteer Responding" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] shadow-2xs transition-colors cursor-pointer" title="Assign Volunteer">
-                                        🤝 Vol
+                                    <button type="submit" name="status" value="Volunteer Responding" class="px-2 py-1 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-semibold text-[10px] transition-colors cursor-pointer" title="Assign Volunteer">
+                                        Volunteer
                                     </button>
                                 <?php elseif ($sos['status'] !== 'Resolved'): ?>
-                                    <button type="submit" name="status" value="Resolved" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] shadow-2xs transition-colors flex items-center gap-1 cursor-pointer">
-                                        <i class="fa-solid fa-check text-[9px]"></i> Resolved
+                                    <button type="submit" name="status" value="Resolved" class="px-2 py-1 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-semibold text-[10px] transition-colors flex items-center gap-1 cursor-pointer">
+                                        <i class="fa-solid fa-check text-[8px] text-slate-400"></i> Resolved
                                     </button>
                                 <?php else: ?>
-                                    <button type="submit" name="status" value="Pending" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] border border-slate-200 transition-colors cursor-pointer">
+                                    <button type="submit" name="status" value="Pending" class="px-2 py-1 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 font-semibold text-[10px] transition-colors cursor-pointer">
                                         Re-open
                                     </button>
                                 <?php endif; ?>
                             </form>
 
-                            <button type="button" onclick="openSosModal(<?= htmlspecialchars(json_encode($sos)) ?>)" class="p-1.5 px-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#1d63d8] border border-blue-200 text-[10px] font-bold transition-all cursor-pointer" title="View Full Dossier">
-                                <i class="fa-solid fa-expand"></i>
+                            <button type="button" onclick="openSosModal(<?= htmlspecialchars(json_encode($sos)) ?>)" class="p-1 px-1.5 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 text-[10px] transition-colors cursor-pointer" title="View Full Dossier">
+                                <i class="fa-solid fa-expand text-[9px]"></i>
                             </button>
 
                             <?php if ($isSuperAdmin): ?>
@@ -417,8 +379,8 @@ require_once __DIR__ . '/sidebar.php';
                                     <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                                     <input type="hidden" name="action" value="delete_sos">
                                     <input type="hidden" name="sos_id" value="<?= $sos['id'] ?>">
-                                    <button type="submit" class="p-1.5 px-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-[10px] cursor-pointer" title="Delete SOS">
-                                        <i class="fa-solid fa-trash-can"></i>
+                                    <button type="submit" class="p-1 px-1.5 rounded border border-slate-200 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 text-[10px] transition-colors cursor-pointer" title="Delete SOS">
+                                        <i class="fa-solid fa-trash-can text-[9px]"></i>
                                     </button>
                                 </form>
                             <?php endif; ?>
@@ -427,22 +389,22 @@ require_once __DIR__ . '/sidebar.php';
                     </div>
 
                     <!-- Row 2: Distress Note Snippet, Assigned Agency & Timestamp -->
-                    <div class="mt-2.5 pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs text-slate-500">
+                    <div class="mt-2 pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs text-slate-400">
                         <div class="flex items-center gap-2 min-w-0 flex-1">
                             <?php if (!empty($sos['message'])): ?>
-                                <span class="text-slate-700 truncate text-[11px] font-medium">
-                                    <i class="fa-solid fa-quote-left text-slate-400 mr-1 text-[9px]"></i>
+                                <span class="text-slate-500 truncate text-[11px]">
+                                    <i class="fa-solid fa-quote-left text-slate-300 mr-1 text-[8px]"></i>
                                     <?= htmlspecialchars($sos['message']) ?>
                                 </span>
                             <?php else: ?>
-                                <span class="text-slate-400 italic text-[11px]">One-touch GPS distress beacon triggered.</span>
+                                <span class="text-slate-300 italic text-[11px]">One-touch GPS distress beacon triggered.</span>
                             <?php endif; ?>
                         </div>
 
                         <div class="flex items-center gap-3 shrink-0 text-[11px]">
                             <?php if (!empty($sos['dispatch_agency'])): ?>
-                                <span class="text-blue-700 font-bold flex items-center gap-1 text-[11px]">
-                                    <i class="fa-solid fa-shield-halved text-[10px]"></i>
+                                <span class="text-slate-500 font-medium flex items-center gap-1 text-[11px]">
+                                    <i class="fa-solid fa-shield-halved text-[9px] text-slate-400"></i>
                                     <?= htmlspecialchars($sos['dispatch_agency']) ?>
                                 </span>
                             <?php endif; ?>
@@ -462,16 +424,16 @@ require_once __DIR__ . '/sidebar.php';
 
 <!-- INTERACTIVE EXPANDED SOS DETAIL & TRIAGE MODAL -->
 <div id="sosDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white border border-slate-200 rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         
         <!-- Modal Header -->
-        <div class="h-16 px-6 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
+        <div class="h-14 px-6 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
-                <span class="w-3 h-3 rounded-full bg-red-600 animate-ping"></span>
-                <h3 class="text-base font-extrabold text-slate-900" id="modalSosTitle">SOS Distress Dossier</h3>
+                <span class="w-2 h-2 rounded-full bg-slate-900"></span>
+                <h3 class="text-sm font-bold text-slate-900" id="modalSosTitle">SOS Distress Dossier</h3>
             </div>
-            <button type="button" onclick="document.getElementById('sosDetailModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-800 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer">
-                <i class="fa-solid fa-xmark text-lg"></i>
+            <button type="button" onclick="document.getElementById('sosDetailModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
+                <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
 
@@ -479,99 +441,99 @@ require_once __DIR__ . '/sidebar.php';
         <div class="flex-1 overflow-y-auto p-6 space-y-5 text-xs text-slate-700">
             
             <!-- Callout Bar -->
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mono">Current Status</span>
-                    <span id="modalSosStatus" class="font-extrabold text-sm text-slate-900"></span>
+                    <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Current Status</span>
+                    <span id="modalSosStatus" class="font-bold text-sm text-slate-900"></span>
                 </div>
                 <div>
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mono">Priority Level</span>
-                    <span id="modalSosPriority" class="font-extrabold text-sm text-red-600"></span>
+                    <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Priority Level</span>
+                    <span id="modalSosPriority" class="font-bold text-sm text-slate-900"></span>
                 </div>
                 <div>
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mono">People Trapped</span>
-                    <span id="modalSosTrapped" class="font-extrabold text-sm text-amber-700"></span>
+                    <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">People Trapped</span>
+                    <span id="modalSosTrapped" class="font-bold text-sm text-slate-900"></span>
                 </div>
             </div>
 
             <!-- Victim Dossier -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase mono">Victim / Contact Name</span>
-                    <p id="modalSosSender" class="font-bold text-slate-900 text-sm"></p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                    <span class="text-[10px] font-semibold text-slate-400 uppercase">Victim / Contact Name</span>
+                    <p id="modalSosSender" class="font-semibold text-slate-900 text-sm"></p>
                 </div>
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase mono">Direct Phone / Hotline</span>
-                    <p id="modalSosPhone" class="font-bold text-[#1d63d8] text-sm font-mono"></p>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                    <span class="text-[10px] font-semibold text-slate-400 uppercase">Direct Phone / Hotline</span>
+                    <p id="modalSosPhone" class="font-semibold text-slate-700 text-sm font-mono"></p>
                 </div>
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase mono">Blood Group &amp; Vitals</span>
-                    <p id="modalSosBlood" class="font-bold text-red-600"></p>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                    <span class="text-[10px] font-semibold text-slate-400 uppercase">Blood Group &amp; Vitals</span>
+                    <p id="modalSosBlood" class="font-semibold text-slate-700"></p>
                 </div>
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase mono">Age of Primary Caller</span>
-                    <p id="modalSosAge" class="font-bold text-slate-900"></p>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                    <span class="text-[10px] font-semibold text-slate-400 uppercase">Age of Primary Caller</span>
+                    <p id="modalSosAge" class="font-semibold text-slate-900"></p>
                 </div>
             </div>
 
             <!-- GPS Coordinates -->
-            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <span class="text-[10px] font-bold text-slate-500 uppercase flex items-center justify-between mono">
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-satellite-dish text-red-600"></i> Geospatial GPS Coordinates</span>
-                    <a id="modalSosMapLink" href="#" target="_blank" class="text-[#1d63d8] hover:underline font-bold text-[11px] flex items-center gap-1">
-                        <span>Open in Google Maps</span> <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <span class="text-[10px] font-semibold text-slate-400 uppercase flex items-center justify-between">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-satellite-dish text-slate-400"></i> Geospatial GPS Coordinates</span>
+                    <a id="modalSosMapLink" href="#" target="_blank" class="text-[#1d63d8] hover:underline font-semibold text-[11px] flex items-center gap-1">
+                        <span>Open in Google Maps</span> <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
                     </a>
                 </span>
-                <p id="modalSosGps" class="font-mono font-bold text-slate-900 text-sm"></p>
+                <p id="modalSosGps" class="font-mono font-semibold text-slate-900 text-sm"></p>
             </div>
 
             <!-- Distress Message -->
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <span class="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1.5 mono">
-                    <i class="fa-solid fa-comment-dots text-[#1d63d8]"></i> Distress Transcript &amp; Message
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <span class="text-[10px] font-semibold text-slate-400 uppercase flex items-center gap-1.5">
+                    <i class="fa-solid fa-comment-dots text-slate-400"></i> Distress Transcript &amp; Message
                 </span>
-                <p id="modalSosMessage" class="text-slate-800 leading-relaxed italic"></p>
+                <p id="modalSosMessage" class="text-slate-700 leading-relaxed italic"></p>
             </div>
 
             <!-- Medical Needs -->
-            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                <span class="text-[10px] font-bold text-slate-500 uppercase mono">System Triaged Relief Supplies &amp; Equipment</span>
-                <p id="modalSosNeeds" class="font-bold text-teal-700"></p>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <span class="text-[10px] font-semibold text-slate-400 uppercase">System Triaged Relief Supplies &amp; Equipment</span>
+                <p id="modalSosNeeds" class="font-semibold text-slate-700"></p>
             </div>
 
             <!-- Dispatch Update Form -->
-            <form method="POST" action="sos.php" class="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 space-y-3">
+            <form method="POST" action="sos.php" class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                 <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                 <input type="hidden" name="action" value="update_status">
                 <input type="hidden" name="sos_id" id="modalFormSosId" value="">
 
-                <span class="text-xs font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-paper-plane text-[#1d63d8]"></i> Command Dispatch &amp; Status Reassignment
+                <span class="text-xs font-semibold text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-slate-400"></i> Command Dispatch &amp; Status Reassignment
                 </span>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1 mono">Target Status</label>
-                        <select name="status" id="modalFormStatusSelect" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:outline-none focus:border-[#1d63d8]">
-                            <option value="Pending">🔴 Pending (Unresolved)</option>
-                            <option value="NDRF Dispatched">🚤 NDRF Tactical Boat Squad</option>
-                            <option value="Police Dispatched">🚓 Police Perimeter &amp; Cordon</option>
-                            <option value="Fire Dispatched">🚒 Fire &amp; Hazmat Engine</option>
-                            <option value="EMS Dispatched">🚑 Advanced Life Support Ambulance</option>
-                            <option value="Volunteer Responding">🤝 Volunteer Relief Corps</option>
-                            <option value="Resolved">✅ Rescued &amp; Resolved</option>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Target Status</label>
+                        <select name="status" id="modalFormStatusSelect" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 text-xs focus:outline-none focus:border-[#1d63d8]">
+                            <option value="Pending">Pending (Unresolved)</option>
+                            <option value="NDRF Dispatched">NDRF Tactical Boat Squad</option>
+                            <option value="Police Dispatched">Police Perimeter &amp; Cordon</option>
+                            <option value="Fire Dispatched">Fire &amp; Hazmat Engine</option>
+                            <option value="EMS Dispatched">Advanced Life Support Ambulance</option>
+                            <option value="Volunteer Responding">Volunteer Relief Corps</option>
+                            <option value="Resolved">Rescued &amp; Resolved</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1 mono">Assigned Agency / Squad</label>
-                        <input type="text" name="dispatch_agency" id="modalFormAgencyInput" placeholder="e.g. NDRF Boat Unit 4, Fire Squad 2" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:outline-none focus:border-[#1d63d8]">
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Assigned Agency / Squad</label>
+                        <input type="text" name="dispatch_agency" id="modalFormAgencyInput" placeholder="e.g. NDRF Boat Unit 4, Fire Squad 2" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 text-xs focus:outline-none focus:border-[#1d63d8]">
                     </div>
                 </div>
 
-                <div class="flex justify-end pt-2">
-                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#1d63d8] hover:bg-[#1553c7] text-white font-bold shadow-sm transition-all cursor-pointer">
-                        Execute Tactical Dispatch →
+                <div class="flex justify-end pt-1">
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors cursor-pointer">
+                        Execute Tactical Dispatch
                     </button>
                 </div>
             </form>
@@ -583,15 +545,15 @@ require_once __DIR__ . '/sidebar.php';
 
 <!-- MANUAL LOG DISTRESS MODAL (FOR DISPATCHERS) -->
 <div id="manualSosModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white border border-slate-200 rounded-3xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         
-        <div class="h-16 px-6 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
-            <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-headset text-red-600"></i>
+        <div class="h-14 px-6 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-headset text-slate-400"></i>
                 <span>Log Inbound SOS Distress Call</span>
             </h3>
-            <button type="button" onclick="document.getElementById('manualSosModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-800 p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer">
-                <i class="fa-solid fa-xmark text-lg"></i>
+            <button type="button" onclick="document.getElementById('manualSosModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
+                <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
 
@@ -601,30 +563,30 @@ require_once __DIR__ . '/sidebar.php';
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Victim / Caller Name *</label>
-                    <input type="text" name="sender_name" required placeholder="e.g. Suresh Kumar" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:border-[#1d63d8] font-medium">
+                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Victim / Caller Name *</label>
+                    <input type="text" name="sender_name" required placeholder="e.g. Suresh Kumar" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:border-[#1d63d8]">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Contact Phone Number *</label>
-                    <input type="text" name="sender_phone" required placeholder="e.g. +91 98112 34567" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#1d63d8] font-medium">
+                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Contact Phone Number *</label>
+                    <input type="text" name="sender_phone" required placeholder="e.g. +91 98112 34567" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#1d63d8]">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">GPS Latitude *</label>
-                    <input type="number" step="0.0001" name="gps_lat" required value="28.6139" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#1d63d8]">
+                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">GPS Latitude *</label>
+                    <input type="number" step="0.0001" name="gps_lat" required value="28.6139" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#1d63d8]">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">GPS Longitude *</label>
-                    <input type="number" step="0.0001" name="gps_lng" required value="77.2090" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#1d63d8]">
+                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">GPS Longitude *</label>
+                    <input type="number" step="0.0001" name="gps_lng" required value="77.2090" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#1d63d8]">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Blood Group</label>
-                    <select name="blood_type" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:border-[#1d63d8]">
+                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Blood Group</label>
+                    <select name="blood_type" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:border-[#1d63d8]">
                         <option value="Unknown">Unknown</option>
                         <option value="A+">A+</option>
                         <option value="A-">A-</option>
@@ -637,12 +599,12 @@ require_once __DIR__ . '/sidebar.php';
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Caller Age</label>
-                    <input type="number" name="age" placeholder="e.g. 35" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:border-[#1d63d8]">
+                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Caller Age</label>
+                    <input type="number" name="age" placeholder="e.g. 35" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:border-[#1d63d8]">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Persons Trapped *</label>
-                    <select name="persons_count" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:border-[#1d63d8]">
+                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Persons Trapped *</label>
+                    <select name="persons_count" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:border-[#1d63d8]">
                         <option value="1 - 4">1 - 4 Persons</option>
                         <option value="4 - 8">4 - 8 Persons</option>
                         <option value="8 - 12">8 - 12 Persons</option>
@@ -653,37 +615,37 @@ require_once __DIR__ . '/sidebar.php';
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Emergency Category *</label>
-                    <select name="emergency_type" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:border-[#1d63d8]">
-                        <option value="Flood">🌊 Flood</option>
-                        <option value="Fire">🔥 Fire</option>
-                        <option value="Earthquake">🌋 Earthquake</option>
-                        <option value="Building Collapse">🏚️ Building Collapse</option>
-                        <option value="Medical Trauma">🚑 Medical Trauma</option>
-                        <option value="Cyclone / Storm">🌪️ Cyclone / Storm</option>
-                        <option value="Other Distress">⚠️ Other Distress</option>
+                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Emergency Category *</label>
+                    <select name="emergency_type" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:border-[#1d63d8]">
+                        <option value="Flood">Flood</option>
+                        <option value="Fire">Fire</option>
+                        <option value="Earthquake">Earthquake</option>
+                        <option value="Building Collapse">Building Collapse</option>
+                        <option value="Medical Trauma">Medical Trauma</option>
+                        <option value="Cyclone / Storm">Cyclone / Storm</option>
+                        <option value="Other Distress">Other Distress</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Triage Priority *</label>
-                    <select name="priority" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:bg-white focus:outline-none focus:border-[#1d63d8]">
-                        <option value="Critical">🔴 Critical (Immediate Life Threat)</option>
-                        <option value="High">🟠 High (Serious Threat)</option>
-                        <option value="Medium">🟡 Medium (Assistance Required)</option>
+                    <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Triage Priority *</label>
+                    <select name="priority" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:border-[#1d63d8]">
+                        <option value="Critical">Critical (Immediate Life Threat)</option>
+                        <option value="High">High (Serious Threat)</option>
+                        <option value="Medium">Medium (Assistance Required)</option>
                     </select>
                 </div>
             </div>
 
             <div>
-                <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Optional Distress Message / Notes</label>
-                <textarea name="message" rows="2" placeholder="Describe caller's distress situation (optional)..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 leading-relaxed focus:bg-white focus:outline-none focus:border-[#1d63d8]"></textarea>
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Optional Distress Message / Notes</label>
+                <textarea name="message" rows="2" placeholder="Describe caller's distress situation (optional)..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 leading-relaxed focus:bg-white focus:outline-none focus:border-[#1d63d8]"></textarea>
             </div>
 
-            <div class="flex justify-end gap-3 pt-3 border-t border-slate-100">
-                <button type="button" onclick="document.getElementById('manualSosModal').classList.add('hidden')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">
+            <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onclick="document.getElementById('manualSosModal').classList.add('hidden')" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold cursor-pointer text-xs">
                     Cancel
                 </button>
-                <button type="submit" class="px-6 py-2.5 rounded-xl bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold shadow-sm cursor-pointer">
+                <button type="submit" class="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold cursor-pointer text-xs">
                     Submit &amp; Broadcast SOS
                 </button>
             </div>

@@ -76,7 +76,7 @@ $currentScript = basename($_SERVER['PHP_SELF']);
             <!-- Global ESP32 Hardware Status / Connect Pill -->
             <button type="button" id="globalEsp32NavBtn" onclick="toggleGlobalSerial()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-slate-700 transition-all shadow-xs cursor-pointer" title="Click to Connect/Disconnect ESP32 USB Serial">
                 <span id="globalEsp32Dot" class="w-2 h-2 rounded-full bg-slate-400"></span>
-                <span id="globalEsp32Text" class="mono text-[11px]">🔌 ESP32: Connect</span>
+                <span id="globalEsp32Text" class="mono text-[11px]"><i class="fa-solid fa-plug"></i> ESP32: Connect</span>
             </button>
 
             <!-- Live Alert Dot Badge with Accent Glow -->

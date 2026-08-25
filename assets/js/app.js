@@ -334,7 +334,7 @@ const FireApp = {
                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Caller & Occupants</p>
                         <h5 class="text-sm font-extrabold text-slate-200">${inc.caller_name} (${inc.caller_phone})</h5>
                         <p class="text-[11px] ${inc.trapped_count > 0 ? 'text-rose-400 font-bold' : 'text-slate-400'}">
-                            ${inc.trapped_count > 0 ? `⚠️ ${inc.trapped_count} Occupants Reported Trapped` : 'No confirmed entrapments'}
+                            ${inc.trapped_count > 0 ? `${inc.trapped_count} Occupants Reported Trapped` : 'No confirmed entrapments'}
                         </p>
                     </div>
                 </div>
@@ -398,7 +398,7 @@ const FireApp = {
                 }
 
                 if (btn) btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-1"></i> GPS Locked`;
-                this.showToast(`GPS Position Locked: ${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`, 'success');
+                this.showToast(`GPS Position Locked: ${lat.toFixed(4)} N, ${lng.toFixed(4)} E`, 'success');
             },
             err => {
                 if (btn) btn.innerHTML = `<i class="fa-solid fa-location-crosshairs mr-1"></i> Auto-Detect GPS`;
@@ -420,7 +420,7 @@ const FireApp = {
         .then(res => res.json())
         .then(res => {
             if (res.success) {
-                this.showToast(`🚨 ${res.incident_number} Dispatched! ${res.message}`, 'success');
+                this.showToast(`${res.incident_number} Dispatched! ${res.message}`, 'success');
                 
                 // Cross-window postMessage for parent dashboard embeds
                 try {

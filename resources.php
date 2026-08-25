@@ -147,7 +147,7 @@ require_once __DIR__ . '/sidebar.php';
                 <div class="space-y-1.5">
                     <div class="flex items-center gap-2.5">
                         <span class="w-9 h-9 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#1d63d8] font-black text-base shadow-2xs">
-                            📦
+                            <i class="fa-solid fa-boxes-stacked"></i>
                         </span>
                         <div>
                             <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 mono">Universal Area Supply Chain</span>
@@ -225,25 +225,25 @@ require_once __DIR__ . '/sidebar.php';
             <!-- Category Chips -->
             <div class="flex items-center gap-1.5 overflow-x-auto py-1 text-xs">
                 <button type="button" onclick="filterByCategory('all', this)" class="category-chip px-3 py-1.5 rounded-xl bg-[#1d63d8] text-white font-bold whitespace-nowrap shadow-2xs transition-all cursor-pointer">
-                    🌟 All Resources (<?= count($resources) ?>)
+                    All Resources (<?= count($resources) ?>)
                 </button>
                 <button type="button" onclick="filterByCategory('Food & Water', this)" class="category-chip px-3 py-1.5 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 font-bold whitespace-nowrap border border-slate-200 transition-all cursor-pointer">
-                    🥪 Food &amp; Water
+                    Food &amp; Water
                 </button>
                 <button type="button" onclick="filterByCategory('Medical Supplies', this)" class="category-chip px-3 py-1.5 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 font-bold whitespace-nowrap border border-slate-200 transition-all cursor-pointer">
-                    💉 Medical &amp; Blood
+                    Medical &amp; Blood
                 </button>
                 <button type="button" onclick="filterByCategory('Power & Energy', this)" class="category-chip px-3 py-1.5 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 font-bold whitespace-nowrap border border-slate-200 transition-all cursor-pointer">
-                    ⚡ Power &amp; Generators
+                    Power &amp; Generators
                 </button>
                 <button type="button" onclick="filterByCategory('Vehicles & Mobility', this)" class="category-chip px-3 py-1.5 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 font-bold whitespace-nowrap border border-slate-200 transition-all cursor-pointer">
-                    🚒 Vehicles &amp; Boats
+                    Vehicles &amp; Boats
                 </button>
                 <button type="button" onclick="filterByCategory('Shelter & Bedding', this)" class="category-chip px-3 py-1.5 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 font-bold whitespace-nowrap border border-slate-200 transition-all cursor-pointer">
-                    🏕️ Shelter &amp; Tents
+                    Shelter &amp; Tents
                 </button>
                 <button type="button" onclick="filterByCategory('Tactical & Rescue Gear', this)" class="category-chip px-3 py-1.5 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 font-bold whitespace-nowrap border border-slate-200 transition-all cursor-pointer">
-                    🦺 Tactical &amp; Gear
+                    Tactical &amp; Gear
                 </button>
             </div>
 
@@ -426,12 +426,12 @@ require_once __DIR__ . '/sidebar.php';
                     <div>
                         <label class="block text-[10px] font-bold text-slate-700 uppercase mb-1 mono">Destination Type</label>
                         <select name="destination_type" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 font-bold focus:outline-none focus:border-[#1d63d8]">
-                            <option value="Relief Camp">🏕️ Relief Camp</option>
-                            <option value="Hospital">🏥 Hospital</option>
-                            <option value="Field Clinic">🩺 Field Clinic</option>
-                            <option value="Police Cordon">🚓 Police Cordon</option>
-                            <option value="Fire Unit">🚒 Fire Unit</option>
-                            <option value="Disaster Evacuation Zone">🌊 Evacuation Zone</option>
+                            <option value="Relief Camp">Relief Camp</option>
+                            <option value="Hospital">Hospital</option>
+                            <option value="Field Clinic">Field Clinic</option>
+                            <option value="Police Cordon">Police Cordon</option>
+                            <option value="Fire Unit">Fire Unit</option>
+                            <option value="Disaster Evacuation Zone">Evacuation Zone</option>
                         </select>
                     </div>
 
@@ -481,13 +481,13 @@ require_once __DIR__ . '/sidebar.php';
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Destination Type *</label>
-                    <select name="destination_type" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-[#1d63d8]">
-                        <option value="Relief Camp">🏕️ Relief Camp</option>
-                        <option value="Hospital">🏥 Hospital</option>
-                        <option value="Field Clinic">🩺 Field Clinic</option>
-                        <option value="Police Cordon">🚓 Police Cordon</option>
-                        <option value="Fire Unit">🚒 Fire Unit</option>
-                        <option value="Disaster Evacuation Zone">🌊 Evacuation Zone</option>
+                        <select name="destination_type" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-[#1d63d8]">
+                        <option value="Relief Camp">Relief Camp</option>
+                        <option value="Hospital">Hospital</option>
+                        <option value="Field Clinic">Field Clinic</option>
+                        <option value="Police Cordon">Police Cordon</option>
+                        <option value="Fire Unit">Fire Unit</option>
+                        <option value="Disaster Evacuation Zone">Evacuation Zone</option>
                     </select>
                 </div>
                 <div>
@@ -548,12 +548,12 @@ require_once __DIR__ . '/sidebar.php';
                 <div>
                     <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Category *</label>
                     <select name="category" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-[#1d63d8]">
-                        <option value="Food & Water">🥪 Food &amp; Water</option>
-                        <option value="Medical Supplies">💉 Medical Supplies</option>
-                        <option value="Power & Energy">⚡ Power &amp; Energy</option>
-                        <option value="Vehicles & Mobility">🚒 Vehicles &amp; Mobility</option>
-                        <option value="Shelter & Bedding">🏕️ Shelter &amp; Bedding</option>
-                        <option value="Tactical & Rescue Gear">🦺 Tactical &amp; Rescue Gear</option>
+                        <option value="Food & Water">Food &amp; Water</option>
+                        <option value="Medical Supplies">Medical Supplies</option>
+                        <option value="Power & Energy">Power &amp; Energy</option>
+                        <option value="Vehicles & Mobility">Vehicles &amp; Mobility</option>
+                        <option value="Shelter & Bedding">Shelter &amp; Bedding</option>
+                        <option value="Tactical & Rescue Gear">Tactical &amp; Rescue Gear</option>
                     </select>
                 </div>
                 <div>
@@ -651,7 +651,7 @@ function openDistributionDossier(resource, distributions) {
     } else {
         let html = '';
         distributions.forEach(d => {
-            const typeIcon = d.destination_type === 'Hospital' ? '🏥' : (d.destination_type === 'Relief Camp' ? '🏕️' : (d.destination_type === 'Fire Unit' ? '🚒' : (d.destination_type === 'Police Cordon' ? '🚓' : '📍')));
+            const typeIcon = d.destination_type === 'Hospital' ? 'Hospital' : (d.destination_type === 'Relief Camp' ? 'Relief Camp' : (d.destination_type === 'Fire Unit' ? 'Fire Unit' : (d.destination_type === 'Police Cordon' ? 'Police Cordon' : d.destination_type)));
             html += `
                 <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition-all text-xs space-y-2">
                     <div class="flex items-center justify-between">
@@ -719,7 +719,7 @@ function initDistributionMap(distributions) {
                 }).addTo(distMarkerGroup)
                 .bindPopup(`
                     <div style="color:#0f172a; font-family:'Inter', sans-serif; font-size:12px; min-width:180px;">
-                        <strong style="color:#1d63d8;">📍 ${d.destination_name}</strong><br/>
+                        <strong style="color:#1d63d8;">${d.destination_name}</strong><br/>
                         <b>Type:</b> ${d.destination_type}<br/>
                         <span>Deployed: <b>${Number(d.quantity_distributed).toLocaleString()} ${d.unit}</b></span><br/>
                         <span style="color:#64748b; font-size:10px;">Contact: ${d.contact_officer}</span>

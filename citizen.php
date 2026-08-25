@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } catch (Exception $ex) {}
 
             logActivity($pdo, 'CITIZEN_SOS_BROADCAST', "Public SOS #{$sosId} transmitted by {$senderName} [GPS: {$latitude}, {$longitude}] ({$emergencyType})");
-            setFlash('success', "🚨 Emergency distress signal transmitted (SOS #{$sosId})! Auto-assigned to {$dispatchAgency}. Help is en-route.");
+            setFlash('success', "Emergency distress signal transmitted (SOS #{$sosId})! Auto-assigned to {$dispatchAgency}. Help is en-route.");
         } catch (Exception $e) {
             setFlash('error', "Failed to broadcast distress signal: " . $e->getMessage());
         }
@@ -547,13 +547,13 @@ $flash = getFlash();
                                 <label for="emergency_type" class="block text-xs font-bold text-[#78716c] uppercase mb-1">Emergency Type</label>
                                 <select id="emergency_type" name="emergency_type" required
                                         class="w-full px-3.5 py-2.5 rounded-xl border border-[#d8d0c5] bg-[#f4f0ea] text-sm font-bold text-[#1c1917] focus:bg-white focus:outline-none focus:border-red-600 transition-colors cursor-pointer">
-                                    <option value="Flood">🌊 Flash Flood / Water Inflow</option>
-                                    <option value="Fire">🔥 Fire / Hazmat / Smoke</option>
-                                    <option value="Earthquake">🏚️ Earthquake / Structural Hazard</option>
-                                    <option value="Cyclone">🌀 Cyclone / Severe Storm</option>
-                                    <option value="Building Collapse">🏢 Building / Wall Collapse</option>
-                                    <option value="Medical Trauma">🚑 Critical Medical Emergency</option>
-                                    <option value="General">🆘 Other Life-Threatening Crisis</option>
+                                    <option value="Flood">Flash Flood / Water Inflow</option>
+                                    <option value="Fire">Fire / Hazmat / Smoke</option>
+                                    <option value="Earthquake">Earthquake / Structural Hazard</option>
+                                    <option value="Cyclone">Cyclone / Severe Storm</option>
+                                    <option value="Building Collapse">Building / Wall Collapse</option>
+                                    <option value="Medical Trauma">Critical Medical Emergency</option>
+                                    <option value="General">Other Life-Threatening Crisis</option>
                                 </select>
                             </div>
                             <div>
@@ -724,7 +724,7 @@ $flash = getFlash();
                             <span style="font-size:10px; font-weight:bold; color:#78716c; text-transform:uppercase;">${escapeHtml(f.type)}</span>
                             <h4 style="font-size:13px; font-weight:bold; color:#000a1e; margin:2px 0 4px 0;">${escapeHtml(f.name)}</h4>
                             <p style="font-size:11px; color:#586377; margin:0 0 6px 0;">Status: <strong style="color:#16a34a;">${escapeHtml(f.status || 'Operational')}</strong></p>
-                            ${f.contact ? `<a href="tel:${f.contact}" style="font-size:11px; color:#c53030; font-weight:bold; text-decoration:none;">📞 Call: ${escapeHtml(f.contact)}</a>` : ''}
+                            ${f.contact ? `<a href="tel:${f.contact}" style="font-size:11px; color:#c53030; font-weight:bold; text-decoration:none;"><i class='fa-solid fa-phone' style='font-size:10px;'></i> Call: ${escapeHtml(f.contact)}</a>` : ''}
                         </div>
                     `);
                 }
@@ -799,7 +799,7 @@ $flash = getFlash();
 
         // Quick Rapid SOS Beacon Click
         function triggerQuickSos() {
-            if (confirm("🚨 TRANSMIT EMERGENCY BEACON IMMEDIATELY?\n\nThis will send your current GPS coordinates to Emergency Services and First Responders.")) {
+            if (confirm("TRANSMIT EMERGENCY BEACON IMMEDIATELY?\n\nThis will send your current GPS coordinates to Emergency Services and First Responders.")) {
                 document.getElementById('sosForm').submit();
             }
         }

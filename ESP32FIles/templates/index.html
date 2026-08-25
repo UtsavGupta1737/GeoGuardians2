@@ -541,9 +541,9 @@
         <span id="connectionText">Gateway Connected</span>
       </div>
       <button id="btnAnnounce" class="btn-toggle-announce active" onclick="toggleAutoAnnounce()">
-        🗣️ Auto Voice Announce: ON
+        Auto Voice Announce: ON
       </button>
-      <button class="btn-secondary" onclick="simulateAlert()">⚡ Test Voice Alert</button>
+      <button class="btn-secondary" onclick="simulateAlert()">Test Voice Alert</button>
     </div>
   </header>
 
@@ -558,7 +558,7 @@
       </div>
 
       <div class="stat-card voice-stat">
-        <h3>🎙️ Voice SOS Alerts</h3>
+        <h3>Voice SOS Alerts</h3>
         <div class="value" id="voiceCount">0</div>
       </div>
 
@@ -581,13 +581,13 @@
     <!-- Live SOS Feed -->
     <div class="feed-panel">
       <div class="feed-header">
-        <h2>🚨 Live Incoming Distress Feed</h2>
+        <h2>Live Incoming Distress Feed</h2>
         <span id="feedCountBadge" style="font-size: 0.8rem; color: var(--text-dim);">Listening for signals...</span>
       </div>
 
       <div id="alertsContainer" class="cards-list">
         <div id="emptyState" class="empty-state">
-          <div class="icon">📡</div>
+          <div class="icon">&#x25CF;</div>
           <h3>Listening for Incoming SOS Dispatches</h3>
           <p>When a citizen connects to the ESP32 Wi-Fi and submits a report or Voice SOS, it will appear here instantaneously.</p>
         </div>
@@ -606,10 +606,10 @@
       const btn = document.getElementById('btnAnnounce');
       if (autoAnnounce) {
         btn.classList.add('active');
-        btn.innerText = '🗣️ Auto Voice Announce: ON';
+        btn.innerText = 'Auto Voice Announce: ON';
       } else {
         btn.classList.remove('active');
-        btn.innerText = '🗣️ Auto Voice Announce: OFF';
+        btn.innerText = 'Auto Voice Announce: OFF';
       }
     }
 
@@ -718,13 +718,13 @@
         voicePlayerHtml = `
           <div class="voice-player-container">
             <div class="voice-player-header">
-              <span>🎙️ EMERGENCY VOICE AUDIO BEACON</span>
+              <span>EMERGENCY VOICE AUDIO BEACON</span>
               <span>${voiceDuration ? voiceDuration + 's audio note' : 'Audio Attached'}</span>
             </div>
             <audio id="audio-${alertId}" src="${data.voice_note}" preload="metadata"></audio>
             <div class="voice-player-controls">
               <button type="button" id="playBtn-${alertId}" class="btn-play-voice" onclick="togglePlayVoice('${alertId}')">
-                ▶️ Play Audio
+                ▶ Play Audio
               </button>
               <div class="audio-waveform-bars" id="eq-${alertId}">
                 <span class="eq-bar"></span>
@@ -743,34 +743,34 @@
       card.innerHTML = `
         <div class="alert-top">
           <div class="victim-title">
-            <span>👤 ${escapeHtml(name)}</span>
+            <span>${escapeHtml(name)}</span>
             <span class="type-badge badge-${typeClean}">${escapeHtml(type)}</span>
-            ${hasVoice ? '<span class="voice-tag-badge">🎙️ VOICE SOS</span>' : ''}
+            ${hasVoice ? '<span class="voice-tag-badge">VOICE SOS</span>' : ''}
           </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">🕒 ${time}</span>
+          <span style="font-size:0.75rem; color:var(--text-dim);">${time}</span>
         </div>
 
         <div style="background:rgba(16, 185, 129, 0.15); border:1px solid #10b981; border-radius:6px; padding:6px 10px; margin-bottom:10px; font-size:0.8rem; display:flex; justify-content:space-between; align-items:center;">
-          <span>📡 <strong>Ingress Node:</strong> ${escapeHtml(beaconId)}</span>
-          <span style="color:#10b981; font-weight:700;">📍 GPS Locked (${lat.toFixed(4)}, ${lng.toFixed(4)})</span>
+          <span><strong>Ingress Node:</strong> ${escapeHtml(beaconId)}</span>
+          <span style="color:#10b981; font-weight:700;">GPS Locked (${lat.toFixed(4)}, ${lng.toFixed(4)})</span>
         </div>
 
         <div class="meta-grid">
           <div class="meta-item">
             <strong>Contact Phone</strong>
-            <span>📞 ${escapeHtml(phone)}</span>
+            <span>${escapeHtml(phone)}</span>
           </div>
           <div class="meta-item">
             <strong>GPS Coordinates</strong>
-            <span>📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}</span>
+            <span>${lat.toFixed(6)}, ${lng.toFixed(6)}</span>
           </div>
           <div class="meta-item">
             <strong>Blood Group</strong>
-            <span>🩸 ${escapeHtml(blood)}</span>
+            <span>${escapeHtml(blood)}</span>
           </div>
           <div class="meta-item">
             <strong>Victim Age</strong>
-            <span>🎂 ${escapeHtml(age)}</span>
+            <span>${escapeHtml(age)}</span>
           </div>
         </div>
 
@@ -782,9 +782,9 @@
         </div>
 
         <div class="card-actions">
-          <a href="${mapUrl}" target="_blank" class="btn-action btn-maps">🗺️ Open Map Location</a>
-          <a href="tel:${phone}" class="btn-action btn-call">📞 Call Victim</a>
-          <button class="btn-action btn-tts" onclick="speakSingleCard('${escapeHtml(name)}', '${escapeHtml(type)}', '${escapeHtml(notes)}')">🗣️ Read Aloud</button>
+          <a href="${mapUrl}" target="_blank" class="btn-action btn-maps">Open Map Location</a>
+          <a href="tel:${phone}" class="btn-action btn-call">Call Victim</a>
+          <button class="btn-action btn-tts" onclick="speakSingleCard('${escapeHtml(name)}', '${escapeHtml(type)}', '${escapeHtml(notes)}')">Read Aloud</button>
           <button class="btn-action btn-resolve" onclick="markResolved('${card.id}')">✓ Mark Handled</button>
         </div>
       `;
@@ -814,7 +814,7 @@
       });
 
       audio.addEventListener('ended', () => {
-        playBtn.innerHTML = '▶️ Play Audio';
+        playBtn.innerHTML = '▶ Play Audio';
         eq.classList.remove('playing');
         seek.value = 0;
       });
@@ -836,11 +836,11 @@
           if (a !== audio) a.pause();
         });
         audio.play();
-        playBtn.innerHTML = '⏸️ Pause';
+        playBtn.innerHTML = 'Pause';
         eq.classList.add('playing');
       } else {
         audio.pause();
-        playBtn.innerHTML = '▶️ Play Audio';
+        playBtn.innerHTML = '▶ Play Audio';
         eq.classList.remove('playing');
       }
     }

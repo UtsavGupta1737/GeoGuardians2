@@ -254,7 +254,7 @@ require_once __DIR__ . '/sidebar.php';
                 <div class="space-y-1.5">
                     <div class="flex items-center gap-2.5">
                         <span class="w-9 h-9 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 font-black text-base shadow-2xs">
-                            🤝
+                            <i class="fa-solid fa-hand-holding-heart"></i>
                         </span>
                         <div>
                             <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 mono">NGO &amp; Volunteer Response Corps</span>
@@ -706,9 +706,9 @@ require_once __DIR__ . '/sidebar.php';
             <div>
                 <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Broadcast Target Scope *</label>
                 <select name="target_type" id="broadcastTargetType" onchange="toggleBroadcastTargetFields(this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-[#1d63d8]">
-                    <option value="ALL">🌐 Broadcast to ALL Registered Volunteers</option>
-                    <option value="TEAM">👥 Broadcast to a Specific Response Team</option>
-                    <option value="VOLUNTEER">👤 Direct Radio Dispatch to a Specific Volunteer</option>
+                    <option value="ALL">Broadcast to ALL Registered Volunteers</option>
+                    <option value="TEAM">Broadcast to a Specific Response Team</option>
+                    <option value="VOLUNTEER">Direct Radio Dispatch to a Specific Volunteer</option>
                 </select>
             </div>
 
@@ -738,9 +738,9 @@ require_once __DIR__ . '/sidebar.php';
                 <div>
                     <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Priority Level *</label>
                     <select name="priority" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-[#1d63d8]">
-                        <option value="Critical Emergency">🚨 Critical Emergency</option>
-                        <option value="High Priority" selected>⚡ High Priority Directive</option>
-                        <option value="General Advisory">ℹ️ General Advisory</option>
+                        <option value="Critical Emergency">Critical Emergency</option>
+                        <option value="High Priority" selected>High Priority Directive</option>
+                        <option value="General Advisory">General Advisory</option>
                     </select>
                 </div>
                 <div>

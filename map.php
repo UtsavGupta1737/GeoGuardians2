@@ -112,19 +112,19 @@ require_once __DIR__ . '/sidebar.php';
                 </div>
                 <div class="space-y-1.5 text-xs">
                     <button type="button" onclick="flyToLocation(28.6050, 77.2950, 15)" class="w-full p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-left flex items-center justify-between text-slate-700 hover:text-slate-900 transition-colors cursor-pointer">
-                        <span>🌊 Mayur Vihar Floodplain</span>
+                        <span>Mayur Vihar Floodplain</span>
                         <span class="text-[9px] font-bold text-red-600 mono">Critical SOS</span>
                     </button>
                     <button type="button" onclick="flyToLocation(28.6750, 77.3650, 15)" class="w-full p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-left flex items-center justify-between text-slate-700 hover:text-slate-900 transition-colors cursor-pointer">
-                        <span>🔥 Sahibabad Hazmat Blaze</span>
+                        <span>Sahibabad Hazmat Blaze</span>
                         <span class="text-[9px] font-bold text-orange-600 mono">Fire Squad</span>
                     </button>
                     <button type="button" onclick="flyToLocation(28.4950, 77.0890, 15)" class="w-full p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-left flex items-center justify-between text-slate-700 hover:text-slate-900 transition-colors cursor-pointer">
-                        <span>🚗 Gurugram Underpass</span>
+                        <span>Gurugram Underpass</span>
                         <span class="text-[9px] font-bold text-blue-600 mono">Water Rescue</span>
                     </button>
                     <button type="button" onclick="flyToLocation(28.5672, 77.2100, 15)" class="w-full p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-left flex items-center justify-between text-slate-700 hover:text-slate-900 transition-colors cursor-pointer">
-                        <span>🏥 AIIMS Trauma Center</span>
+                        <span>AIIMS Trauma Center</span>
                         <span class="text-[9px] font-bold text-emerald-600 mono">38 Beds Open</span>
                     </button>
                 </div>
@@ -214,13 +214,13 @@ document.addEventListener('DOMContentLoaded', () => {
             .bindPopup(`
                 <div style="color:#0f172a; font-family:'Inter', sans-serif; font-size:12px; min-width:220px; line-height:1.4;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <strong style="color:#dc2626; font-size:12px; font-weight:800;">🚨 SOS DISTRESS BEACON</strong>
+                        <strong style="color:#dc2626; font-size:12px; font-weight:800;">SOS DISTRESS BEACON</strong>
                         <span style="font-size:10px; background:#fee2e2; color:#991b1b; padding:1px 5px; border-radius:0; font-weight:700;">${(sos.priority || 'CRITICAL').toUpperCase()}</span>
                     </div>
                     <b style="font-size:13px; color:#1e293b;">${sos.sender_name}</b><br/>
                     <span style="color:#1d63d8; font-weight:700;">${sos.emergency_type}</span> • <span style="color:#64748b;">${sos.persons_count || '1 - 4'} Persons</span><br/>
                     <p style="margin:4px 0; color:#334155; font-family:monospace; font-size:11px;"><b>GPS:</b> ${Number(sos.gps_lat).toFixed(4)}°, ${Number(sos.gps_lng).toFixed(4)}°</p>
-                    ${sos.dispatch_agency ? `<p style="margin:2px 0; color:#0369a1; font-weight:700; font-size:11px;">🛡️ Assigned: ${sos.dispatch_agency}</p>` : ''}
+                    ${sos.dispatch_agency ? `<p style="margin:2px 0; color:#0369a1; font-weight:700; font-size:11px;">Assigned: ${sos.dispatch_agency}</p>` : ''}
                     ${sos.message ? `<p style="margin:0 0 6px; color:#64748b; font-size:11px;"><i>${sos.message}</i></p>` : ''}
                     <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:6px;">
                         <span style="color:#dc2626; font-weight:700;">Blood: ${sos.blood_type || 'Unknown'}</span>
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).addTo(layerPolice)
         .bindPopup(`
             <div style="color:#0f172a; font-family:'Inter', sans-serif; font-size:12px; min-width:180px;">
-                <strong style="color:#2563eb; font-size:12px;">🚓 ${p.callsign}</strong><br/>
+                <strong style="color:#2563eb; font-size:12px;">${p.callsign}</strong><br/>
                 <b>Mission:</b> ${p.mission}<br/>
                 <span>Officers: <b>${p.officers} On-Duty</b></span><br/>
                 <span style="color:#64748b; font-size:10px;">Radio: ${p.radio}</span>
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).addTo(layerFire)
         .bindPopup(`
             <div style="color:#0f172a; font-family:'Inter', sans-serif; font-size:12px; min-width:180px;">
-                <strong style="color:#dc2626; font-size:12px;">🚒 ${f.callsign}</strong><br/>
+                <strong style="color:#dc2626; font-size:12px;">${f.callsign}</strong><br/>
                 <b>Mission:</b> ${f.mission}<br/>
                 <span>Tenders Active: <b>${f.tenders} Units</b></span>
             </div>
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).addTo(layerEms)
         .bindPopup(`
             <div style="color:#0f172a; font-family:'Inter', sans-serif; font-size:12px; min-width:180px;">
-                <strong style="color:#0d9488; font-size:12px;">🚑 ${e.callsign}</strong><br/>
+                <strong style="color:#0d9488; font-size:12px;">${e.callsign}</strong><br/>
                 <b>Status:</b> ${e.status}<br/>
                 <span>Equipment: <b>${e.beds}</b></span>
             </div>
@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).addTo(layerCamps)
         .bindPopup(`
             <div style="color:#0f172a; font-family:'Inter', sans-serif; font-size:12px; min-width:190px;">
-                <strong style="color:${color}; font-size:12px;">${isHosp ? '🏥 Hospital' : '🏕️ Relief Shelter'}</strong><br/>
+                <strong style="color:${color}; font-size:12px;">${isHosp ? 'Hospital' : 'Relief Shelter'}</strong><br/>
                 <b>${fac.name}</b><br/>
                 <span style="color:#1e293b; font-weight:700;">Capacity: ${fac.capacity}</span><br/>
                 <span style="color:#64748b; font-size:10px;">Emergency triage & food distribution operational</span>
