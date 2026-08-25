@@ -140,7 +140,7 @@ require_once __DIR__ . '/sidebar.php';
                     <span class="flex items-center gap-1.5 font-medium whitespace-nowrap"><i class="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></i> Police Squad</span>
                     <span class="flex items-center gap-1.5 font-medium whitespace-nowrap"><i class="w-2.5 h-2.5 rounded-full bg-red-600 inline-block"></i> Fire Unit</span>
                     <span class="flex items-center gap-1.5 font-medium whitespace-nowrap"><i class="w-2.5 h-2.5 rounded-full bg-teal-600 inline-block"></i> Ambulance</span>
-                    <span class="flex items-center gap-1.5 font-medium whitespace-nowrap"><i class="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></i> Hospital</span>
+                    <span class="flex items-center gap-1.5 font-medium whitespace-nowrap"><i class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></i> Hospital</span>
                     <span class="flex items-center gap-1.5 font-medium whitespace-nowrap"><i class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></i> Relief Camp</span>
                 </div>
                 <div class="text-[11px] font-mono text-slate-400 hidden md:block whitespace-nowrap">
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="color:#0f172a; font-family:'Inter', sans-serif; font-size:12px; min-width:220px; line-height:1.4;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                         <strong style="color:#dc2626; font-size:12px; font-weight:800;">🚨 SOS DISTRESS BEACON</strong>
-                        <span style="font-size:10px; background:#fee2e2; color:#991b1b; padding:1px 5px; border-radius:4px; font-weight:700;">${(sos.priority || 'CRITICAL').toUpperCase()}</span>
+                        <span style="font-size:10px; background:#fee2e2; color:#991b1b; padding:1px 5px; border-radius:0; font-weight:700;">${(sos.priority || 'CRITICAL').toUpperCase()}</span>
                     </div>
                     <b style="font-size:13px; color:#1e293b;">${sos.sender_name}</b><br/>
                     <span style="color:#1d63d8; font-weight:700;">${sos.emergency_type}</span> • <span style="color:#64748b;">${sos.persons_count || '1 - 4'} Persons</span><br/>
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${sos.message ? `<p style="margin:0 0 6px; color:#64748b; font-size:11px;"><i>${sos.message}</i></p>` : ''}
                     <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:6px;">
                         <span style="color:#dc2626; font-weight:700;">Blood: ${sos.blood_type || 'Unknown'}</span>
-                        <a href="sos.php?id=${sos.id}" style="background:#1d63d8; color:#fff; text-decoration:none; padding:3px 8px; border-radius:6px; font-size:10px; font-weight:700;">Triage Dossier →</a>
+                        <a href="sos.php?id=${sos.id}" style="background:#1d63d8; color:#fff; text-decoration:none; padding:3px 8px; border-radius:0; font-size:10px; font-weight:700;">Triage Dossier →</a>
                     </div>
                 </div>
             `);
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     facilities.forEach(fac => {
         const isHosp = fac.type === 'hospital';
-        const color = isHosp ? '#16a34a' : '#eab308';
+        const color = isHosp ? '#00FF00' : '#eab308';
         L.circleMarker([fac.lat, fac.lng], {
             radius: 8,
             fillColor: color,

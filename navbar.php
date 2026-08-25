@@ -26,11 +26,11 @@ $currentScript = basename($_SERVER['PHP_SELF']);
 
             <!-- Command Center Context Title -->
             <div class="flex items-center gap-2.5">
-                <div class="h-5 w-1.5 rounded-full bg-[#1d63d8] hidden sm:block"></div>
+                <div class="h-5 w-1.5 bg-[var(--role-primary)] hidden sm:block"></div>
                 <h1 class="text-sm sm:text-base font-black text-slate-900 tracking-tight">
                     <?= htmlspecialchars(PAGE_TITLE) ?>
                 </h1>
-                <span class="text-[10px] font-extrabold text-[#1d63d8] uppercase tracking-wider hidden md:inline ml-1 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 mono">
+                <span class="text-[10px] font-extrabold text-[var(--role-primary)] uppercase tracking-wider hidden md:inline ml-1 px-2.5 py-0.5 bg-[var(--role-accent-bg)] border border-[var(--role-accent-border)] mono">
                     Live Ops
                 </span>
             </div>
@@ -97,19 +97,19 @@ $currentScript = basename($_SERVER['PHP_SELF']);
             <!-- Quick Switch Demo Role Dropdown -->
             <div class="relative" id="demoAccountsWrapper">
                 <button type="button" onclick="document.getElementById('demoSwitchMenu').classList.toggle('hidden')" 
-                        class="px-3 py-1.5 text-xs font-bold bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-blue-300 rounded-xl text-slate-800 flex items-center gap-2 transition-all shadow-2xs cursor-pointer">
-                    <i class="fa-solid fa-users-viewfinder text-[#1d63d8]"></i>
+                        class="px-3 py-1.5 text-xs font-bold bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-[var(--role-accent-border)] text-slate-800 flex items-center gap-2 transition-all cursor-pointer">
+                    <i class="fa-solid fa-users-viewfinder text-[var(--role-primary)]"></i>
                     <span class="hidden md:inline">Role Switcher</span>
                     <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                 </button>
-                <div id="demoSwitchMenu" class="hidden absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-slate-200 shadow-2xl p-2 z-50">
+                <div id="demoSwitchMenu" class="hidden absolute right-0 mt-2 w-64 bg-white border border-slate-200 shadow-xl p-2 z-50">
                     <div class="px-3 py-2 text-[11px] font-extrabold text-blue-800 uppercase tracking-wider border-b border-slate-100 mono flex items-center justify-between">
                         <span>Demo Accounts (7 Roles)</span>
                         <i class="fa-solid fa-bolt text-amber-500"></i>
                     </div>
                     <div class="space-y-1 mt-1 max-h-80 overflow-y-auto">
-                        <a href="login.php?quick_login=superadmin@system.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-purple-50 hover:text-purple-900 rounded-xl transition-colors">
-                            <div class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 border border-purple-200 flex items-center justify-center font-bold text-xs shrink-0">
+                        <a href="login.php?quick_login=superadmin@system.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-purple-50 hover:text-purple-900 transition-colors">
+                            <div class="w-7 h-7 bg-purple-50 text-purple-600 border border-purple-200 flex items-center justify-center font-bold text-xs shrink-0">
                                 <i class="fa-solid fa-crown"></i>
                             </div>
                             <div>
@@ -117,8 +117,8 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                                 <p class="text-[10px] text-slate-500">Supreme Commander</p>
                             </div>
                         </a>
-                        <a href="login.php?quick_login=ndrf.commander@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-orange-50 hover:text-orange-900 rounded-xl transition-colors">
-                            <div class="w-7 h-7 rounded-lg bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center font-bold text-xs shrink-0">
+                        <a href="login.php?quick_login=ndrf.commander@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-orange-50 hover:text-orange-900 transition-colors">
+                            <div class="w-7 h-7 bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center font-bold text-xs shrink-0">
                                 <i class="fa-solid fa-truck-monster"></i>
                             </div>
                             <div>
@@ -126,8 +126,8 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                                 <p class="text-[10px] text-slate-500">Tactical Crisis Response</p>
                             </div>
                         </a>
-                        <a href="login.php?quick_login=police.command@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-900 rounded-xl transition-colors">
-                            <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center font-bold text-xs shrink-0">
+                        <a href="login.php?quick_login=police.command@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-900 transition-colors">
+                            <div class="w-7 h-7 bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center font-bold text-xs shrink-0">
                                 <i class="fa-solid fa-person-military-pointing"></i>
                             </div>
                             <div>
@@ -135,8 +135,8 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                                 <p class="text-[10px] text-slate-500">Perimeter & Deployments</p>
                             </div>
                         </a>
-                        <a href="login.php?quick_login=fire.chief@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-red-50 hover:text-red-900 rounded-xl transition-colors">
-                            <div class="w-7 h-7 rounded-lg bg-red-50 text-red-600 border border-red-200 flex items-center justify-center font-bold text-xs shrink-0">
+                        <a href="login.php?quick_login=fire.chief@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-red-50 hover:text-red-900 transition-colors">
+                            <div class="w-7 h-7 bg-red-50 text-red-600 border border-red-200 flex items-center justify-center font-bold text-xs shrink-0">
                                 <i class="fa-solid fa-fire-extinguisher"></i>
                             </div>
                             <div>
@@ -144,8 +144,8 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                                 <p class="text-[10px] text-slate-500">Fire Suppression & Hazmat</p>
                             </div>
                         </a>
-                        <a href="login.php?quick_login=medical.dir@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-teal-50 hover:text-teal-900 rounded-xl transition-colors">
-                            <div class="w-7 h-7 rounded-lg bg-teal-50 text-teal-600 border border-teal-200 flex items-center justify-center font-bold text-xs shrink-0">
+                        <a href="login.php?quick_login=medical.dir@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-teal-50 hover:text-teal-900 transition-colors">
+                            <div class="w-7 h-7 bg-teal-50 text-teal-600 border border-teal-200 flex items-center justify-center font-bold text-xs shrink-0">
                                 <i class="fa-solid fa-truck-medical"></i>
                             </div>
                             <div>
@@ -153,8 +153,8 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                                 <p class="text-[10px] text-slate-500">Hospital ICU & Ambulances</p>
                             </div>
                         </a>
-                        <a href="login.php?quick_login=volunteer@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-900 rounded-xl transition-colors">
-                            <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center font-bold text-xs shrink-0">
+                        <a href="login.php?quick_login=volunteer@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-900 transition-colors">
+                            <div class="w-7 h-7 bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center font-bold text-xs shrink-0">
                                 <i class="fa-solid fa-hand-holding-heart"></i>
                             </div>
                             <div>
@@ -162,8 +162,8 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                                 <p class="text-[10px] text-slate-500">Field Missions & Aid</p>
                             </div>
                         </a>
-                        <a href="login.php?quick_login=citizen@example.com" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-amber-50 hover:text-amber-900 rounded-xl transition-colors">
-                            <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center font-bold text-xs shrink-0">
+                        <a href="login.php?quick_login=citizen@example.com" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-amber-50 hover:text-amber-900 transition-colors">
+                            <div class="w-7 h-7 bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center font-bold text-xs shrink-0">
                                 <i class="fa-solid fa-person-shelter"></i>
                             </div>
                             <div>
@@ -178,25 +178,25 @@ $currentScript = basename($_SERVER['PHP_SELF']);
             <!-- User Profile Avatar & Menu Dropdown -->
             <div class="relative">
                 <button type="button" onclick="document.getElementById('userMenu').classList.toggle('hidden')" 
-                        class="flex items-center gap-2.5 p-1 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors focus:outline-none cursor-pointer">
+                        class="flex items-center gap-2.5 p-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors focus:outline-none cursor-pointer">
                     <img src="<?= htmlspecialchars($currentUser['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($currentUser['name'] ?? 'User') . '&background=1d63d8&color=fff') ?>" 
-                         alt="Avatar" class="w-8 h-8 rounded-xl object-cover border border-slate-200">
+                         alt="Avatar" class="w-8 h-8 object-cover border border-slate-200">
                     <span class="text-xs font-extrabold text-slate-900 hidden lg:inline mr-1">
                         <?= htmlspecialchars(explode(' ', $currentUser['name'] ?? 'User')[0]) ?>
                     </span>
                     <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 mr-1 hidden lg:inline"></i>
                 </button>
 
-                <div id="userMenu" class="hidden absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-2xl p-2 z-50 space-y-1">
+                <div id="userMenu" class="hidden absolute right-0 mt-2 w-56 bg-white border border-slate-200 shadow-xl p-2 z-50 space-y-1">
                     <div class="px-3 py-2 border-b border-slate-100">
                         <p class="text-xs font-extrabold text-slate-900 truncate"><?= htmlspecialchars($currentUser['name'] ?? 'User') ?></p>
                         <p class="text-[10px] text-slate-500 font-mono truncate"><?= htmlspecialchars($currentUser['email'] ?? '') ?></p>
                     </div>
-                    <a href="profile.php" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[#1d63d8] rounded-xl transition-colors">
+                    <a href="profile.php" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[var(--role-primary)] transition-colors">
                         <i class="fa-solid fa-user-gear text-slate-400"></i>
                         <span>Account Profile</span>
                     </a>
-                    <a href="logout.php" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+                    <a href="logout.php" class="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i>
                         <span>Sign Out</span>
                     </a>

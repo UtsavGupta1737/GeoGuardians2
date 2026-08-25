@@ -3,9 +3,10 @@
 if (!defined('PAGE_TITLE')) {
     define('PAGE_TITLE', 'Command Center');
 }
+$_roleSlug = $_SESSION['user_role'] ?? 'superadmin';
 ?>
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#f8fafc] text-slate-900">
+<html lang="en" class="h-full bg-[#f8fafc] text-slate-900" data-role="<?= htmlspecialchars($_roleSlug) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,17 +37,17 @@ if (!defined('PAGE_TITLE')) {
                             600: '#94a3b8'
                         },
                         brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
+                            50: 'var(--role-accent-bg)',
+                            100: 'var(--role-accent-bg)',
+                            500: 'var(--role-primary)',
+                            600: 'var(--role-primary)',
+                            700: 'var(--role-primary)',
+                            800: 'var(--role-deep)',
+                            900: 'var(--role-deep)',
                         },
                         gov: {
-                            blue: '#1d63d8',
-                            navy: '#0f2942',
+                            blue: 'var(--role-primary)',
+                            navy: 'var(--role-deep)',
                             red: '#dc2626',
                             amber: '#d97706',
                             green: '#16a34a'
@@ -57,6 +58,13 @@ if (!defined('PAGE_TITLE')) {
                             amber: '#d97706',
                             emerald: '#16a34a',
                             blue: '#2563eb'
+                        },
+                        role: {
+                            primary: 'var(--role-primary)',
+                            deep: 'var(--role-deep)',
+                            light: 'var(--role-accent-bg)',
+                            muted: 'var(--role-accent-muted)',
+                            accent: 'var(--role-accent-border)',
                         }
                     },
                     fontFamily: {
@@ -76,10 +84,21 @@ if (!defined('PAGE_TITLE')) {
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     
     <style>
+        /* ================================================================
+           GLOBAL SHARP EDGE GEOMETRY - ZERO RADIUS ENFORCEMENT
+           ================================================================ */
+        *, *::before, *::after {
+            border-radius: 0 !important;
+        }
+
+        /* ================================================================
+           ROLE-BASED THEME PALETTE SYSTEM
+           Each role gets its own set of CSS variables injected via [data-role]
+           ================================================================ */
         :root {
             --surface: #f8fafc;
             --panel: #ffffff;
-            --border: #e2e8f0;
+            --border-color: #e2e8f0;
             --border-accent: #cbd5e1;
             --primary-accent: #1d63d8;
             --emerald-accent: #16a34a;
@@ -88,12 +107,108 @@ if (!defined('PAGE_TITLE')) {
             --muted: #64748b;
             --font-sans: 'Inter', system-ui, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* Default Role Variables (Super Admin Blue) */
+            --role-primary: #1d63d8;
+            --role-primary-hover: #1553c7;
+            --role-deep: #152238;
+            --role-accent-bg: #CDEBFE;
+            --role-accent-muted: #0073E6;
+            --role-accent-border: #0047AB;
+            --role-gradient-from: #0047AB;
+            --role-gradient-to: #0073E6;
         }
+
+        /* --- SUPER ADMIN: Pure White + Blue Shades --- */
+        [data-role="superadmin"] {
+            --role-primary: #1d63d8;
+            --role-primary-hover: #1553c7;
+            --role-deep: #152238;
+            --role-accent-bg: #CDEBFE;
+            --role-accent-muted: #0073E6;
+            --role-accent-border: #0047AB;
+            --role-gradient-from: #0047AB;
+            --role-gradient-to: #0073E6;
+        }
+
+        /* --- NDRF FORCE: Combat Fatigue / Olive Green / Khaki / Camo --- */
+        [data-role="ndrf"] {
+            --role-primary: #556B2F;
+            --role-primary-hover: #4a5c28;
+            --role-deep: #2d3a18;
+            --role-accent-bg: #E6EFDB;
+            --role-accent-muted: #6B8E23;
+            --role-accent-border: #8B7355;
+            --role-gradient-from: #556B2F;
+            --role-gradient-to: #6B8E23;
+        }
+
+        /* --- POLICE COMMAND: Indian Police Khaki + Deep Police Blue --- */
+        [data-role="police"] {
+            --role-primary: #001F5B;
+            --role-primary-hover: #001745;
+            --role-deep: #000F33;
+            --role-accent-bg: #E6DBCF;
+            --role-accent-muted: #A08060;
+            --role-accent-border: #C3A381;
+            --role-gradient-from: #001F5B;
+            --role-gradient-to: #C3A381;
+        }
+
+        /* --- FIRE & RESCUE: Fire Red / Scarlet / High-Vis Orange --- */
+        [data-role="fire"] {
+            --role-primary: #CE2029;
+            --role-primary-hover: #b51c24;
+            --role-deep: #7F171F;
+            --role-accent-bg: #EFDECD;
+            --role-accent-muted: #FF4500;
+            --role-accent-border: #CE2029;
+            --role-gradient-from: #CE2029;
+            --role-gradient-to: #FF4500;
+        }
+
+        /* --- MEDICAL HUB: Hospital Green / Teal / Soft Mint --- */
+        [data-role="medical"] {
+            --role-primary: #008080;
+            --role-primary-hover: #006666;
+            --role-deep: #004D4D;
+            --role-accent-bg: #E6FAF1;
+            --role-accent-muted: #3EB489;
+            --role-accent-border: #008080;
+            --role-gradient-from: #004D4D;
+            --role-gradient-to: #3EB489;
+        }
+
+        /* --- VOLUNTEERS: Pumpkin Orange / Amber / Soft Peach --- */
+        [data-role="volunteer"] {
+            --role-primary: #FF6700;
+            --role-primary-hover: #e65c00;
+            --role-deep: #8B4513;
+            --role-accent-bg: #FFF5EC;
+            --role-accent-muted: #FBB917;
+            --role-accent-border: #FF6700;
+            --role-gradient-from: #8B4513;
+            --role-gradient-to: #FF6700;
+        }
+
+        /* --- CITIZEN (User): Neutral Slate --- */
+        [data-role="user"] {
+            --role-primary: #475569;
+            --role-primary-hover: #334155;
+            --role-deep: #1e293b;
+            --role-accent-bg: #f1f5f9;
+            --role-accent-muted: #94a3b8;
+            --role-accent-border: #cbd5e1;
+            --role-gradient-from: #334155;
+            --role-gradient-to: #64748b;
+        }
+
         body {
             font-family: var(--font-sans);
             background: #f8fafc;
             color: #0f172a;
         }
+
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -103,37 +218,33 @@ if (!defined('PAGE_TITLE')) {
         }
         ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
-            border-radius: 6px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
-        
-        /* Top Sovereign Accent Line */
+
+        /* Top Sovereign Accent Line - Role-Aware Gradient */
         .top-accent-line {
             height: 3px;
-            background: linear-gradient(90deg, #1d63d8 0%, #0284c7 35%, #059669 70%, #d97706 100%);
+            background: linear-gradient(90deg, var(--role-gradient-from) 0%, var(--role-primary) 35%, var(--role-accent-muted) 70%, var(--role-accent-border) 100%);
             width: 100%;
         }
 
         .glass-panel {
             background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
         }
-        
+
         .stat-card-accent {
             background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-top: 3px solid #1d63d8;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--role-primary);
             transition: all 0.2s ease;
         }
         .stat-card-accent:hover {
             transform: translateY(-2px);
-            border-color: #cbd5e1;
-            border-top-color: #1d63d8;
-            box-shadow: 0 8px 16px -4px rgba(29, 99, 216, 0.12);
+            border-color: var(--border-accent);
+            border-top-color: var(--role-primary);
         }
 
         .accent-card-red {
@@ -155,7 +266,6 @@ if (!defined('PAGE_TITLE')) {
         .live-dot {
             width: 8px;
             height: 8px;
-            border-radius: 50%;
             background: #ba1a1a;
             display: inline-block;
             box-shadow: 0 0 8px rgba(186, 26, 26, 0.5);
@@ -166,24 +276,67 @@ if (!defined('PAGE_TITLE')) {
             50% { transform: scale(1.25); opacity: 1; box-shadow: 0 0 12px rgba(186, 26, 26, 0.8); }
             100% { transform: scale(0.95); opacity: 0.8; }
         }
+
+        /* SOS Citizen Distress Marker - Strict RED #FF0000 */
         .radar-pulse-marker {
             width: 26px;
             height: 26px;
-            background: radial-gradient(circle, #ef4444, #991b1b);
-            border-radius: 50%;
+            background: #FF0000;
             display: grid;
             place-items: center;
             color: white;
             font-weight: 900;
             font-size: 12px;
             border: 2px solid #ffffff;
-            box-shadow: 0 0 0 rgba(239, 68, 68, 0.8);
+            box-shadow: 0 0 0 rgba(255, 0, 0, 0.8);
             animation: pulseRadar 1.5s infinite;
         }
         @keyframes pulseRadar {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.9); }
-            70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.9); }
+            70% { box-shadow: 0 0 0 20px rgba(255, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+        }
+
+        /* Medical Sign Marker - Strict GREEN #00FF00 */
+        .medical-sign-marker {
+            width: 30px;
+            height: 30px;
+            background: #00FF00;
+            display: grid;
+            place-items: center;
+            color: #004D00;
+            font-weight: 900;
+            font-size: 14px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 0 rgba(0, 255, 0, 0.6);
+            animation: pulseMedical 2s infinite;
+        }
+        @keyframes pulseMedical {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
+            70% { box-shadow: 0 0 0 14px rgba(0, 255, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+        }
+
+        /* ================================================================
+           LEAFLET MAP OVERRIDES - Sharp 90-degree corners, clean borders
+           ================================================================ */
+        .leaflet-popup-content-wrapper {
+            border-radius: 0 !important;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+        }
+        .leaflet-popup-tip {
+            border-radius: 0 !important;
+        }
+        .leaflet-control-zoom a {
+            border-radius: 0 !important;
+        }
+        .leaflet-control-layers {
+            border-radius: 0 !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        .leaflet-control-attribution {
+            border-radius: 0 !important;
         }
 
         /* Smooth Sliding Sidebar Drawer Styles */
@@ -192,7 +345,7 @@ if (!defined('PAGE_TITLE')) {
         }
         body.sidebar-collapsed #main-sidebar {
             transform: translateX(-100%);
-            margin-left: -18rem; /* Collapses 72 Tailwind width */
+            margin-left: -18rem;
         }
         @media (max-width: 1023px) {
             body.sidebar-collapsed #main-sidebar {

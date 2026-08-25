@@ -1,13 +1,23 @@
-/* assets/css/fire_cad.css - Tactical Dark Mode & Animation Styles for Fire & Rescue CAD */
+/* assets/css/fire_cad.css - Tactical Sharp Mode & Animation Styles for Fire & Rescue CAD */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap');
 
+*, *::before, *::after {
+    border-radius: 0 !important;
+}
+
 :root {
-    --flame-red: #e11d48;
-    --flame-amber: #f59e0b;
+    --flame-red: #CE2029;
+    --flame-amber: #FF4500;
     --flame-emerald: #10b981;
     --flame-blue: #0284c7;
-    --bg-tactical: #020617;
+    --bg-tactical: #ffffff;
+    --role-primary: #CE2029;
+    --role-primary-hover: #b51c24;
+    --role-deep: #7F171F;
+    --role-accent-bg: #EFDECD;
+    --role-accent-muted: #FF4500;
+    --role-accent-border: #CE2029;
 }
 
 body {
@@ -18,60 +28,54 @@ body {
     font-family: 'JetBrains Mono', monospace;
 }
 
-/* Custom Scrollbars */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: #090d16;
+    background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-    background: #1e293b;
-    border-radius: 4px;
+    background: #cbd5e1;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: #94a3b8;
 }
 
-/* Active Pulsing Flame Marker */
 .fire-pulse-marker {
     width: 32px;
     height: 32px;
-    background: radial-gradient(circle, #e11d48, #991b1b);
-    border-radius: 50%;
+    background: radial-gradient(circle, #CE2029, #7F171F);
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
     font-size: 14px;
     border: 2px solid #ffffff;
-    box-shadow: 0 0 0 rgba(225, 29, 72, 0.8);
+    box-shadow: 0 0 0 rgba(206, 32, 41, 0.8);
     animation: firePulse 1.6s infinite;
 }
 
 @keyframes firePulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.9);
+        box-shadow: 0 0 0 0 rgba(206, 32, 41, 0.9);
         transform: scale(0.95);
     }
     70% {
-        box-shadow: 0 0 0 24px rgba(225, 29, 72, 0);
+        box-shadow: 0 0 0 24px rgba(206, 32, 41, 0);
         transform: scale(1.15);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(225, 29, 72, 0);
+        box-shadow: 0 0 0 0 rgba(206, 32, 41, 0);
         transform: scale(0.95);
     }
 }
 
-/* Station HQ Marker */
 .station-hq-marker {
     width: 34px;
     height: 34px;
-    background: #0f172a;
+    background: #152238;
     border: 2px solid #38bdf8;
-    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,13 +84,11 @@ body {
     box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
 }
 
-/* Hydrant Marker */
 .hydrant-pin-marker {
     width: 26px;
     height: 26px;
     background: #0284c7;
     border: 2px solid #ffffff;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -95,19 +97,57 @@ body {
     box-shadow: 0 2px 6px rgba(2, 132, 199, 0.4);
 }
 
-/* Apparatus Responding Marker */
+.radar-pulse-marker {
+    width: 26px;
+    height: 26px;
+    background: #FF0000;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-weight: 900;
+    font-size: 12px;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 rgba(255, 0, 0, 0.8);
+    animation: pulseRadar 1.5s infinite;
+}
+
+@keyframes pulseRadar {
+    0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.9); }
+    70% { box-shadow: 0 0 0 20px rgba(255, 0, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+}
+
+.medical-sign-marker {
+    width: 30px;
+    height: 30px;
+    background: #00FF00;
+    display: grid;
+    place-items: center;
+    color: #004D00;
+    font-weight: 900;
+    font-size: 14px;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 rgba(0, 255, 0, 0.6);
+    animation: pulseMedical 2s infinite;
+}
+
+@keyframes pulseMedical {
+    0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
+    70% { box-shadow: 0 0 0 14px rgba(0, 255, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+}
+
 .apparatus-rolling-marker {
     width: 30px;
     height: 30px;
-    background: #d97706;
+    background: #FF4500;
     border: 2px solid #ffffff;
-    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
     font-size: 13px;
-    box-shadow: 0 0 10px rgba(217, 119, 6, 0.6);
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.6);
     animation: engineBounce 2s infinite;
 }
 
@@ -116,43 +156,48 @@ body {
     50% { transform: translateY(-4px); }
 }
 
-/* CAD 5-Stage Step Line */
 .cad-step-active {
-    background: linear-gradient(135deg, #e11d48, #be123c);
+    background: linear-gradient(135deg, #CE2029, #b51c24);
     color: #ffffff;
-    box-shadow: 0 0 16px rgba(225, 29, 72, 0.4);
+    box-shadow: 0 0 16px rgba(206, 32, 41, 0.4);
 }
 .cad-step-done {
     background: #10b981;
     color: #ffffff;
 }
 .cad-step-pending {
-    background: #1e293b;
+    background: #e2e8f0;
     color: #64748b;
 }
 
-/* Tactical Panel Glow */
 .tactical-card {
-    background: #090d16;
-    border: 1px solid #1e293b;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     transition: all 0.2s ease;
 }
 .tactical-card:hover {
-    border-color: #334155;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
 }
 
-/* Custom Tactical Leaflet Map Overrides */
 .leaflet-container {
-    background: #020617 !important;
+    background: #f8fafc !important;
 }
 .leaflet-popup-content-wrapper {
-    background: #0f172a !important;
-    color: #f8fafc !important;
-    border: 1px solid #334155 !important;
-    border-radius: 1rem !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6) !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
 }
 .leaflet-popup-tip {
-    background: #0f172a !important;
+    background: #ffffff !important;
+    border-radius: 0 !important;
+}
+.leaflet-control-zoom a {
+    border-radius: 0 !important;
+}
+.leaflet-control-layers {
+    border-radius: 0 !important;
+    border: 1px solid #e2e8f0 !important;
 }

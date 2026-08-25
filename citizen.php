@@ -92,7 +92,7 @@ $facilities = $pdo->query("SELECT * FROM facilities WHERE status != 'Closed'")->
 $flash = getFlash();
 ?>
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#fbf9f5] text-[#1c1917]">
+<html lang="en" class="h-full bg-[#fbf9f5] text-[#1c1917]" data-role="citizen">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -144,6 +144,9 @@ $flash = getFlash();
         }
     </script>
     <style>
+        *, *::before, *::after {
+            border-radius: 0 !important;
+        }
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -698,7 +701,7 @@ $flash = getFlash();
                     let markerColor = '#10b981'; // Green for shelters
                     let iconClass = 'fa-campground';
                     if (f.type === 'Hospital') {
-                        markerColor = '#ef4444';
+                        markerColor = '#00FF00';
                         iconClass = 'fa-hospital';
                     } else if (f.type === 'Fire Station') {
                         markerColor = '#f59e0b';
@@ -710,7 +713,7 @@ $flash = getFlash();
 
                     const customIcon = L.divIcon({
                         className: 'custom-facility-pin',
-                        html: `<div style="background-color:${markerColor}; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; border:2px solid white; box-shadow:0 3px 8px rgba(0,0,0,0.3);"><i class="fa-solid ${iconClass}" style="font-size:13px;"></i></div>`,
+                        html: `<div style="background-color:${markerColor}; width:32px; height:32px; border-radius:0; display:flex; align-items:center; justify-content:center; color:white; border:2px solid white; box-shadow:0 3px 8px rgba(0,0,0,0.3);"><i class="fa-solid ${iconClass}" style="font-size:13px;"></i></div>`,
                         iconSize: [32, 32],
                         iconAnchor: [16, 16]
                     });
@@ -757,7 +760,7 @@ $flash = getFlash();
                         } else {
                             const userIcon = L.divIcon({
                                 className: 'custom-user-pin',
-                                html: `<div style="background-color:#2563eb; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; border:3px solid white; box-shadow:0 0 0 6px rgba(37,99,235,0.4);"><i class="fa-solid fa-user" style="font-size:11px;"></i></div>`,
+                                html: `<div style="background-color:#2563eb; width:28px; height:28px; border-radius:0; display:flex; align-items:center; justify-content:center; color:white; border:3px solid white; box-shadow:0 0 0 6px rgba(37,99,235,0.4);"><i class="fa-solid fa-user" style="font-size:11px;"></i></div>`,
                                 iconSize: [28, 28],
                                 iconAnchor: [14, 14]
                             });

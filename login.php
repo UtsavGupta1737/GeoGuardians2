@@ -77,7 +77,7 @@ $csrfToken = generateCsrfToken();
 $flash = getFlash();
 ?>
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#f8fafc]">
+<html lang="en" class="h-full bg-[#f8fafc]" data-role="superadmin">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

@@ -6,7 +6,7 @@ $userName = $currentUser['name'] ?? ($_SESSION['user_name'] ?? 'Volunteer');
 $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-role="volunteer">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -19,6 +19,9 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
   <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   
   <style>
+    *, *::before, *::after {
+        border-radius: 0 !important;
+    }
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background-color: #f7f9fb;

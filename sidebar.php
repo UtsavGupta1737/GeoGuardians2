@@ -27,11 +27,11 @@ $currentScript = basename($_SERVER['PHP_SELF']);
     <!-- Brand Header & Collapse Drawer Button -->
     <div class="h-16 flex items-center justify-between px-5 border-b border-slate-200 shrink-0 bg-white">
         <a href="dashboard.php" class="flex items-center gap-3 group">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0f172a] to-[#1e3a8a] text-white flex items-center justify-center font-black text-sm shadow-xs group-hover:scale-105 transition-transform shrink-0 border border-slate-700">
-                <i class="fa-solid fa-shield-halved text-sm text-blue-400"></i>
+            <div class="w-9 h-9 bg-gradient-to-br from-[var(--role-gradient-from)] to-[var(--role-gradient-to)] text-white flex items-center justify-center font-black text-sm shrink-0 border border-[var(--role-accent-border)]">
+                <i class="fa-solid fa-shield-halved text-sm"></i>
             </div>
             <div class="min-w-0">
-                <span class="text-base font-black text-slate-900 tracking-tight block truncate">Disaster<span class="text-[#1d63d8]">Safe</span></span>
+                <span class="text-base font-black text-slate-900 tracking-tight block truncate">Disaster<span class="text-[var(--role-primary)]">Safe</span></span>
                 <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider truncate mono">Command Center</span>
             </div>
         </a>
@@ -254,13 +254,13 @@ $currentScript = basename($_SERVER['PHP_SELF']);
 
     <!-- Bottom User Status & Log Out Action -->
     <div class="p-3 border-t border-slate-200 bg-slate-50 shrink-0">
-        <div class="p-2.5 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center justify-between">
+        <div class="p-2.5 bg-white border border-slate-200 flex items-center justify-between">
             <div class="flex items-center gap-2.5 min-w-0">
                 <img src="<?= htmlspecialchars($currentUser['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($currentUser['name'] ?? 'User') . '&background=1d63d8&color=fff') ?>" 
-                     alt="Avatar" class="w-8 h-8 rounded-xl object-cover border border-slate-200 shrink-0">
+                     alt="Avatar" class="w-8 h-8 object-cover border border-slate-200 shrink-0">
                 <div class="min-w-0">
                     <p class="text-xs font-black text-slate-900 truncate"><?= htmlspecialchars($currentUser['name'] ?? 'User') ?></p>
-                    <p class="text-[10px] font-bold text-blue-700 uppercase tracking-wider truncate mono"><?= htmlspecialchars($currentUser['role_name'] ?? 'User') ?></p>
+                    <p class="text-[10px] font-bold text-[var(--role-primary)] uppercase tracking-wider truncate mono"><?= htmlspecialchars($currentUser['role_name'] ?? 'User') ?></p>
                 </div>
             </div>
             <a href="logout.php" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors shrink-0" title="Sign Out">

@@ -24,7 +24,7 @@ $flash = getFlash();
                 background: '#ffffff',
                 color: '#0f172a',
                 customClass: {
-                    popup: 'border border-slate-200 shadow-xl rounded-2xl'
+                    popup: 'border border-slate-200 shadow-xl'
                 },
                 didOpen: (toast) => {
                     toast.addEventListener('mouseenter', Swal.stopTimer)

@@ -28,7 +28,7 @@ $onDutyStaffCount = count(array_filter($firefighters, fn($f) => $f['status'] ===
 $readyHydrantsCount = count(array_filter($hydrants, fn($h) => $h['status'] === 'Operational'));
 ?>
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#020617] text-slate-100">
+<html lang="en" class="h-full bg-[#020617] text-slate-100" data-role="fire">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
