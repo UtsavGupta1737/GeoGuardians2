@@ -1,18 +1,54 @@
 <?php
-// citizen.php - DisasterSafe Citizen Emergency SOS & Crisis Portal (Converted from React to PHP)
+// citizen.php - DisasterSafe Citizen & Victim Emergency Safety Portal (Unified Architecture)
 define('PAGE_TITLE', 'Citizen Emergency & Safety Portal');
 require_once __DIR__ . '/auth.php';
 
+requireLogin();
 $currentUser = getCurrentUser($pdo);
-$userName = $currentUser['name'] ?? 'Citizen';
+
+$userName = $currentUser['name'] ?? ($_SESSION['user_name'] ?? 'Citizen');
 $userPhone = $currentUser['phone'] ?? '+91 98765 43210';
 $userEmail = $currentUser['email'] ?? '';
+$userId = $currentUser['id'] ?? 0;
+$csrfToken = generateCsrfToken();
 
-// Handle Direct POST SOS Submission
-$feedback = null;
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Auto-triage function
+function determineSystemTriage($type, $priority, $persons) {
+    return match($type) {
+        'Fire', 'Gas Leak', 'Industrial Hazard' => [
+            'agency' => 'Fire & Rescue Department',
+            'needs' => 'Thermal Suits, High-Flow Hoses, Smoke Extractors, Oxygen Supply'
+        ],
+        'Medical', 'Mass Casualty', 'Injury' => [
+            'agency' => 'Medical & EMS Department',
+            'needs' => 'Paramedic ALS, Trauma Kits, Stretcher Evacuation, Defibrillator'
+        ],
+        'Flood', 'Structural Collapse', 'Landslide' => [
+            'agency' => 'NDRF Force Command',
+            'needs' => 'Heavy Cutting Gear, Inflatable Boats, Life Jackets, Sonar Detectors'
+        ],
+        'Law Enforcement', 'Perimeter Breach', 'Missing Relative' => [
+            'agency' => 'Police Department',
+            'needs' => 'Perimeter Patrol, Roadblocks, Search Team, Radio Beacon'
+        ],
+        default => [
+            'agency' => 'Volunteer Relief Corps',
+            'needs' => 'First Aid Triage, Dry Rations, Clean Water, Emergency Blankets'
+        ]
+    };
+}
+
+// Handle POST Submissions
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        setFlash('error', 'Invalid security token. Please refresh and retry.');
+        header("Location: citizen.php");
+        exit;
+    }
+
     $action = $_POST['action'] ?? '';
 
+    // 1. BROADCAST EMERGENCY SOS
     if ($action === 'broadcast_sos') {
         $senderName = trim($_POST['sender_name'] ?? $userName);
         $senderPhone = trim($_POST['sender_phone'] ?? $userPhone);
@@ -43,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } catch (Exception $ex) {}
 
             logActivity($pdo, 'CITIZEN_SOS_BROADCAST', "Public SOS #{$sosId} transmitted by {$senderName} [GPS: {$latitude}, {$longitude}] ({$emergencyType})");
-            setFlash('success', "🚨 Emergency distress signal transmitted (SOS #{$sosId})! Auto-assigned to {$dispatchAgency}. Help is en-route.");
+            setFlash('success', "🚨 Emergency distress signal transmitted (SOS #{$sosId})! Auto-assigned to {$dispatchAgency}. Emergency responders have been notified.");
         } catch (Exception $e) {
             setFlash('error', "Failed to broadcast distress signal: " . $e->getMessage());
         }
@@ -52,769 +88,655 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // 2. RESOLVE SOS / CANCEL DISTRESS
     if ($action === 'resolve_sos') {
         $sosId = (int)($_POST['sos_id'] ?? 0);
         if ($sosId > 0) {
             $pdo->prepare("UPDATE emergency_sos SET status = 'Resolved' WHERE id = ?")->execute([$sosId]);
-            logActivity($pdo, 'SOS_RESOLVED_CITIZEN', "SOS #{$sosId} marked resolved by citizen");
-            setFlash('success', "SOS #{$sosId} marked as resolved. Glad you are safe!");
+            logActivity($pdo, 'SOS_RESOLVED_CITIZEN', "SOS #{$sosId} marked resolved by citizen ({$userName})");
+            setFlash('success', "SOS #{$sosId} marked as resolved. We are glad you are safe!");
+        }
+        header("Location: citizen.php");
+        exit;
+    }
+
+    // 3. SEND DIRECT CHAT TO RESPONDER
+    if ($action === 'send_responder_chat') {
+        $sosId = (int)($_POST['sos_id'] ?? 0);
+        $msg = trim($_POST['message'] ?? '');
+        if ($sosId > 0 && !empty($msg)) {
+            $pdo->prepare("
+                INSERT INTO victim_volunteer_chats (sos_id, sender_id, sender_name, sender_role, message)
+                VALUES (?, ?, ?, 'victim', ?)
+            ")->execute([$sosId, $userId, $userName, $msg]);
+            setFlash('success', 'Update sent to your responder team.');
         }
         header("Location: citizen.php");
         exit;
     }
 }
 
-// Fetch active SOS for the logged-in user
-$stmt = $pdo->prepare("SELECT * FROM emergency_sos WHERE sender_phone = ? OR sender_name = ? ORDER BY id DESC LIMIT 1");
-$stmt->execute([$userPhone, $userName]);
-$activeSos = $stmt->fetch();
+// Fetch Active SOS for the logged-in user
+$activeSos = null;
+if (!empty($userPhone) || !empty($userName)) {
+    $stmt = $pdo->prepare("SELECT * FROM emergency_sos WHERE (sender_phone = ? OR sender_name = ?) AND status != 'Resolved' ORDER BY id DESC LIMIT 1");
+    $stmt->execute([$userPhone, $userName]);
+    $activeSos = $stmt->fetch();
+}
 
-// Fetch reports history
+// Fetch History of Previous SOS Reports
 $userReports = [];
 if (!empty($userPhone) || !empty($userName)) {
-    $stmt = $pdo->prepare("SELECT * FROM emergency_sos WHERE sender_phone = ? OR sender_name = ? ORDER BY id DESC LIMIT 15");
+    $stmt = $pdo->prepare("SELECT * FROM emergency_sos WHERE sender_phone = ? OR sender_name = ? ORDER BY id DESC LIMIT 10");
     $stmt->execute([$userPhone, $userName]);
     $userReports = $stmt->fetchAll();
 }
 if (empty($userReports)) {
-    $userReports = $pdo->query("SELECT * FROM emergency_sos ORDER BY id DESC LIMIT 6")->fetchAll();
+    $userReports = $pdo->query("SELECT * FROM emergency_sos ORDER BY id DESC LIMIT 5")->fetchAll();
 }
 
-// Stats for dashboard banner
-$statsTotal = $pdo->query("SELECT COUNT(*) FROM emergency_sos")->fetchColumn();
-$statsActive = $pdo->query("SELECT COUNT(*) FROM emergency_sos WHERE status != 'Resolved'")->fetchColumn();
+// Fetch Facilities for Shelter Radar
+$facilities = $pdo->query("SELECT * FROM facilities WHERE status != 'Closed' ORDER BY type ASC, total_capacity DESC LIMIT 12")->fetchAll();
+
+// Stats
+$statsTotalSos = $pdo->query("SELECT COUNT(*) FROM emergency_sos")->fetchColumn();
+$statsActiveSos = $pdo->query("SELECT COUNT(*) FROM emergency_sos WHERE status != 'Resolved'")->fetchColumn();
 $statsShelters = $pdo->query("SELECT COUNT(*) FROM facilities WHERE type = 'Relief Shelter'")->fetchColumn() ?: 4;
-$statsMedics = $pdo->query("SELECT COUNT(*) FROM facilities WHERE type = 'Hospital'")->fetchColumn() ?: 6;
+$statsHospitals = $pdo->query("SELECT COUNT(*) FROM facilities WHERE type = 'Hospital'")->fetchColumn() ?: 6;
 
-// Facilities for map
-$facilities = $pdo->query("SELECT * FROM facilities WHERE status != 'Closed'")->fetchAll();
-
-$flash = getFlash();
+require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/sidebar.php';
 ?>
-<!DOCTYPE html>
-<html lang="en" class="h-full bg-[#fbf9f5] text-[#1c1917]" data-role="citizen">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Citizen Emergency Portal | DisasterSafe</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cream: {
-                            50: '#fbf9f5',
-                            100: '#f4f0ea',
-                            200: '#eee7db',
-                            300: '#d8d0c5',
-                            400: '#b8ad9e'
-                        },
-                        navy: {
-                            950: '#000a1e',
-                            900: '#0a0f1d',
-                            800: '#11192e',
-                            700: '#1c2b4e'
-                        },
-                        crimson: {
-                            500: '#dc2626',
-                            600: '#c53030',
-                            700: '#a82525'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        *, *::before, *::after {
-            border-radius: 0 !important;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f4f0ea;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #d8d0c5;
-            border-radius: 4px;
-        }
-        @keyframes beaconPulse {
-            0% { transform: scale(0.97); box-shadow: 0 0 0 0 rgba(197, 48, 48, 0.7); }
-            70% { transform: scale(1.03); box-shadow: 0 0 0 18px rgba(197, 48, 48, 0); }
-            100% { transform: scale(0.97); box-shadow: 0 0 0 0 rgba(197, 48, 48, 0); }
-        }
-        .animate-beacon {
-            animation: beaconPulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
-        }
-        .pulse-ring {
-            box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5);
-            animation: pulse-ring 2s infinite;
-        }
-        @keyframes pulse-ring {
-            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); }
-            70% { box-shadow: 0 0 0 14px rgba(220, 38, 38, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-[#fbf9f5] text-[#1c1917] font-sans antialiased flex flex-col">
+<div class="flex-1 flex flex-col min-w-0 bg-[#f8fafc] min-h-screen overflow-y-auto">
+    <?php require_once __DIR__ . '/navbar.php'; ?>
 
-    <!-- Top Navigation Header (Yukta's Citizen Layout) -->
-    <header class="sticky top-0 z-50 bg-[#000a1e] border-b border-[#1c2b4e] text-white shadow-lg backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                
-                <!-- Left Brand -->
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-amber-500 flex items-center justify-center font-black text-white text-xl shadow-md shadow-red-900/50">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-lg font-extrabold text-white tracking-tight">DisasterSafe</span>
-                            <span class="px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-bold uppercase tracking-wider">Citizen Portal</span>
-                        </div>
-                        <p class="text-[11px] text-slate-400 font-medium hidden sm:block">Real-Time Emergency SOS & Crisis Protection</p>
-                    </div>
-                </div>
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
 
-                <!-- Center Nav Links -->
-                <nav class="hidden md:flex items-center gap-1 bg-[#11192e] p-1 rounded-xl border border-[#243049]">
-                    <a href="citizen.php" class="px-3.5 py-1.5 rounded-lg bg-red-600 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all">
+        <!-- 1. Hero Emergency Lifeline Banner -->
+        <section class="bg-gradient-to-r from-red-950 via-slate-900 to-red-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-red-800/40">
+            <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-red-500/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute right-20 top-0 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div class="space-y-2 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 border border-red-400/30 text-red-300 text-xs font-bold mono">
+                        <span class="w-2 h-2 rounded-full bg-red-400 animate-ping"></span>
                         <i class="fa-solid fa-tower-broadcast text-xs"></i>
-                        <span>Emergency SOS</span>
-                    </a>
-                    <a href="citizen_guides.php" class="px-3.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 font-semibold text-xs flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-book-medical text-xs text-amber-400"></i>
-                        <span>Safety Guides</span>
-                    </a>
-                    <a href="citizen_contacts.php" class="px-3.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 font-semibold text-xs flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-phone-volume text-xs text-teal-400"></i>
-                        <span>Emergency Directory</span>
-                    </a>
-                </nav>
-
-                <!-- Right Actions -->
-                <div class="flex items-center gap-3">
-                    <a href="tel:112" class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-red-600/20 border border-red-500/40 text-red-300 hover:bg-red-600/30 text-xs font-bold transition-all">
-                        <i class="fa-solid fa-phone text-xs animate-bounce text-red-400"></i>
-                        <span>Helpline: <strong>112</strong></span>
-                    </a>
-
-                    <div class="flex items-center gap-2.5 pl-2 border-l border-[#243049]">
-                        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-200">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <div class="hidden lg:block text-left">
-                            <span class="block text-xs font-bold text-slate-200"><?= htmlspecialchars($userName) ?></span>
-                            <span class="block text-[10px] text-slate-400 font-mono">Public Citizen</span>
-                        </div>
-                        <a href="logout.php" title="Sign Out of DisasterSafe" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 text-xs font-bold transition-all shadow-xs">
-                            <i class="fa-solid fa-arrow-right-from-bracket text-red-400"></i>
-                            <span class="hidden sm:inline">Logout</span>
-                        </a>
+                        <span>PUBLIC CITIZEN • 24/7 EMERGENCY LIFELINE</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
+                        Emergency SOS &amp; Civilian Safety Portal
+                    </h1>
+                    <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                        One-touch GPS distress beacon, verified safe shelter locators, hospital bed radar, and live multi-agency crisis lifeline.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-4 pt-2 text-xs font-bold text-slate-300">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-circle text-red-400"></i> Citizen: <strong class="text-white"><?= htmlspecialchars($userName) ?></strong></span>
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-phone text-emerald-400"></i> Contact: <strong class="text-white"><?= htmlspecialchars($userPhone) ?></strong></span>
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-satellite-dish text-teal-400"></i> Mesh Link: <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">ONLINE</span></span>
                     </div>
                 </div>
 
-            </div>
-        </div>
-
-        <!-- Mobile Navigation Sub-bar -->
-        <div class="md:hidden flex items-center justify-around border-t border-[#1c2b4e] bg-[#0a0f1d] px-2 py-2 text-xs">
-            <a href="citizen.php" class="px-3 py-1 rounded-lg bg-red-600/20 text-red-400 font-bold flex items-center gap-1.5">
-                <i class="fa-solid fa-tower-broadcast"></i> SOS Beacon
-            </a>
-            <a href="citizen_guides.php" class="px-3 py-1 rounded-lg text-slate-400 font-semibold flex items-center gap-1.5">
-                <i class="fa-solid fa-book-medical text-amber-400"></i> Guides
-            </a>
-            <a href="citizen_contacts.php" class="px-3 py-1 rounded-lg text-slate-400 font-semibold flex items-center gap-1.5">
-                <i class="fa-solid fa-phone-volume text-teal-400"></i> Helplines
-            </a>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        
-        <!-- Flash Alert Messages -->
-        <?php if ($flash): ?>
-            <div class="p-4 rounded-2xl <?= $flash['type'] === 'success' ? 'bg-emerald-50 border border-emerald-300 text-emerald-900' : 'bg-rose-50 border border-rose-300 text-rose-900' ?> flex items-start gap-3 shadow-sm">
-                <i class="fa-solid <?= $flash['type'] === 'success' ? 'fa-circle-check text-emerald-600' : 'fa-triangle-exclamation text-rose-600' ?> text-lg mt-0.5 shrink-0"></i>
-                <div class="text-sm font-semibold leading-relaxed"><?= htmlspecialchars($flash['message']) ?></div>
-            </div>
-        <?php endif; ?>
-
-        <!-- Key Metrics Banner -->
-        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
-            <div class="p-4 rounded-2xl bg-white border border-[#d8d0c5] shadow-xs flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-xl bg-red-100 border border-red-200 text-red-600 flex items-center justify-center text-xl shrink-0">
-                    <i class="fa-solid fa-bell"></i>
-                </div>
-                <div>
-                    <div class="text-2xl font-black text-[#000a1e] font-mono leading-none"><?= (int)$statsTotal ?></div>
-                    <span class="text-xs font-bold text-[#78716c] uppercase tracking-wider">Distress Signals</span>
-                </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-white border border-[#d8d0c5] shadow-xs flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-xl bg-amber-100 border border-amber-200 text-amber-600 flex items-center justify-center text-xl shrink-0">
-                    <i class="fa-solid fa-truck-fast"></i>
-                </div>
-                <div>
-                    <div class="text-2xl font-black text-[#000a1e] font-mono leading-none"><?= (int)$statsActive ?></div>
-                    <span class="text-xs font-bold text-[#78716c] uppercase tracking-wider">Active Operations</span>
-                </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-white border border-[#d8d0c5] shadow-xs flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-xl bg-emerald-100 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl shrink-0">
-                    <i class="fa-solid fa-campground"></i>
-                </div>
-                <div>
-                    <div class="text-2xl font-black text-[#000a1e] font-mono leading-none"><?= (int)$statsShelters ?></div>
-                    <span class="text-xs font-bold text-[#78716c] uppercase tracking-wider">Safe Shelters Open</span>
-                </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-white border border-[#d8d0c5] shadow-xs flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-xl bg-blue-100 border border-blue-200 text-blue-600 flex items-center justify-center text-xl shrink-0">
-                    <i class="fa-solid fa-user-doctor"></i>
-                </div>
-                <div>
-                    <div class="text-2xl font-black text-[#000a1e] font-mono leading-none"><?= (int)$statsMedics ?></div>
-                    <span class="text-xs font-bold text-[#78716c] uppercase tracking-wider">Emergency Hospitals</span>
+                <!-- Right Quick Hotline Callouts -->
+                <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0">
+                    <a href="tel:112" class="px-5 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-black transition-all shadow-lg flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-phone-volume text-sm animate-bounce"></i>
+                        <span>NATIONAL HELPLINE: 112</span>
+                    </a>
+                    <a href="#shelterRadarSection" class="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-sm text-amber-400"></i>
+                        <span>Find Nearest Safe Shelter</span>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <!-- 2-Column Responsive Layout -->
-        <div class="grid lg:grid-cols-12 gap-6 items-start">
-            
-            <!-- Left Column (7/12): Live SOS Tracker, Interactive Map, and Quick Guides -->
-            <div class="lg:col-span-7 space-y-6">
-                
-                <!-- Live SOS Tracker Card (Shows if active SOS exists) -->
-                <?php if ($activeSos && $activeSos['status'] !== 'Resolved'): ?>
-                    <section class="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-red-950 via-[#11192e] to-[#0a0f1d] border-2 border-red-500/60 shadow-xl text-white relative overflow-hidden">
-                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-red-600/20 rounded-full blur-2xl pointer-events-none"></div>
-                        
-                        <div class="flex items-start justify-between gap-3 mb-4">
-                            <div class="flex items-center gap-2.5">
-                                <span class="w-3.5 h-3.5 rounded-full bg-red-500 animate-ping shrink-0"></span>
-                                <h3 class="text-base sm:text-lg font-black text-white uppercase tracking-tight">Active Emergency SOS #<?= $activeSos['id'] ?></h3>
-                            </div>
-                            <span class="px-2.5 py-1 rounded-full bg-red-500/20 border border-red-500/40 text-red-300 font-mono text-[11px] font-bold uppercase">
-                                <?= htmlspecialchars($activeSos['status'] ?? 'Pending') ?>
+        <!-- 2. Active SOS Distress Card (If citizen currently has an active distress call) -->
+        <?php if ($activeSos): ?>
+            <section class="bg-gradient-to-br from-red-600 to-rose-700 rounded-3xl p-6 sm:p-8 text-white shadow-2xl relative overflow-hidden border border-red-500 animate-pulse-glow">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+                    <div class="space-y-3 max-w-2xl">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-black uppercase mono border border-white/30">
+                                🚨 ACTIVE DISTRESS SIGNAL #<?= $activeSos['id'] ?>
+                            </span>
+                            <span class="px-3 py-1 rounded-full bg-black/20 text-white text-xs font-bold mono">
+                                <?= htmlspecialchars($activeSos['emergency_type']) ?> • <?= htmlspecialchars($activeSos['priority']) ?>
                             </span>
                         </div>
+                        <h2 class="text-xl sm:text-2xl font-black">
+                            Responders Dispatched • Help is En-Route
+                        </h2>
+                        <p class="text-sm text-red-100 font-medium leading-relaxed">
+                            Your emergency coordinates [<strong class="font-mono"><?= $activeSos['gps_lat'] ?>, <?= $activeSos['gps_lng'] ?></strong>] have been assigned to <strong class="text-white"><?= htmlspecialchars($activeSos['assigned_unit'] ?: $activeSos['dispatch_agency']) ?></strong>. Stay calm, keep phone on, and stay in a safe position.
+                        </p>
 
-                        <!-- 4-Stage Progress Tracker -->
-                        <div class="my-6 grid grid-cols-4 gap-2 relative">
-                            <!-- Stage 1: Sent -->
-                            <div class="text-center space-y-1.5">
-                                <div class="w-8 h-8 mx-auto rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-black shadow-md shadow-emerald-500/40">
-                                    <i class="fa-solid fa-check"></i>
-                                </div>
-                                <span class="block text-[11px] font-bold text-slate-200">Sent</span>
-                                <span class="block text-[9px] text-slate-400 font-mono">Signal Logged</span>
+                        <!-- Responder Card Details -->
+                        <div class="p-4 rounded-2xl bg-black/20 border border-white/20 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div>
+                                <span class="block text-[10px] uppercase font-bold text-red-200 mono">Assigned Unit</span>
+                                <strong class="text-sm font-black text-white"><?= htmlspecialchars($activeSos['assigned_unit'] ?: 'Tactical First Responders') ?></strong>
                             </div>
-
-                            <!-- Stage 2: Triage -->
-                            <div class="text-center space-y-1.5">
-                                <div class="w-8 h-8 mx-auto rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-black shadow-md shadow-emerald-500/40">
-                                    <i class="fa-solid fa-check"></i>
-                                </div>
-                                <span class="block text-[11px] font-bold text-slate-200">Triaged</span>
-                                <span class="block text-[9px] text-slate-400 font-mono"><?= htmlspecialchars($activeSos['emergency_type']) ?></span>
+                            <div>
+                                <span class="block text-[10px] uppercase font-bold text-red-200 mono">Estimated Arrival (ETA)</span>
+                                <strong class="text-sm font-black text-amber-300 font-mono"><i class="fa-solid fa-stopwatch mr-1"></i>~<?= (int)($activeSos['eta_minutes'] ?: 8) ?> Minutes</strong>
                             </div>
-
-                            <!-- Stage 3: Dispatched / En Route -->
-                            <div class="text-center space-y-1.5">
-                                <div class="w-8 h-8 mx-auto rounded-full <?= in_array($activeSos['status'], ['Assigned', 'In Progress', 'En Route']) ? 'bg-amber-500 text-slate-950 animate-bounce' : 'bg-slate-700 text-slate-400' ?> flex items-center justify-center text-xs font-black">
-                                    <i class="fa-solid fa-truck-medical"></i>
-                                </div>
-                                <span class="block text-[11px] font-bold text-slate-200">En Route</span>
-                                <span class="block text-[9px] text-amber-400 font-mono font-bold">ETA ~<?= (int)($activeSos['eta_minutes'] ?? 8) ?>m</span>
-                            </div>
-
-                            <!-- Stage 4: Resolved -->
-                            <div class="text-center space-y-1.5">
-                                <div class="w-8 h-8 mx-auto rounded-full bg-slate-800 border border-slate-700 text-slate-500 flex items-center justify-center text-xs font-black">
-                                    <i class="fa-solid fa-shield"></i>
-                                </div>
-                                <span class="block text-[11px] font-bold text-slate-400">Resolved</span>
-                                <span class="block text-[9px] text-slate-500 font-mono">Safe</span>
+                            <div>
+                                <span class="block text-[10px] uppercase font-bold text-red-200 mono">Current Dispatch Status</span>
+                                <strong class="text-sm font-black text-emerald-300 uppercase"><?= htmlspecialchars($activeSos['status']) ?></strong>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Dispatch Info Box -->
-                        <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-xs space-y-2 mb-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-slate-400 font-semibold">Assigned Unit:</span>
-                                <strong class="text-indigo-300 font-bold"><?= htmlspecialchars($activeSos['assigned_unit'] ?? $activeSos['dispatch_agency'] ?? 'NDRF Tactical Response Squad') ?></strong>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-slate-400 font-semibold">Triage Needs:</span>
-                                <span class="text-slate-200 font-medium text-right"><?= htmlspecialchars($activeSos['medical_needs'] ?? 'Trauma Care & Evacuation') ?></span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-slate-400 font-semibold">Location Coordinates:</span>
-                                <span class="text-amber-300 font-mono"><?= number_format((float)$activeSos['gps_lat'], 5) ?>, <?= number_format((float)$activeSos['gps_lng'], 5) ?></span>
-                            </div>
-                        </div>
+                    <!-- Actions on Active SOS -->
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
+                        <button type="button" onclick="openResponderChatModal(<?= $activeSos['id'] ?>)" class="px-5 py-3 rounded-2xl bg-white text-slate-900 hover:bg-slate-100 text-xs font-black transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-comments text-blue-600 text-sm"></i>
+                            <span>Chat with Responder</span>
+                        </button>
 
-                        <form method="POST" action="citizen.php" class="flex items-center justify-between gap-3">
+                        <form method="POST" action="citizen.php">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                             <input type="hidden" name="action" value="resolve_sos">
-                            <input type="hidden" name="sos_id" value="<?= (int)$activeSos['id'] ?>">
-                            <span class="text-[11px] text-slate-400">Responders are navigating to your location.</span>
-                            <button type="submit" onclick="return confirm('Confirm that you are safe and wish to close this distress signal?')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors shadow-md shadow-emerald-950/40 cursor-pointer flex items-center gap-1.5">
-                                <i class="fa-solid fa-check-double"></i>
-                                <span>I am Safe (Close SOS)</span>
+                            <input type="hidden" name="sos_id" value="<?= $activeSos['id'] ?>">
+                            <button type="submit" class="w-full px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-circle-check text-sm"></i>
+                                <span>I am Safe / Cancel SOS</span>
                             </button>
                         </form>
-                    </section>
-                <?php endif; ?>
-
-                <!-- Interactive Citizen Map Card (Yukta's Citizen Map) -->
-                <section class="bg-white rounded-3xl border border-[#d8d0c5] p-5 sm:p-6 shadow-xs space-y-4">
-                    <div class="flex items-center justify-between flex-wrap gap-2">
-                        <div>
-                            <h3 class="text-base sm:text-lg font-bold text-[#000a1e] flex items-center gap-2">
-                                <i class="fa-solid fa-map-location-dot text-red-600"></i>
-                                <span>Crisis Radar & Safe Shelter Map</span>
-                            </h3>
-                            <p class="text-xs text-[#78716c]">Find verified evacuation shelters, medical aid camps, and relief depots near you</p>
-                        </div>
-                        <button type="button" onclick="locateUserGPS()" class="px-3.5 py-1.5 rounded-xl bg-[#000a1e] hover:bg-[#11192e] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer">
-                            <i class="fa-solid fa-crosshairs text-red-400"></i>
-                            <span>Locate Me</span>
-                        </button>
                     </div>
+                </div>
+            </section>
+        <?php endif; ?>
 
-                    <!-- Map Container -->
-                    <div id="citizenMap" class="w-full h-[380px] sm:h-[420px] rounded-2xl border border-[#d8d0c5] shadow-inner relative z-0"></div>
+        <!-- 3. Primary Emergency SOS Trigger & Form Grid -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                    <!-- Map Legend -->
-                    <div class="flex items-center justify-between flex-wrap gap-2 pt-2 text-[11px] font-bold text-[#586377] border-t border-[#eee7db]">
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-3 h-3 rounded-full bg-blue-600 ring-2 ring-blue-300 inline-block"></span>
-                            <span>Your Location</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span>
-                            <span>Safe Relief Shelters</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-3 h-3 rounded-full bg-rose-600 inline-block"></span>
-                            <span>Hospitals / EMS</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
-                            <span>Fire & Police Stations</span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Quick Survival Guides Preview Cards -->
-                <section class="bg-white rounded-3xl border border-[#d8d0c5] p-5 sm:p-6 shadow-xs space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-base font-bold text-[#000a1e] flex items-center gap-2">
-                            <i class="fa-solid fa-life-ring text-amber-500"></i>
-                            <span>Emergency Survival Protocols</span>
-                        </h3>
-                        <a href="citizen_guides.php" class="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1">
-                            <span>View All Guides</span>
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                        </a>
-                    </div>
-
-                    <div class="grid sm:grid-cols-3 gap-3">
-                        <a href="citizen_guides.php?guide=flood" class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-200 hover:border-blue-400 transition-all block group">
-                            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-base mb-2 group-hover:scale-105 transition-transform">
-                                <i class="fa-solid fa-water"></i>
-                            </div>
-                            <h4 class="text-xs font-bold text-[#000a1e] mb-1">Flash Flood</h4>
-                            <p class="text-[11px] text-[#78716c] leading-snug">Rooftop signals, water safety, power shut-off.</p>
-                        </a>
-
-                        <a href="citizen_guides.php?guide=earthquake" class="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200 hover:border-amber-400 transition-all block group">
-                            <div class="w-9 h-9 rounded-xl bg-amber-600 text-white flex items-center justify-center text-base mb-2 group-hover:scale-105 transition-transform">
-                                <i class="fa-solid fa-house-crack"></i>
-                            </div>
-                            <h4 class="text-xs font-bold text-[#000a1e] mb-1">Earthquake</h4>
-                            <p class="text-[11px] text-[#78716c] leading-snug">Drop-Cover-Hold, open ground evacuation.</p>
-                        </a>
-
-                        <a href="citizen_guides.php?guide=fire" class="p-3.5 rounded-2xl bg-rose-50/60 border border-rose-200 hover:border-rose-400 transition-all block group">
-                            <div class="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center text-base mb-2 group-hover:scale-105 transition-transform">
-                                <i class="fa-solid fa-fire"></i>
-                            </div>
-                            <h4 class="text-xs font-bold text-[#000a1e] mb-1">Fire & Smoke</h4>
-                            <p class="text-[11px] text-[#78716c] leading-snug">Low crawl, wet cloth, exit routes.</p>
-                        </a>
-                    </div>
-                </section>
-
-            </div>
-
-            <!-- Right Column (5/12): Rapid SOS Trigger, Detailed Form & Log -->
-            <div class="lg:col-span-5 space-y-6">
-                
-                <!-- Main SOS Transmission Card (Yukta's Send Emergency Report) -->
-                <div class="bg-white rounded-3xl border-2 border-red-200 p-5 sm:p-7 shadow-lg space-y-5">
-                    
-                    <div class="flex items-center justify-between pb-3 border-b border-[#eee7db]">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center text-lg shadow-md shadow-red-600/30">
-                                <i class="fa-solid fa-tower-broadcast animate-pulse"></i>
+            <!-- 1-Touch GPS Panic Beacon (1 col) -->
+            <div class="bg-white rounded-3xl border-2 border-red-200 shadow-sm p-6 flex flex-col justify-between relative overflow-hidden">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid fa-tower-broadcast"></i>
                             </div>
                             <div>
-                                <h3 class="text-lg font-black text-[#000a1e]">Send Emergency SOS</h3>
-                                <p class="text-xs text-[#78716c]">Transmits instant GPS coordinates to emergency dispatch</p>
+                                <h3 class="text-sm font-black text-slate-900">Instant SOS Beacon</h3>
+                                <p class="text-[10px] text-slate-500 font-medium">Automatic Emergency GPS Dispatch</p>
                             </div>
                         </div>
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
                     </div>
 
-                    <!-- 1-Tap Big Rapid Red Beacon -->
-                    <button type="button" onclick="triggerQuickSos()" id="rapidSosBtn" class="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 text-white font-black text-sm uppercase tracking-wider shadow-lg shadow-red-600/40 transition-all flex items-center justify-center gap-3 cursor-pointer group pulse-ring">
-                        <i class="fa-solid fa-triangle-exclamation text-lg animate-bounce"></i>
-                        <span>1-Tap Instant SOS Beacon</span>
-                        <i class="fa-solid fa-bolt text-amber-300"></i>
-                    </button>
+                    <p class="text-xs text-slate-600 leading-relaxed font-medium">
+                        Pressing the SOS button instantly transmits your GPS coordinates and distress type directly to <strong>NDRF, Police, Fire, and Medical Command</strong>.
+                    </p>
 
-                    <!-- Detailed Emergency Form -->
-                    <form method="POST" action="citizen.php" id="sosForm" class="space-y-4">
-                        <input type="hidden" name="action" value="broadcast_sos">
-                        <input type="hidden" id="latitudeInput" name="latitude" value="28.6139">
-                        <input type="hidden" id="longitudeInput" name="longitude" value="77.2090">
-
-                        <!-- GPS Location Box -->
-                        <div class="p-3.5 rounded-2xl bg-[#f4f0ea] border border-[#d8d0c5] space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-[#000a1e] flex items-center gap-1.5">
-                                    <i class="fa-solid fa-location-crosshairs text-red-600"></i>
-                                    <span>Live GPS Coordinates</span>
-                                </span>
-                                <button type="button" onclick="refreshGPS()" class="text-[11px] font-bold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer">
-                                    <i class="fa-solid fa-arrows-rotate" id="gpsRefreshIcon"></i>
-                                    <span>Refresh GPS</span>
-                                </button>
-                            </div>
-                            <div class="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-[#d8d0c5] text-xs font-mono">
-                                <span id="gpsCoordDisplay" class="font-bold text-[#1c1917]">Acquiring GPS location…</span>
-                                <span id="gpsAccuracyBadge" class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">Auto</span>
-                            </div>
+                    <!-- GPS Status Card -->
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-700" id="citizenGpsLabel">
+                                <i class="fa-solid fa-location-crosshairs text-red-600 mr-1"></i> GPS Coordinates
+                            </span>
+                            <button type="button" onclick="acquireCitizenGps()" class="text-[11px] text-red-600 font-bold underline cursor-pointer">
+                                Auto-Detect GPS
+                            </button>
                         </div>
-
-                        <!-- Name & Phone -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label for="sos_name" class="block text-xs font-bold text-[#78716c] uppercase mb-1">Your Full Name</label>
-                                <input type="text" id="sos_name" name="sender_name" required value="<?= htmlspecialchars($userName) ?>"
-                                       placeholder="e.g. Aarav Patel"
-                                       class="w-full px-3.5 py-2.5 rounded-xl border border-[#d8d0c5] bg-[#f4f0ea] text-sm text-[#1c1917] font-semibold focus:bg-white focus:outline-none focus:border-red-600 transition-colors">
-                            </div>
-                            <div>
-                                <label for="sos_phone" class="block text-xs font-bold text-[#78716c] uppercase mb-1">Contact Phone</label>
-                                <input type="tel" id="sos_phone" name="sender_phone" required value="<?= htmlspecialchars($userPhone) ?>"
-                                       placeholder="+91 98765 43210"
-                                       class="w-full px-3.5 py-2.5 rounded-xl border border-[#d8d0c5] bg-[#f4f0ea] text-sm font-mono font-semibold text-[#1c1917] focus:bg-white focus:outline-none focus:border-red-600 transition-colors">
-                            </div>
+                        <div class="font-mono text-xs font-bold text-slate-900 bg-white p-2 rounded-xl border border-slate-200" id="citizenGpsCoords">
+                            28.6139° N, 77.2090° E (NCR Base)
                         </div>
-
-                        <!-- Emergency Type & Number of People -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label for="emergency_type" class="block text-xs font-bold text-[#78716c] uppercase mb-1">Emergency Type</label>
-                                <select id="emergency_type" name="emergency_type" required
-                                        class="w-full px-3.5 py-2.5 rounded-xl border border-[#d8d0c5] bg-[#f4f0ea] text-sm font-bold text-[#1c1917] focus:bg-white focus:outline-none focus:border-red-600 transition-colors cursor-pointer">
-                                    <option value="Flood">🌊 Flash Flood / Water Inflow</option>
-                                    <option value="Fire">🔥 Fire / Hazmat / Smoke</option>
-                                    <option value="Earthquake">🏚️ Earthquake / Structural Hazard</option>
-                                    <option value="Cyclone">🌀 Cyclone / Severe Storm</option>
-                                    <option value="Building Collapse">🏢 Building / Wall Collapse</option>
-                                    <option value="Medical Trauma">🚑 Critical Medical Emergency</option>
-                                    <option value="General">🆘 Other Life-Threatening Crisis</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="persons_count" class="block text-xs font-bold text-[#78716c] uppercase mb-1">People in Danger</label>
-                                <select id="persons_count" name="persons_count"
-                                        class="w-full px-3.5 py-2.5 rounded-xl border border-[#d8d0c5] bg-[#f4f0ea] text-sm font-bold text-[#1c1917] focus:bg-white focus:outline-none focus:border-red-600 transition-colors cursor-pointer">
-                                    <option value="1">1 Person</option>
-                                    <option value="2 - 4">2 - 4 Persons</option>
-                                    <option value="5 - 10">5 - 10 Persons</option>
-                                    <option value="10+">10+ Trapped Citizens</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Priority & Special Needs -->
-                        <div>
-                            <label for="priority_level" class="block text-xs font-bold text-[#78716c] uppercase mb-1">Urgency / Severity</label>
-                            <div class="grid grid-cols-3 gap-2">
-                                <label class="flex items-center justify-center p-2 rounded-xl border border-red-300 bg-red-50 text-red-900 font-bold text-xs cursor-pointer select-none">
-                                    <input type="radio" name="priority" value="Critical" checked class="mr-1.5 accent-red-600">
-                                    <span>CRITICAL</span>
-                                </label>
-                                <label class="flex items-center justify-center p-2 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 font-bold text-xs cursor-pointer select-none">
-                                    <input type="radio" name="priority" value="High" class="mr-1.5 accent-amber-600">
-                                    <span>HIGH</span>
-                                </label>
-                                <label class="flex items-center justify-center p-2 rounded-xl border border-blue-300 bg-blue-50 text-blue-900 font-bold text-xs cursor-pointer select-none">
-                                    <input type="radio" name="priority" value="Medium" class="mr-1.5 accent-blue-600">
-                                    <span>MEDIUM</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Message / Specific Situation -->
-                        <div>
-                            <label for="sos_message" class="block text-xs font-bold text-[#78716c] uppercase mb-1">Situation Details & Landmarks</label>
-                            <textarea id="sos_message" name="message" rows="3"
-                                      placeholder="e.g. Trapped on 2nd floor, infant present, elderly patient needing oxygen support…"
-                                      class="w-full px-3.5 py-2.5 rounded-xl border border-[#d8d0c5] bg-[#f4f0ea] text-sm text-[#1c1917] focus:bg-white focus:outline-none focus:border-red-600 transition-colors resize-none"></textarea>
-                        </div>
-
-                        <!-- Transmit Submit Button -->
-                        <button type="submit" id="submitReportBtn" class="w-full py-3.5 px-4 rounded-2xl bg-[#000a1e] hover:bg-[#11192e] text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
-                            <i class="fa-solid fa-paper-plane text-xs text-red-400"></i>
-                            <span>Transmit Full Distress Report</span>
-                        </button>
-                    </form>
-
+                    </div>
                 </div>
 
-                <!-- Submitted Reports Log (Yukta's Reports Sent) -->
-                <section class="bg-white rounded-3xl border border-[#d8d0c5] p-5 shadow-xs space-y-3">
-                    <div class="flex items-center justify-between pb-2 border-b border-[#eee7db]">
-                        <h4 class="text-xs font-black text-[#000a1e] uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-clock-rotate-left text-slate-500"></i>
-                            <span>My Emergency SOS Log</span>
-                        </h4>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f4f0ea] text-[#78716c] font-mono">
-                            <?= count($userReports) ?> Recorded
-                        </span>
+                <!-- Big Red Panic Trigger Button -->
+                <div class="pt-6">
+                    <button type="button" onclick="triggerQuickPanicSos()" class="w-full py-5 rounded-3xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black text-base uppercase tracking-wider shadow-xl shadow-red-500/25 hover:shadow-red-500/40 transition-all flex flex-col items-center justify-center gap-1 cursor-pointer border-2 border-red-400/50">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl animate-bounce"></i>
+                        <span>TRANSMIT EMERGENCY SOS</span>
+                        <span class="text-[10px] font-normal tracking-normal text-red-200 lowercase">one-click multi-agency response</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detailed SOS Distress Form (2 cols) -->
+            <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid fa-clipboard-list"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-black text-slate-900">Custom Emergency Distress Report</h3>
+                                <p class="text-[10px] text-slate-500 font-medium">Provide critical specifics (persons count, medical conditions, entrapment type)</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <?php if (empty($userReports)): ?>
-                        <p class="text-xs text-[#78716c] bg-[#fbf9f5] border border-[#d8d0c5] rounded-xl p-3.5 text-center">
-                            No active SOS signals transmitted yet. Submitted distress beacons will appear here.
-                        </p>
-                    <?php else: ?>
-                        <div class="space-y-2.5 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
-                            <?php foreach ($userReports as $rep): ?>
-                                <?php
-                                $isResolved = ($rep['status'] === 'Resolved');
-                                $isPending = ($rep['status'] === 'Pending');
-                                $badgeColor = $isResolved ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : ($isPending ? 'bg-red-100 text-red-900 border-red-300' : 'bg-amber-100 text-amber-900 border-amber-300');
-                                ?>
-                                <div class="p-3 rounded-2xl bg-[#fbf9f5] border border-[#d8d0c5] hover:border-slate-400 transition-colors space-y-1.5">
-                                    <div class="flex items-center justify-between gap-2">
-                                        <div class="flex items-center gap-2 min-w-0">
-                                            <span class="text-xs font-extrabold text-[#000a1e] truncate"><?= htmlspecialchars($rep['emergency_type']) ?></span>
-                                            <span class="text-[10px] text-slate-500 font-mono">#<?= (int)$rep['id'] ?></span>
-                                        </div>
-                                        <span class="px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase tracking-wider <?= $badgeColor ?> <?= $isPending ? 'animate-pulse' : '' ?>">
-                                            <?= htmlspecialchars($rep['status']) ?>
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center justify-between text-[11px] text-[#586377]">
-                                        <span class="font-mono truncate">GPS: <?= number_format((float)$rep['gps_lat'], 4) ?>, <?= number_format((float)$rep['gps_lng'], 4) ?></span>
-                                        <span class="text-[10px] font-medium text-slate-400"><?= htmlspecialchars(date('M d, H:i', strtotime($rep['created_at'] ?? 'now'))) ?></span>
-                                    </div>
-                                    <?php if (!empty($rep['message'])): ?>
-                                        <p class="text-[11px] text-[#1c1917] bg-white p-2 rounded-lg border border-[#eee7db] line-clamp-1 italic">
-                                            "<?= htmlspecialchars($rep['message']) ?>"
-                                        </p>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </section>
+                    <form id="citizenSosForm" method="POST" action="citizen.php" class="space-y-4">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                        <input type="hidden" name="action" value="broadcast_sos">
+                        <input type="hidden" name="latitude" id="form_latitude" value="28.6139">
+                        <input type="hidden" name="longitude" id="form_longitude" value="77.2090">
 
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 mono">Your Name *</label>
+                                <input type="text" name="sender_name" value="<?= htmlspecialchars($userName) ?>" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-red-600 font-medium">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 mono">Phone Number *</label>
+                                <input type="text" name="sender_phone" value="<?= htmlspecialchars($userPhone) ?>" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-red-600 font-medium">
+                            </div>
+                        </div>
+
+                        <!-- Emergency Type Buttons Grid -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 mono">Select Emergency Type *</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                <label class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:border-red-400 flex items-center gap-2 cursor-pointer text-xs font-bold">
+                                    <input type="radio" name="emergency_type" value="Flood" checked class="text-red-600 focus:ring-red-500">
+                                    <span>🌊 Flood / Water</span>
+                                </label>
+                                <label class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:border-red-400 flex items-center gap-2 cursor-pointer text-xs font-bold">
+                                    <input type="radio" name="emergency_type" value="Structural Collapse" class="text-red-600 focus:ring-red-500">
+                                    <span>🏚️ Trapped in Debris</span>
+                                </label>
+                                <label class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:border-red-400 flex items-center gap-2 cursor-pointer text-xs font-bold">
+                                    <input type="radio" name="emergency_type" value="Medical" class="text-red-600 focus:ring-red-500">
+                                    <span>🏥 Severe Medical</span>
+                                </label>
+                                <label class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:border-red-400 flex items-center gap-2 cursor-pointer text-xs font-bold">
+                                    <input type="radio" name="emergency_type" value="Fire" class="text-red-600 focus:ring-red-500">
+                                    <span>🔥 Fire / Smoke</span>
+                                </label>
+                                <label class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:border-red-400 flex items-center gap-2 cursor-pointer text-xs font-bold">
+                                    <input type="radio" name="emergency_type" value="Missing Relative" class="text-red-600 focus:ring-red-500">
+                                    <span>🔍 Missing Person</span>
+                                </label>
+                                <label class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:border-red-400 flex items-center gap-2 cursor-pointer text-xs font-bold">
+                                    <input type="radio" name="emergency_type" value="Food / Water Shortage" class="text-red-600 focus:ring-red-500">
+                                    <span>🍞 Food/Water Cutoff</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 mono">Persons in Danger *</label>
+                                <select name="persons_count" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-red-600 font-medium">
+                                    <option value="1">1 Person (Self)</option>
+                                    <option value="2-3">2-3 Family Members</option>
+                                    <option value="4-6">4-6 People</option>
+                                    <option value="7+">7+ Large Group</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 mono">Blood Group</label>
+                                <select name="blood_type" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-red-600 font-medium">
+                                    <option value="Unknown">Unknown</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 mono">Priority Level</label>
+                                <select name="priority" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-red-600 font-medium">
+                                    <option value="Critical">🔴 Critical (Life Threat)</option>
+                                    <option value="High">🟠 High Urgency</option>
+                                    <option value="Medium">🟡 Medium Urgency</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 mono">Situation Details &amp; Exact Landmarks</label>
+                            <textarea name="message" rows="2" placeholder="e.g. Trapped on 2nd floor terrace, rising water level, elderly grandmother needing insulin..." class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-red-600 font-medium"></textarea>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2">
+                            <span class="text-[10px] text-slate-500 mono font-medium">
+                                <i class="fa-solid fa-lock text-emerald-600 mr-1"></i> End-to-end encrypted dispatch to CAD Server
+                            </span>
+                            <button type="submit" class="px-6 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-md transition-all cursor-pointer flex items-center gap-2">
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
+                                <span>Broadcast Detailed Distress</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-        </div>
+        </section>
+
+        <!-- 4. Safe Evacuation Shelter & Emergency Resource Radar -->
+        <section id="shelterRadarSection" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center text-base font-bold">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-black text-slate-900">Verified Safe Shelters &amp; Hospital Radar</h2>
+                        <p class="text-xs text-slate-500 font-medium">Live government shelters with available bedding capacity, food, drinking water, and trauma centers</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200 mono">
+                        <?= count($facilities) ?> Facilities Live
+                    </span>
+                </div>
+            </div>
+
+            <!-- Leaflet Interactive Shelter Map -->
+            <div id="citizenRadarMap" class="w-full h-80 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden relative z-0"></div>
+
+            <!-- Facility Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                <?php foreach ($facilities as $fac): ?>
+                    <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between space-y-2.5">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-1.5">
+                                <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase mono <?= $fac['type'] === 'Hospital' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' ?>">
+                                    <?= htmlspecialchars($fac['type']) ?>
+                                </span>
+                                <span class="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> OPEN
+                                </span>
+                            </div>
+                            <h4 class="text-sm font-black text-slate-900"><?= htmlspecialchars($fac['name']) ?></h4>
+                            <p class="text-xs text-slate-500 font-medium mt-0.5"><?= htmlspecialchars($fac['address'] ?? 'Central Disaster Perimeter') ?></p>
+                            <div class="mt-2 text-xs font-mono font-bold text-slate-700 flex items-center justify-between">
+                                <span>Beds: <?= $fac['available_capacity'] ?> / <?= $fac['total_capacity'] ?></span>
+                                <span class="text-blue-600 font-bold"><?= $fac['available_capacity'] ?> Available</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
+                            <a href="tel:<?= htmlspecialchars($fac['contact'] ?: '112') ?>" class="text-slate-700 hover:text-slate-900 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-phone text-xs text-emerald-600"></i> Call Facility
+                            </a>
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=<?= (float)$fac['latitude'] ?>,<?= (float)$fac['longitude'] ?>" target="_blank" class="text-blue-600 hover:text-blue-800 font-black flex items-center gap-1">
+                                Directions &rarr;
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <!-- 5. Survival Action Guides & Emergency Helplines Grid -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Survival Action Guides -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+                <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+                    <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-book-medical"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900">Life-Saving Survival Protocols</h3>
+                        <p class="text-[10px] text-slate-500 font-medium">Immediate instructions during sudden crisis</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2.5 text-xs">
+                    <details class="p-3 rounded-2xl bg-slate-50 border border-slate-200 group">
+                        <summary class="font-black text-slate-900 cursor-pointer flex items-center justify-between">
+                            <span>🌊 Severe Flood / Water Inundation</span>
+                            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-2 text-slate-600 font-medium leading-relaxed">
+                            Move to the highest floor or roof. Never attempt to walk, swim, or drive through flooded roads. Disconnect electrical mains before water enters the premises.
+                        </p>
+                    </details>
+
+                    <details class="p-3 rounded-2xl bg-slate-50 border border-slate-200 group">
+                        <summary class="font-black text-slate-900 cursor-pointer flex items-center justify-between">
+                            <span>🏚️ Earthquake / Structure Tremor</span>
+                            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-2 text-slate-600 font-medium leading-relaxed">
+                            <strong>DROP, COVER, HOLD ON!</strong> Protect your head under sturdy furniture. Stay away from windows, glass, and heavy shelving. Do not use elevators.
+                        </p>
+                    </details>
+
+                    <details class="p-3 rounded-2xl bg-slate-50 border border-slate-200 group">
+                        <summary class="font-black text-slate-900 cursor-pointer flex items-center justify-between">
+                            <span>🔥 Fire &amp; Smoke Inhalation</span>
+                            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-2 text-slate-600 font-medium leading-relaxed">
+                            Crawl low under smoke where air is cleaner. Feel doors with the back of your hand before opening. Cover nose with a damp cloth if available.
+                        </p>
+                    </details>
+                </div>
+            </div>
+
+            <!-- Direct Hotline Speed Dial Grid -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+                <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+                    <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-phone-volume"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900">National Emergency Speed Dial</h3>
+                        <p class="text-[10px] text-slate-500 font-medium">Toll-free 24/7 government hotlines</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <a href="tel:112" class="p-3 rounded-2xl bg-red-50 border border-red-200 hover:bg-red-100 transition-colors flex items-center gap-3 text-xs">
+                        <div class="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center font-black">112</div>
+                        <div>
+                            <strong class="block text-slate-900 font-black">National SOS</strong>
+                            <span class="text-[10px] text-slate-500 font-medium">All Emergencies</span>
+                        </div>
+                    </a>
+
+                    <a href="tel:108" class="p-3 rounded-2xl bg-teal-50 border border-teal-200 hover:bg-teal-100 transition-colors flex items-center gap-3 text-xs">
+                        <div class="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black">108</div>
+                        <div>
+                            <strong class="block text-slate-900 font-black">Ambulance</strong>
+                            <span class="text-[10px] text-slate-500 font-medium">Medical Trauma</span>
+                        </div>
+                    </a>
+
+                    <a href="tel:101" class="p-3 rounded-2xl bg-orange-50 border border-orange-200 hover:bg-orange-100 transition-colors flex items-center gap-3 text-xs">
+                        <div class="w-8 h-8 rounded-xl bg-orange-600 text-white flex items-center justify-center font-black">101</div>
+                        <div>
+                            <strong class="block text-slate-900 font-black">Fire &amp; Rescue</strong>
+                            <span class="text-[10px] text-slate-500 font-medium">Fire Brigade</span>
+                        </div>
+                    </a>
+
+                    <a href="tel:1078" class="p-3 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors flex items-center gap-3 text-xs">
+                        <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black">1078</div>
+                        <div>
+                            <strong class="block text-slate-900 font-black">NDMA Control</strong>
+                            <span class="text-[10px] text-slate-500 font-medium">Disaster Helpline</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </section>
 
     </main>
+</div>
 
-    <!-- Footer -->
-    <footer class="mt-auto bg-[#000a1e] border-t border-[#1c2b4e] py-4 text-center text-xs text-slate-400">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span>&copy; 2026 DisasterSafe Crisis Management Suite • GeoGuardians</span>
-            <div class="flex items-center gap-4 text-slate-300">
-                <a href="citizen_guides.php" class="hover:text-white">Safety Guides</a>
-                <span>•</span>
-                <a href="citizen_contacts.php" class="hover:text-white">Helplines</a>
-                <span>•</span>
-                <a href="login.php" class="hover:text-white">Authority Login</a>
+<!-- ==================== RESPONDER 2-WAY CHAT MODAL ==================== -->
+<div id="responderChatModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
+                    <i class="fa-solid fa-comments text-base"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-black text-slate-900">Direct Responder Lifeline</h3>
+                    <p class="text-[11px] text-slate-500 font-medium">2-Way Secure Rescue Channel</p>
+                </div>
             </div>
+            <button type="button" onclick="closeResponderChatModal()" class="text-slate-400 hover:text-slate-800 p-2 cursor-pointer">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
         </div>
-    </footer>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <div class="flex-1 overflow-y-auto space-y-2 p-3 bg-slate-50 rounded-2xl border border-slate-200 min-h-[220px] max-h-[320px]" id="responderChatMessagesBox">
+            <p class="text-xs text-slate-400 text-center py-8">Connecting to responder team...</p>
+        </div>
 
-    <script>
-        let map;
-        let userMarker;
-        let userCircle;
-        let currentLat = 28.6139;
-        let currentLng = 77.2090;
+        <form method="POST" action="citizen.php" class="pt-3 mt-3 border-t border-slate-100 flex items-center gap-2">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+            <input type="hidden" name="action" value="send_responder_chat">
+            <input type="hidden" name="sos_id" id="modal_chat_sos_id" value="<?= $activeSos['id'] ?? 0 ?>">
+            <input type="text" name="message" required placeholder="Send update, landmark, or request to responder..." class="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-red-600 font-medium">
+            <button type="submit" class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+</div>
 
-        // Initialize Map
-        function initCitizenMap() {
-            map = L.map('citizenMap').setView([currentLat, currentLng], 12);
+<!-- Leaflet Radar Map Script -->
+<script>
+let citizenMap = null;
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-                maxZoom: 19
-            }).addTo(map);
+function initCitizenMap() {
+    if (citizenMap) return;
+    const mapEl = document.getElementById('citizenRadarMap');
+    if (!mapEl) return;
 
-            // Add Facilities Markers
-            const facilities = <?= json_encode($facilities) ?>;
-            facilities.forEach(f => {
-                const lat = parseFloat(f.latitude);
-                const lng = parseFloat(f.longitude);
-                if (lat && lng) {
-                    let markerColor = '#10b981'; // Green for shelters
-                    let iconClass = 'fa-campground';
-                    if (f.type === 'Hospital') {
-                        markerColor = '#00FF00';
-                        iconClass = 'fa-hospital';
-                    } else if (f.type === 'Fire Station') {
-                        markerColor = '#f59e0b';
-                        iconClass = 'fa-fire-extinguisher';
-                    } else if (f.type === 'Police Station') {
-                        markerColor = '#3b82f6';
-                        iconClass = 'fa-shield-halved';
-                    }
+    citizenMap = L.map('citizenRadarMap').setView([28.6139, 77.2090], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(citizenMap);
 
-                    const customIcon = L.divIcon({
-                        className: 'custom-facility-pin',
-                        html: `<div style="background-color:${markerColor}; width:32px; height:32px; border-radius:0; display:flex; align-items:center; justify-content:center; color:white; border:2px solid white; box-shadow:0 3px 8px rgba(0,0,0,0.3);"><i class="fa-solid ${iconClass}" style="font-size:13px;"></i></div>`,
-                        iconSize: [32, 32],
-                        iconAnchor: [16, 16]
-                    });
+    // Plot Citizen Current Position
+    const userMarker = L.circleMarker([28.6139, 77.2090], {
+        radius: 10,
+        fillColor: '#dc2626',
+        color: '#ffffff',
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 1
+    }).addTo(citizenMap).bindPopup(`
+        <div style="font-family: sans-serif; font-size: 12px;">
+            <strong style="color: #dc2626;">📍 YOUR LOCATION</strong><br>
+            <span>Coordinates: 28.6139, 77.2090</span>
+        </div>
+    `);
 
-                    const marker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
-                    marker.bindPopup(`
-                        <div style="font-family:Inter,sans-serif; min-width:180px;">
-                            <span style="font-size:10px; font-weight:bold; color:#78716c; text-transform:uppercase;">${escapeHtml(f.type)}</span>
-                            <h4 style="font-size:13px; font-weight:bold; color:#000a1e; margin:2px 0 4px 0;">${escapeHtml(f.name)}</h4>
-                            <p style="font-size:11px; color:#586377; margin:0 0 6px 0;">Status: <strong style="color:#16a34a;">${escapeHtml(f.status || 'Operational')}</strong></p>
-                            ${f.contact ? `<a href="tel:${f.contact}" style="font-size:11px; color:#c53030; font-weight:bold; text-decoration:none;">📞 Call: ${escapeHtml(f.contact)}</a>` : ''}
-                        </div>
-                    `);
-                }
-            });
+    // Plot Shelters & Hospitals
+    <?php foreach ($facilities as $fac): ?>
+        <?php if (!empty($fac['latitude']) && !empty($fac['longitude'])): ?>
+            L.circleMarker([<?= (float)$fac['latitude'] ?>, <?= (float)$fac['longitude'] ?>], {
+                radius: 8,
+                fillColor: '<?= $fac['type'] === 'Hospital' ? '#e11d48' : '#2563eb' ?>',
+                color: '#ffffff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.85
+            }).addTo(citizenMap).bindPopup(`
+                <div style="font-family: sans-serif; font-size: 12px;">
+                    <strong style="color: <?= $fac['type'] === 'Hospital' ? '#e11d48' : '#2563eb' ?>;">
+                        <?= $fac['type'] === 'Hospital' ? '🏥' : '🏠' ?> ${<?= json_encode($fac['name']) ?>}
+                    </strong><br>
+                    <strong>Type:</strong> ${<?= json_encode($fac['type']) ?>}<br>
+                    <strong>Address:</strong> ${<?= json_encode($fac['address'] ?? 'Central Disaster Perimeter') ?>}<br>
+                    <strong>Available Beds:</strong> ${<?= (int)$fac['available_capacity'] ?>} / ${<?= (int)$fac['total_capacity'] ?>}<br>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=<?= (float)$fac['latitude'] ?>,<?= (float)$fac['longitude'] ?>" target="_blank" style="display:inline-block; margin-top:5px; color: #2563eb; font-weight: bold;">Get Directions &rarr;</a>
+                </div>
+            `);
+        <?php endif; ?>
+    <?php endforeach; ?>
+}
 
-            // Start Geolocation
-            locateUserGPS();
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    initCitizenMap();
+});
 
-        // Get Live Geolocation
-        function locateUserGPS() {
-            if ("geolocation" in navigator) {
-                const refreshIcon = document.getElementById('gpsRefreshIcon');
-                if (refreshIcon) refreshIcon.classList.add('fa-spin');
+// Auto GPS Detection
+function acquireCitizenGps() {
+    if (navigator.geolocation) {
+        document.getElementById('citizenGpsLabel').innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1 text-red-600"></i> Acquiring GPS Satellites...`;
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            document.getElementById('citizenGpsCoords').innerText = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E (GPS Locked ±${Math.round(pos.coords.accuracy)}m)`;
+            document.getElementById('form_latitude').value = lat;
+            document.getElementById('form_longitude').value = lng;
+            document.getElementById('citizenGpsLabel').innerHTML = `<i class="fa-solid fa-check text-emerald-600 mr-1"></i> GPS Locked`;
 
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        currentLat = position.coords.latitude;
-                        currentLng = position.coords.longitude;
-                        const accuracy = Math.round(position.coords.accuracy);
-
-                        // Update Hidden Form inputs
-                        document.getElementById('latitudeInput').value = currentLat;
-                        document.getElementById('longitudeInput').value = currentLng;
-
-                        // Update text displays
-                        document.getElementById('gpsCoordDisplay').textContent = `${currentLat.toFixed(5)}, ${currentLng.toFixed(5)}`;
-                        document.getElementById('gpsAccuracyBadge').textContent = `±${accuracy}m GPS`;
-
-                        // Update or Create Map Marker
-                        if (userMarker) {
-                            userMarker.setLatLng([currentLat, currentLng]);
-                        } else {
-                            const userIcon = L.divIcon({
-                                className: 'custom-user-pin',
-                                html: `<div style="background-color:#2563eb; width:28px; height:28px; border-radius:0; display:flex; align-items:center; justify-content:center; color:white; border:3px solid white; box-shadow:0 0 0 6px rgba(37,99,235,0.4);"><i class="fa-solid fa-user" style="font-size:11px;"></i></div>`,
-                                iconSize: [28, 28],
-                                iconAnchor: [14, 14]
-                            });
-                            userMarker = L.marker([currentLat, currentLng], { icon: userIcon }).addTo(map);
-                            userMarker.bindPopup("<strong>You are here</strong><br>GPS Acquired");
-                        }
-
-                        if (userCircle) {
-                            userCircle.setLatLng([currentLat, currentLng]).setRadius(accuracy);
-                        } else {
-                            userCircle = L.circle([currentLat, currentLng], {
-                                radius: accuracy,
-                                color: '#2563eb',
-                                fillOpacity: 0.12,
-                                weight: 1.5
-                            }).addTo(map);
-                        }
-
-                        map.setView([currentLat, currentLng], 14);
-                        if (refreshIcon) refreshIcon.classList.remove('fa-spin');
-                    },
-                    (error) => {
-                        console.warn("GPS lookup fallback:", error.message);
-                        document.getElementById('gpsCoordDisplay').textContent = `${currentLat.toFixed(5)}, ${currentLng.toFixed(5)} (Default)`;
-                        document.getElementById('gpsAccuracyBadge').textContent = `Fallback`;
-                        if (refreshIcon) refreshIcon.classList.remove('fa-spin');
-                    },
-                    { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-                );
+            if (citizenMap) {
+                citizenMap.setView([lat, lng], 14);
             }
-        }
-
-        function refreshGPS() {
-            locateUserGPS();
-        }
-
-        // Quick Rapid SOS Beacon Click
-        function triggerQuickSos() {
-            if (confirm("🚨 TRANSMIT EMERGENCY BEACON IMMEDIATELY?\n\nThis will send your current GPS coordinates to Emergency Services and First Responders.")) {
-                document.getElementById('sosForm').submit();
-            }
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text.replace(/[&<>"']/g, function(m) {
-                return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m];
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initCitizenMap();
+        }, function(err) {
+            document.getElementById('citizenGpsLabel').innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-600 mr-1"></i> GPS Error`;
+            alert('Location permission denied or unavailable. Using default base coordinates.');
         });
-    </script>
-</body>
-</html>
+    }
+}
+
+// 1-Touch Big Red Panic Trigger
+function triggerQuickPanicSos() {
+    Swal.fire({
+        title: 'TRANSMIT EMERGENCY SOS?',
+        text: 'This will immediately broadcast your GPS coordinates to Emergency Multi-Agency Command (NDRF, Police, Fire, Medical).',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'YES, TRANSMIT SOS NOW',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('citizenSosForm').submit();
+        }
+    });
+}
+
+// Responder Chat Modal
+function openResponderChatModal(sosId) {
+    document.getElementById('modal_chat_sos_id').value = sosId;
+    document.getElementById('responderChatModal').classList.remove('hidden');
+
+    const box = document.getElementById('responderChatMessagesBox');
+    box.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Connecting to emergency lifeline...</p>`;
+
+    fetch(`api/victim_volunteer_chat_history.php?sos_id=${sosId}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success' && data.messages && data.messages.length > 0) {
+                box.innerHTML = data.messages.map(m => `
+                    <div class="flex flex-col ${m.sender_role === 'victim' ? 'items-end' : 'items-start'}">
+                        <div class="max-w-[80%] p-2.5 rounded-2xl text-xs ${m.sender_role === 'victim' ? 'bg-red-600 text-white rounded-br-none' : 'bg-white border border-slate-200 text-slate-900 rounded-bl-none shadow-2xs'}">
+                            <span class="block text-[10px] font-mono font-bold ${m.sender_role === 'victim' ? 'text-red-200' : 'text-slate-400'}">${m.sender_name} (${m.sender_role})</span>
+                            <p class="font-medium mt-0.5">${m.message}</p>
+                        </div>
+                    </div>
+                `).join('');
+                box.scrollTop = box.scrollHeight;
+            } else {
+                box.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">No previous messages. Type a direct note to your responders below.</p>`;
+            }
+        })
+        .catch(() => {
+            box.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Lifeline channel ready. Send a message below.</p>`;
+        });
+}
+
+function closeResponderChatModal() {
+    document.getElementById('responderChatModal').classList.add('hidden');
+}
+</script>
+
+<?php require_once __DIR__ . '/footer.php'; ?>

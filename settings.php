@@ -7,6 +7,12 @@ requireLogin();
 $currentUser = getCurrentUser($pdo);
 $isSuperAdmin = isSuperAdmin($currentUser);
 
+if (!$isSuperAdmin) {
+    setFlash('error', 'Access Restricted: ESP32 Hardware & System Settings are only accessible by Super Administrator.');
+    header("Location: dashboard.php");
+    exit;
+}
+
 // Fetch latest 10 SOS alerts from database to show live sync status
 $recentSosAlerts = $pdo->query("SELECT * FROM emergency_sos ORDER BY id DESC LIMIT 6")->fetchAll();
 $totalSosCount = (int)$pdo->query("SELECT COUNT(*) FROM emergency_sos")->fetchColumn();

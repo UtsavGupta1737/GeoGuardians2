@@ -152,9 +152,11 @@ if (!function_exists('getRoleHomeUrl')) {
     function getRoleHomeUrl($userOrSlug) {
         $roleSlug = is_array($userOrSlug) ? ($userOrSlug['role_slug'] ?? 'user') : (string)$userOrSlug;
         return match ($roleSlug) {
+            'police' => 'police_hub.php',
+            'fire' => 'fire_hub.php',
+            'medical' => 'medical_hub.php',
             'volunteer', 'ngo' => 'volunteer.php',
             'user', 'citizen', 'victim' => 'citizen.php',
-            'fire' => 'fire_hub.php',
             default => 'dashboard.php'
         };
     }
@@ -236,7 +238,7 @@ if (!function_exists('logoutUser')) {
     function logoutUser() {
         if (session_status() === PHP_SESSION_ACTIVE) {
             $_SESSION = [];
-            if (ini_get("session.use_cookies")) {
+            if (ini_get("session.use_cookies") && !headers_sent()) {
                 $params = session_get_cookie_params();
                 setcookie(session_name(), '', time() - 42000,
                     $params["path"], $params["domain"],

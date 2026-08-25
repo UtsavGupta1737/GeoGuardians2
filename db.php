@@ -9,9 +9,14 @@ if (!file_exists($db_dir)) {
 $db_file = $db_dir . DIRECTORY_SEPARATOR . 'app.sqlite';
 
 try {
-    $pdo = new PDO("sqlite:" . $db_file);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $pdo = new PDO("sqlite:" . $db_file, null, null, [
+        PDO::ATTR_TIMEOUT => 10,
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+    ]);
+    $pdo->exec("PRAGMA journal_mode = WAL;");
+    $pdo->exec("PRAGMA busy_timeout = 10000;");
+    $pdo->exec("PRAGMA synchronous = NORMAL;");
     $pdo->exec("PRAGMA foreign_keys = ON;");
 } catch (PDOException $e) {
     die("Database Connection Error: " . htmlspecialchars($e->getMessage()));
@@ -501,10 +506,9 @@ function initializeDatabase(PDO $pdo) {
         [
             'name' => 'NDRF Force Commander',
             'slug' => 'ndrf',
-            'description' => 'National Disaster Response Force tactical operations, heavy extraction, flood evacuation, and multi-agency mission control.',
+            'description' => 'National Disaster Response Force tactical operations, heavy extraction, flood evacuation, and specialized disaster rescue operations.',
             'permissions' => json_encode([
-                'access_sos_database', 'access_disasters', 'access_ndrf', 'access_police', 'access_fire', 
-                'access_medical', 'view_dashboard', 'view_analytics', 'edit_profile'
+                'access_sos_database', 'access_disasters', 'access_ndrf', 'view_dashboard', 'view_analytics', 'edit_profile'
             ])
         ],
         [
@@ -555,8 +559,6 @@ function initializeDatabase(PDO $pdo) {
         $row = $exists->fetch();
         if (!$row) {
             $pdo->prepare("INSERT INTO roles (name, slug, description, permissions) VALUES (?, ?, ?, ?)")->execute([$role['name'], $role['slug'], $role['description'], $role['permissions']]);
-        } else {
-            $pdo->prepare("UPDATE roles SET name = ?, description = ?, permissions = ? WHERE slug = ?")->execute([$role['name'], $role['description'], $role['permissions'], $role['slug']]);
         }
     }
 
@@ -1684,5 +1686,8 @@ function initializeDatabase(PDO $pdo) {
     }
 }
 
-// Run DB initialization
-initializeDatabase($pdo);
+// Run DB initialization only when schema is not yet built
+$isInit = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")->fetch();
+if (!$isInit) {
+    initializeDatabase($pdo);
+}

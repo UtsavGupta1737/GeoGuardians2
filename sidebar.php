@@ -92,8 +92,35 @@ $currentScript = basename($_SERVER['PHP_SELF']);
             </nav>
         </div>
 
-        <!-- Emergency Agency Command (Dedicated 3 Departments) -->
-        <?php if ($isSuperAdmin || $hasPolice || $hasFire || $hasMedical): ?>
+        <!-- Citizen Safety Portal (Direct Lifeline) -->
+        <?php if (isCitizen($currentUser) || $isSuperAdmin): ?>
+            <div>
+                <div class="px-3 mb-1.5 text-[10px] font-black uppercase tracking-wider text-red-600 mono flex items-center justify-between">
+                    <span>Citizen Safety Portal</span>
+                    <i class="fa-solid fa-heart-pulse text-[10px] text-red-600"></i>
+                </div>
+                <nav class="space-y-1">
+                    <a href="citizen.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all <?= ($currentScript === 'citizen.php') ? 'bg-red-50 text-red-900 border-l-4 border-red-600 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                        <i class="fa-solid fa-tower-broadcast text-sm w-4 text-center text-red-600"></i>
+                        <span class="flex-1 font-extrabold">Emergency SOS Beacon</span>
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    </a>
+
+                    <a href="citizen_guides.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all <?= ($currentScript === 'citizen_guides.php') ? 'bg-amber-50 text-amber-900 border-l-4 border-amber-600 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                        <i class="fa-solid fa-book-medical text-sm w-4 text-center text-amber-600"></i>
+                        <span class="flex-1 font-extrabold">Survival &amp; Guides</span>
+                    </a>
+
+                    <a href="citizen_contacts.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all <?= ($currentScript === 'citizen_contacts.php') ? 'bg-teal-50 text-teal-900 border-l-4 border-teal-600 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                        <i class="fa-solid fa-phone-volume text-sm w-4 text-center text-teal-600"></i>
+                        <span class="flex-1 font-extrabold">Emergency Directory</span>
+                    </a>
+                </nav>
+            </div>
+        <?php endif; ?>
+
+        <!-- Emergency Agency Command (Dedicated 4 Departments) -->
+        <?php if ($isSuperAdmin || $hasPolice || $hasFire || $hasMedical || $hasVolunteer): ?>
             <div>
                 <div class="px-3 mb-1.5 text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center justify-between mono">
                     <span>Emergency Agencies</span>
@@ -129,6 +156,17 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                             <span class="flex-1 font-extrabold">EMS &amp; Medical Hub</span>
                             <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-teal-100 border border-teal-200 text-teal-800 mono">
                                 <?= $pdo->query("SELECT available_quantity FROM agency_resources WHERE agency_type = 'Medical' AND item_name LIKE '%ICU%' LIMIT 1")->fetchColumn() ?: '98'; ?> Beds
+                            </span>
+                        </a>
+                    <?php endif; ?>
+
+                    <!-- 4. Volunteer Command Hub -->
+                    <?php if ($isSuperAdmin || $hasVolunteer): ?>
+                        <a href="volunteer.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all <?= ($currentScript === 'volunteer.php') ? 'bg-emerald-50 text-emerald-900 border-l-4 border-emerald-600 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                            <i class="fa-solid fa-hand-holding-heart text-sm w-4 text-center text-emerald-600"></i>
+                            <span class="flex-1 font-extrabold">Volunteer Command Hub</span>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 border border-emerald-200 text-emerald-800 mono">
+                                HQ
                             </span>
                         </a>
                     <?php endif; ?>
@@ -247,11 +285,13 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                         </a>
                     <?php endif; ?>
 
-                    <a href="settings.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all <?= ($currentScript === 'settings.php') ? 'bg-indigo-50 text-indigo-900 border-l-4 border-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                        <i class="fa-solid fa-microchip text-sm w-4 text-center text-indigo-600"></i>
-                        <span class="flex-1 font-extrabold">Settings &amp; ESP32</span>
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    </a>
+                    <?php if ($isSuperAdmin): ?>
+                        <a href="settings.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all <?= ($currentScript === 'settings.php') ? 'bg-indigo-50 text-indigo-900 border-l-4 border-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                            <i class="fa-solid fa-microchip text-sm w-4 text-center text-indigo-600"></i>
+                            <span class="flex-1 font-extrabold">Settings &amp; ESP32</span>
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </a>
+                    <?php endif; ?>
                 </nav>
             </div>
         <?php endif; ?>

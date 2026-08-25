@@ -3,10 +3,18 @@
 // Production-ready, zero-configuration, self-contained standalone and embeddable module
 
 define('PAGE_TITLE', 'Fire & Rescue Tactical CAD');
+require_once __DIR__ . '/auth.php';
 
-// Optional session check if embedded inside DisasterSafe or standalone
-if (session_status() === PHP_SESSION_NONE) {
-    @session_start();
+requireLogin();
+$currentUser = getCurrentUser($pdo);
+
+// Role & Permission Checks
+$isSuperAdmin = isSuperAdmin($currentUser);
+$hasFireAccess = $isSuperAdmin || hasPermission($currentUser, 'access_fire');
+if (!$hasFireAccess) {
+    setFlash('error', 'Access denied. You do not have permission to view Fire & Rescue Department Operations.');
+    header("Location: dashboard.php");
+    exit;
 }
 
 require_once __DIR__ . '/config/fire_db.php';

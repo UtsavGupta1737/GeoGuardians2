@@ -142,9 +142,9 @@ require_once __DIR__ . '/sidebar.php';
                         'Moderate' => 'bg-yellow-50 text-yellow-800 border-yellow-200',
                         default => 'bg-blue-50 text-blue-800 border-blue-200'
                     };
-                    $tasksCount = $pdo->query("SELECT COUNT(*) FROM volunteer_tasks WHERE disaster_id = {$d['id']}")->fetchColumn();
-                    $deployCount = $pdo->query("SELECT COUNT(*) FROM police_deployments WHERE disaster_id = {$d['id']}")->fetchColumn();
-                    $sosCount = $pdo->query("SELECT COUNT(*) FROM emergency_sos WHERE disaster_id = {$d['id']}")->fetchColumn();
+                    $tasksCount = (int) $pdo->query("SELECT COUNT(*) FROM volunteer_tasks WHERE disaster_id = {$d['id']}")->fetchColumn();
+                    $deployCount = (int) $pdo->query("SELECT COUNT(*) FROM police_deployments WHERE disaster_id = {$d['id']}")->fetchColumn();
+                    $sosCount = (int) $pdo->query("SELECT COUNT(*) FROM emergency_sos WHERE emergency_type LIKE " . $pdo->quote('%' . $d['type'] . '%'))->fetchColumn();
                 ?>
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs hover:border-slate-300 hover:shadow-sm transition-all space-y-4">
                     

@@ -3,3 +3,19 @@
 [2026-08-25 09:02:10] INGESTED SOS #15: Vaibhav | Building Collapse | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
 [2026-08-25 09:04:52] INGESTED SOS #16: Yukta-laptop | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
 [2026-08-25 09:07:22] INGESTED SOS #17: Ritesh | Flood | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 09:50:47] INGESTED SOS #19: Vaibhav | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 09:55:11] INGESTED SOS #20: Vai | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 10:08:44] INGESTED SOS #21: Vaibhav | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 10:23:07] INGESTED SOS #22: Utsav | Chemical Leak | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 10:23:47] INGESTED SOS #23: Emergency Caller | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 16:57:46] INGESTED SOS #24: Hdhd | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 16:59:20] INGESTED SOS #25: Utsav | Fire | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 18:27:32] INGESTED SOS #26: Emergency Caller | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 18:29:58] INGESTED SOS #27: Emergency Caller | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 18:31:34] INGESTED SOS #28: Emergency Caller | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 18:31:45] INGESTED SOS #29: Emergency Caller | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 18:31:51] INGESTED SOS #30: Emergency Caller | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 18:31:58] INGESTED SOS #31: Emergency Caller | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 18:44:28] INGESTED SOS #32: Chh | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 18:45:40] INGESTED SOS #33: Emergency Caller | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
+[2026-08-25 19:13:57] INGESTED SOS #34: Emergency Caller | General Emergency | GPS: 28.6139, 77.209 | Node: RESCUE-BEACON-04
