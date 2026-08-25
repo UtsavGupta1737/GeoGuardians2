@@ -246,6 +246,12 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                             <span class="flex-1 font-extrabold">Audit Activity Logs</span>
                         </a>
                     <?php endif; ?>
+
+                    <a href="settings.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all <?= ($currentScript === 'settings.php') ? 'bg-indigo-50 text-indigo-900 border-l-4 border-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                        <i class="fa-solid fa-microchip text-sm w-4 text-center text-indigo-600"></i>
+                        <span class="flex-1 font-extrabold">Settings &amp; ESP32</span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    </a>
                 </nav>
             </div>
         <?php endif; ?>

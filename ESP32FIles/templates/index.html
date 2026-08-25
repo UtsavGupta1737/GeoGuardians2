@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRISISNET // Emergency SOS Command Center</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #080c14;
+      --panel-bg: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --danger-red: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.4);
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --text-white: #f8fafc;
+      --text-dim: #94a3b8;
+      --badge-flood: #0284c7;
+      --badge-fire: #dc2626;
+      --badge-quake: #d97706;
+      --badge-chem: #9333ea;
+      --badge-med: #e11d48;
+      --badge-voice: #f43f5e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navigation Bar */
+    header {
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      background: var(--danger-red);
+      color: white;
+      font-weight: 900;
+      padding: 6px 12px;
+      border-radius: 8px;
+      letter-spacing: 1px;
+      animation: blink-dot 2s infinite;
+    }
+
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .brand p {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .btn-toggle-announce {
+      background: rgba(244, 63, 94, 0.2);
+      color: #fda4af;
+      border: 1px solid var(--badge-voice);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .btn-toggle-announce.active {
+      background: var(--badge-voice);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--text-white);
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: #334155;
+    }
+
+    /* Main Dashboard Layout */
+    .dashboard-container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      flex: 1;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Metrics Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .stat-card h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .stat-card .value {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .stat-card.alert-stat {
+      border-left: 4px solid var(--danger-red);
+    }
+
+    .stat-card.alert-stat .value {
+      color: var(--danger-red);
+    }
+
+    .stat-card.voice-stat {
+      border-left: 4px solid var(--badge-voice);
+    }
+
+    .stat-card.voice-stat .value {
+      color: var(--badge-voice);
+    }
+
+    /* Right Main Feed */
+    .feed-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+
+    .feed-header h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* SOS Alert Card */
+    .alert-card {
+      background: var(--card-bg);
+      border: 1px solid #475569;
+      border-left: 6px solid var(--danger-red);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s ease;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-card.voice-sos-highlight {
+      border-left-color: var(--badge-voice);
+      box-shadow: 0 4px 20px rgba(244, 63, 94, 0.25);
+    }
+
+    .alert-card.resolved {
+      border-left-color: #10b981;
+      opacity: 0.65;
+    }
+
+    .alert-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .victim-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .type-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: white;
+      background: var(--danger-red);
+    }
+
+    .voice-tag-badge {
+      background: rgba(244, 63, 94, 0.25);
+      border: 1px solid var(--badge-voice);
+      color: #fda4af;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      animation: pulse-voice 1.5s infinite alternate;
+    }
+
+    @keyframes pulse-voice {
+      0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
+      100% { box-shadow: 0 0 10px 2px rgba(244, 63, 94, 0.3); }
+    }
+
+    .badge-Flood { background: var(--badge-flood); }
+    .badge-Fire { background: var(--badge-fire); }
+    .badge-Earthquake { background: var(--badge-quake); }
+    .badge-Chemical-Leak { background: var(--badge-chem); }
+    .badge-Medical-Trauma { background: var(--badge-med); }
+    .badge-Voice-Note-SOS { background: var(--badge-voice); }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+    }
+
+    .meta-item strong {
+      color: var(--text-dim);
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .meta-item span {
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+
+    .needs-box {
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .need-tag {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid var(--accent-amber);
+      color: #fbbf24;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Embedded Voice Note Audio Player */
+    .voice-player-container {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.15), rgba(15, 23, 42, 0.95));
+      border: 1.5px solid rgba(244, 63, 94, 0.45);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .voice-player-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #fda4af;
+      letter-spacing: 0.5px;
+    }
+
+    .voice-player-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-play-voice {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-play-voice:hover {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+    }
+
+    .audio-waveform-bars {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 22px;
+    }
+
+    .audio-waveform-bars .eq-bar {
+      width: 3px;
+      height: 6px;
+      background: #f43f5e;
+      border-radius: 2px;
+      transition: height 0.2s;
+    }
+
+    .audio-waveform-bars.playing .eq-bar {
+      animation: eq-bounce 0.6s infinite alternate ease-in-out;
+    }
+
+    .audio-waveform-bars.playing .eq-bar:nth-child(1) { animation-delay: 0.1s; }
+    .audio-waveform-bars.playing .eq-bar:nth-child(2) { animation-delay: 0.3s; }
+    .audio-waveform-bars.playing .eq-bar:nth-child(3) { animation-delay: 0.15s; }
+    .audio-waveform-bars.playing .eq-bar:nth-child(4) { animation-delay: 0.4s; }
+    .audio-waveform-bars.playing .eq-bar:nth-child(5) { animation-delay: 0.25s; }
+
+    @keyframes eq-bounce {
+      0% { height: 4px; }
+      100% { height: 20px; }
+    }
+
+    .audio-seek-slider {
+      flex: 1;
+      accent-color: #f43f5e;
+      cursor: pointer;
+      height: 5px;
+    }
+
+    .audio-time-counter {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-weight: 700;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    .message-box {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 3px solid var(--accent-cyan);
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      margin-bottom: 14px;
+      font-style: italic;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-maps {
+      background: #0284c7;
+      color: white;
+    }
+    .btn-maps:hover { background: #0369a1; }
+
+    .btn-call {
+      background: #16a34a;
+      color: white;
+    }
+    .btn-call:hover { background: #15803d; }
+
+    .btn-tts {
+      background: rgba(244, 63, 94, 0.2);
+      border: 1px solid #f43f5e;
+      color: #fda4af;
+    }
+    .btn-tts:hover { background: #f43f5e; color: white; }
+
+    .btn-resolve {
+      background: #475569;
+      color: white;
+    }
+    .btn-resolve:hover { background: #334155; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-dim);
+    }
+    .empty-state .icon {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">SOS</div>
+      <div>
+        <h1>EMERGENCY COMMAND CENTER</h1>
+        <p>ESP32 Captive Portal Gateway Link (USB Serial + Voice SOS)</p>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div class="status-indicator">
+        <div id="connectionDot" class="status-dot"></div>
+        <span id="connectionText">Gateway Connected</span>
+      </div>
+      <button id="btnAnnounce" class="btn-toggle-announce active" onclick="toggleAutoAnnounce()">
+        🗣️ Auto Voice Announce: ON
+      </button>
+      <button class="btn-secondary" onclick="simulateAlert()">⚡ Test Voice Alert</button>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <div class="dashboard-container">
+    
+    <!-- Sidebar / Stats -->
+    <div class="sidebar">
+      <div class="stat-card alert-stat">
+        <h3>Active Crisis Incidents</h3>
+        <div class="value" id="activeCount">0</div>
+      </div>
+
+      <div class="stat-card voice-stat">
+        <h3>🎙️ Voice SOS Alerts</h3>
+        <div class="value" id="voiceCount">0</div>
+      </div>
+
+      <div class="stat-card">
+        <h3>Total SOS Received</h3>
+        <div class="value" id="totalCount">0</div>
+      </div>
+
+      <div class="stat-card">
+        <h3>Gateway Link</h3>
+        <div style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.6;">
+          <div><strong>Protocol:</strong> JSON over USB Serial</div>
+          <div><strong>Baud Rate:</strong> 115200</div>
+          <div><strong>ESP32 AP:</strong> EMERGENCY-SOS-PORTAL</div>
+          <div><strong>Voice Codec:</strong> WAV / Base64 Audio</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live SOS Feed -->
+    <div class="feed-panel">
+      <div class="feed-header">
+        <h2>🚨 Live Incoming Distress Feed</h2>
+        <span id="feedCountBadge" style="font-size: 0.8rem; color: var(--text-dim);">Listening for signals...</span>
+      </div>
+
+      <div id="alertsContainer" class="cards-list">
+        <div id="emptyState" class="empty-state">
+          <div class="icon">📡</div>
+          <h3>Listening for Incoming SOS Dispatches</h3>
+          <p>When a citizen connects to the ESP32 Wi-Fi and submits a report or Voice SOS, it will appear here instantaneously.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const socket = io();
+    let alerts = [];
+    let autoAnnounce = true;
+
+    function toggleAutoAnnounce() {
+      autoAnnounce = !autoAnnounce;
+      const btn = document.getElementById('btnAnnounce');
+      if (autoAnnounce) {
+        btn.classList.add('active');
+        btn.innerText = '🗣️ Auto Voice Announce: ON';
+      } else {
+        btn.classList.remove('active');
+        btn.innerText = '🗣️ Auto Voice Announce: OFF';
+      }
+    }
+
+    socket.on('connect', () => {
+      document.getElementById('connectionDot').style.background = '#10b981';
+      document.getElementById('connectionDot').style.boxShadow = '0 0 8px #10b981';
+      document.getElementById('connectionText').innerText = 'Gateway Connected';
+    });
+
+    socket.on('disconnect', () => {
+      document.getElementById('connectionDot').style.background = '#ef4444';
+      document.getElementById('connectionDot').style.boxShadow = '0 0 8px #ef4444';
+      document.getElementById('connectionText').innerText = 'Disconnected';
+    });
+
+    socket.on('new_sos_alert', (data) => {
+      renderNewAlert(data);
+      playAlertTone();
+      if (autoAnnounce) {
+        speakAlert(data);
+      }
+    });
+
+    function playAlertTone() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+      } catch (e) {}
+    }
+
+    function speakAlert(data) {
+      try {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const caller = data.victim_name || data.sender_name || 'Caller';
+          const type = data.emergency_type || 'Distress alert';
+          const notes = data.message ? `. Note: ${data.message}` : '';
+          const utterance = new SpeechSynthesisUtterance(`Emergency SOS Alert from ${caller}. Crisis: ${type}${notes}`);
+          utterance.rate = 1.0;
+          utterance.pitch = 1.1;
+          window.speechSynthesis.speak(utterance);
+        }
+      } catch (e) {}
+    }
+
+    function speakSingleCard(caller, type, message) {
+      try {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(`Emergency Alert from ${caller}. Incident type: ${type}. Situation notes: ${message}`);
+          window.speechSynthesis.speak(utterance);
+        }
+      } catch (e) {}
+    }
+
+    function renderNewAlert(data) {
+      alerts.unshift(data);
+      updateCounts();
+
+      const empty = document.getElementById('emptyState');
+      if (empty) empty.style.display = 'none';
+
+      const container = document.getElementById('alertsContainer');
+      const card = document.createElement('div');
+      const alertId = data.id || Date.now();
+      const hasVoice = Boolean(data.voice_note);
+      
+      card.className = 'alert-card' + (hasVoice ? ' voice-sos-highlight' : '');
+      card.id = `alert-${alertId}`;
+
+      const name = data.victim_name || data.sender_name || "Unknown Caller";
+      const phone = data.phone || data.sender_phone || "N/A";
+      const lat = parseFloat(data.latitude || data.gps_lat) || 28.613900;
+      const lng = parseFloat(data.longitude || data.gps_lng) || 77.209000;
+      const beaconId = data.beacon_node_id || "RESCUE-BEACON-04";
+      const type = data.emergency_type || "General Emergency";
+      const needs = data.quick_needs || data.medical_needs || "";
+      const blood = data.blood_type || "Unknown";
+      const age = data.age ? `${data.age} yrs` : "N/A";
+      const notes = data.message || "Distress report registered.";
+      const time = data.received_at || new Date().toLocaleTimeString();
+      const voiceDuration = data.voice_duration_sec || 0;
+
+      const typeClean = type.replace(/\s+/g, '-');
+      const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+
+      let needsHtml = '';
+      if (needs) {
+        const list = needs.split(',').map(n => `<span class="need-tag">${n.trim()}</span>`).join('');
+        needsHtml = `<div class="needs-box"><strong>Requested Aid:</strong> ${list}</div>`;
+      }
+
+      // Voice Player Component HTML
+      let voicePlayerHtml = '';
+      if (hasVoice) {
+        voicePlayerHtml = `
+          <div class="voice-player-container">
+            <div class="voice-player-header">
+              <span>🎙️ EMERGENCY VOICE AUDIO BEACON</span>
+              <span>${voiceDuration ? voiceDuration + 's audio note' : 'Audio Attached'}</span>
+            </div>
+            <audio id="audio-${alertId}" src="${data.voice_note}" preload="metadata"></audio>
+            <div class="voice-player-controls">
+              <button type="button" id="playBtn-${alertId}" class="btn-play-voice" onclick="togglePlayVoice('${alertId}')">
+                ▶️ Play Audio
+              </button>
+              <div class="audio-waveform-bars" id="eq-${alertId}">
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+              </div>
+              <input type="range" id="seek-${alertId}" class="audio-seek-slider" min="0" max="100" value="0" oninput="seekVoice('${alertId}', this.value)">
+              <span id="time-${alertId}" class="audio-time-counter">00:00</span>
+            </div>
+          </div>
+        `;
+      }
+
+      card.innerHTML = `
+        <div class="alert-top">
+          <div class="victim-title">
+            <span>👤 ${escapeHtml(name)}</span>
+            <span class="type-badge badge-${typeClean}">${escapeHtml(type)}</span>
+            ${hasVoice ? '<span class="voice-tag-badge">🎙️ VOICE SOS</span>' : ''}
+          </div>
+          <span style="font-size:0.75rem; color:var(--text-dim);">🕒 ${time}</span>
+        </div>
+
+        <div style="background:rgba(16, 185, 129, 0.15); border:1px solid #10b981; border-radius:6px; padding:6px 10px; margin-bottom:10px; font-size:0.8rem; display:flex; justify-content:space-between; align-items:center;">
+          <span>📡 <strong>Ingress Node:</strong> ${escapeHtml(beaconId)}</span>
+          <span style="color:#10b981; font-weight:700;">📍 GPS Locked (${lat.toFixed(4)}, ${lng.toFixed(4)})</span>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-item">
+            <strong>Contact Phone</strong>
+            <span>📞 ${escapeHtml(phone)}</span>
+          </div>
+          <div class="meta-item">
+            <strong>GPS Coordinates</strong>
+            <span>📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}</span>
+          </div>
+          <div class="meta-item">
+            <strong>Blood Group</strong>
+            <span>🩸 ${escapeHtml(blood)}</span>
+          </div>
+          <div class="meta-item">
+            <strong>Victim Age</strong>
+            <span>🎂 ${escapeHtml(age)}</span>
+          </div>
+        </div>
+
+        ${needsHtml}
+        ${voicePlayerHtml}
+
+        <div class="message-box">
+          "${escapeHtml(notes)}"
+        </div>
+
+        <div class="card-actions">
+          <a href="${mapUrl}" target="_blank" class="btn-action btn-maps">🗺️ Open Map Location</a>
+          <a href="tel:${phone}" class="btn-action btn-call">📞 Call Victim</a>
+          <button class="btn-action btn-tts" onclick="speakSingleCard('${escapeHtml(name)}', '${escapeHtml(type)}', '${escapeHtml(notes)}')">🗣️ Read Aloud</button>
+          <button class="btn-action btn-resolve" onclick="markResolved('${card.id}')">✓ Mark Handled</button>
+        </div>
+      `;
+
+      container.insertBefore(card, container.firstChild);
+
+      if (hasVoice) {
+        setupAudioEvents(alertId);
+      }
+    }
+
+    function setupAudioEvents(alertId) {
+      const audio = document.getElementById(`audio-${alertId}`);
+      const seek = document.getElementById(`seek-${alertId}`);
+      const timeLabel = document.getElementById(`time-${alertId}`);
+      const playBtn = document.getElementById(`playBtn-${alertId}`);
+      const eq = document.getElementById(`eq-${alertId}`);
+
+      if (!audio) return;
+
+      audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+          const progress = (audio.currentTime / audio.duration) * 100;
+          seek.value = progress;
+          timeLabel.innerText = formatAudioTime(audio.currentTime) + ' / ' + formatAudioTime(audio.duration);
+        }
+      });
+
+      audio.addEventListener('ended', () => {
+        playBtn.innerHTML = '▶️ Play Audio';
+        eq.classList.remove('playing');
+        seek.value = 0;
+      });
+
+      audio.addEventListener('loadedmetadata', () => {
+        timeLabel.innerText = '00:00 / ' + formatAudioTime(audio.duration);
+      });
+    }
+
+    function togglePlayVoice(alertId) {
+      const audio = document.getElementById(`audio-${alertId}`);
+      const playBtn = document.getElementById(`playBtn-${alertId}`);
+      const eq = document.getElementById(`eq-${alertId}`);
+
+      if (!audio) return;
+
+      if (audio.paused) {
+        document.querySelectorAll('audio').forEach(a => {
+          if (a !== audio) a.pause();
+        });
+        audio.play();
+        playBtn.innerHTML = '⏸️ Pause';
+        eq.classList.add('playing');
+      } else {
+        audio.pause();
+        playBtn.innerHTML = '▶️ Play Audio';
+        eq.classList.remove('playing');
+      }
+    }
+
+    function seekVoice(alertId, val) {
+      const audio = document.getElementById(`audio-${alertId}`);
+      if (audio && audio.duration) {
+        audio.currentTime = (val / 100) * audio.duration;
+      }
+    }
+
+    function formatAudioTime(seconds) {
+      if (isNaN(seconds)) return '00:00';
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+    }
+
+    function markResolved(cardId) {
+      const card = document.getElementById(cardId);
+      if (card) {
+        card.classList.toggle('resolved');
+      }
+    }
+
+    function updateCounts() {
+      const total = alerts.length;
+      const voiceTotal = alerts.filter(a => a.voice_note || a.is_voice_sos).length;
+      document.getElementById('totalCount').innerText = total;
+      document.getElementById('activeCount').innerText = total;
+      document.getElementById('voiceCount').innerText = voiceTotal;
+      document.getElementById('feedCountBadge').innerText = `${total} alerts logged (${voiceTotal} voice notes)`;
+    }
+
+    function simulateAlert() {
+      fetch('/api/test-alert', { method: 'POST' });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Initial Fetch
+    fetch('/api/sos-list')
+      .then(res => res.json())
+      .then(res => {
+        if (res.alerts && res.alerts.length > 0) {
+          res.alerts.reverse().forEach(alert => renderNewAlert(alert));
+        }
+      });
+  </script>
+</body>
+</html>

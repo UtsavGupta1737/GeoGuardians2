@@ -27,8 +27,8 @@ $flash = getFlash();
                     popup: 'border border-slate-200 shadow-xl'
                 },
                 didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
                 }
             });
 
@@ -39,5 +39,8 @@ $flash = getFlash();
         });
     </script>
     <?php endif; ?>
+
+    <!-- Global Persistent ESP32 Web Serial Background Listener -->
+    <script src="js/esp32_global_serial.js"></script>
 </body>
 </html>

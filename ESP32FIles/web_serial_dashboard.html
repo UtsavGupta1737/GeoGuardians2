@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browser Web-Serial SOS Receiver (With Voice SOS Player)</title>
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --panel-bg: #111827;
+      --card-bg: #1f2937;
+      --border-color: #374151;
+      --danger-red: #ef4444;
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --badge-voice: #f43f5e;
+      --text-white: #f9fafb;
+      --text-dim: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-tag {
+      background: #2563eb;
+      color: white;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    .btn-connect {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .btn-connect:hover { background: #059669; }
+    .btn-connect.connected { background: #dc2626; }
+
+    .main-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+    }
+
+    @media (max-width: 850px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feed-panel, .log-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .feed-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .sos-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--danger-red);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sos-card.voice-sos-highlight {
+      border-left-color: var(--badge-voice);
+      box-shadow: 0 4px 18px rgba(244, 63, 94, 0.25);
+    }
+
+    .victim-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .victim-name {
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .badge-type {
+      background: var(--danger-red);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .voice-tag-badge {
+      background: rgba(244, 63, 94, 0.25);
+      border: 1px solid var(--badge-voice);
+      color: #fda4af;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .grid-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(0,0,0,0.25);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+
+    /* Embedded Voice Player */
+    .voice-player-box {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.15), rgba(17, 24, 39, 0.95));
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .voice-player-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #fda4af;
+    }
+
+    .voice-controls-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-play-voice-sm {
+      background: #f43f5e;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-play-voice-sm:hover { background: #e11d48; }
+
+    .audio-eq-bars {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 18px;
+    }
+
+    .audio-eq-bars .eq-bar {
+      width: 3px;
+      height: 4px;
+      background: #f43f5e;
+      border-radius: 2px;
+    }
+
+    .audio-eq-bars.playing .eq-bar {
+      animation: eq-bounce 0.6s infinite alternate ease-in-out;
+    }
+    .audio-eq-bars.playing .eq-bar:nth-child(1) { animation-delay: 0.1s; }
+    .audio-eq-bars.playing .eq-bar:nth-child(2) { animation-delay: 0.3s; }
+    .audio-eq-bars.playing .eq-bar:nth-child(3) { animation-delay: 0.15s; }
+    .audio-eq-bars.playing .eq-bar:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes eq-bounce {
+      0% { height: 4px; }
+      100% { height: 16px; }
+    }
+
+    .seek-bar-sm {
+      flex: 1;
+      accent-color: #f43f5e;
+      cursor: pointer;
+      height: 4px;
+    }
+
+    .notes-box {
+      font-style: italic;
+      color: #e5e7eb;
+      font-size: 0.88rem;
+      margin-bottom: 12px;
+      padding-left: 8px;
+      border-left: 2px solid var(--accent-cyan);
+    }
+
+    .card-footer-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-map {
+      display: inline-block;
+      background: #0284c7;
+      color: white;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .btn-tts-sm {
+      background: rgba(244, 63, 94, 0.2);
+      border: 1px solid #f43f5e;
+      color: #fda4af;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-tts-sm:hover { background: #f43f5e; color: white; }
+
+    .serial-log {
+      width: 100%;
+      height: 400px;
+      background: #030712;
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      color: #10b981;
+      font-family: monospace;
+      font-size: 0.78rem;
+      padding: 10px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="brand-tag">WEB SERIAL API</span>
+      <div>
+        <h2>Standalone ESP32 SOS Console</h2>
+        <p style="font-size:0.75rem; color:var(--text-dim);">Connect directly to ESP32 USB COM Port in Chrome / Edge (Voice SOS Enabled)</p>
+      </div>
+    </div>
+
+    <button id="btnConnect" class="btn-connect" onclick="toggleSerial()">
+      🔌 Connect ESP32 USB
+    </button>
+  </header>
+
+  <div class="main-container">
+    
+    <!-- Feed -->
+    <div class="feed-panel">
+      <div class="feed-title">
+        <span>🚨 Parsed Emergency Dispatches</span>
+        <span id="badgeCount" style="font-size:0.8rem; color:var(--text-dim);">0 reports</span>
+      </div>
+
+      <div id="cardsContainer">
+        <p style="color:var(--text-dim); text-align:center; padding: 40px 0;">
+          Plug in ESP32 via USB and click <strong>"Connect ESP32 USB"</strong> to stream SOS alerts and Voice Notes directly into this browser window.
+        </p>
+      </div>
+    </div>
+
+    <!-- Raw Serial Monitor -->
+    <div class="log-panel">
+      <div class="feed-title">
+        <span>📟 Live Serial Stream</span>
+        <button onclick="clearLog()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:0.75rem;">Clear</button>
+      </div>
+      <div id="serialLog" class="serial-log">Waiting for connection (115200 baud)...&#10;</div>
+    </div>
+
+  </div>
+
+  <script>
+    let port = null;
+    let reader = null;
+    let keepReading = false;
+    let sosCount = 0;
+
+    const btnConnect = document.getElementById('btnConnect');
+    const serialLog = document.getElementById('serialLog');
+    const cardsContainer = document.getElementById('cardsContainer');
+
+    function logToScreen(text) {
+      const display = text.length > 120 ? text.substring(0, 60) + '... [TRUNCATED] ...' + text.substring(text.length - 30) : text;
+      serialLog.textContent += display + "\n";
+      serialLog.scrollTop = serialLog.scrollHeight;
+    }
+
+    function clearLog() {
+      serialLog.textContent = "";
+    }
+
+    function speakAlert(caller, type, message) {
+      try {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(`Emergency SOS Alert from ${caller}. Incident type: ${type}. Notes: ${message}`);
+          window.speechSynthesis.speak(utterance);
+        }
+      } catch (e) {}
+    }
+
+    async function toggleSerial() {
+      if (port) {
+        keepReading = false;
+        if (reader) await reader.cancel();
+        await port.close();
+        port = null;
+        btnConnect.innerText = "🔌 Connect ESP32 USB";
+        btnConnect.classList.remove('connected');
+        logToScreen("[DISCONNECTED] Serial port closed.");
+        return;
+      }
+
+      if (!("serial" in navigator)) {
+        alert("Web Serial API is supported in Google Chrome, Microsoft Edge, and Opera.\nPlease use a supported browser.");
+        return;
+      }
+
+      try {
+        port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 115200 });
+        keepReading = true;
+        btnConnect.innerText = "🛑 Disconnect USB";
+        btnConnect.classList.add('connected');
+        logToScreen("[CONNECTED] Listening on 115200 baud...");
+
+        readSerialLoop();
+      } catch (err) {
+        logToScreen("[ERROR] " + err.message);
+      }
+    }
+
+    async function readSerialLoop() {
+      const textDecoder = new TextDecoderStream();
+      const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+      reader = textDecoder.readable.getReader();
+
+      let buffer = "";
+      let inSosBlock = false;
+      let sosLines = [];
+
+      try {
+        while (keepReading) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (value) {
+            buffer += value;
+            let lines = buffer.split("\n");
+            buffer = lines.pop();
+
+            for (let line of lines) {
+              line = line.trim();
+              if (!line) continue;
+              logToScreen(line);
+
+              if (line === "---SOS_START---") {
+                inSosBlock = true;
+                sosLines = [];
+                continue;
+              } else if (line === "---SOS_END---") {
+                inSosBlock = false;
+                try {
+                  const data = JSON.parse(sosLines.join(""));
+                  renderCard(data);
+                } catch (e) {
+                  logToScreen("[PARSE ERROR] " + e.message);
+                }
+                sosLines = [];
+                continue;
+              }
+
+              if (inSosBlock) {
+                sosLines.push(line);
+              } else if (line.startsWith("{") && line.endsWith("}")) {
+                try {
+                  const data = JSON.parse(line);
+                  if (data.victim_name || data.sender_name) {
+                    renderCard(data);
+                  }
+                } catch (e) {}
+              }
+            }
+          }
+        }
+      } catch (e) {
+        logToScreen("[STREAM ERROR] " + e.message);
+      } finally {
+        reader.releaseLock();
+      }
+    }
+
+    function renderCard(data) {
+      sosCount++;
+      document.getElementById('badgeCount').innerText = `${sosCount} reports`;
+
+      if (sosCount === 1) {
+        cardsContainer.innerHTML = "";
+      }
+
+      const alertId = data.id || ('ws-' + Date.now());
+      const hasVoice = Boolean(data.voice_note);
+      const name = data.victim_name || data.sender_name || "Unknown Caller";
+      const phone = data.phone || data.sender_phone || "N/A";
+      const lat = parseFloat(data.latitude || data.gps_lat) || 28.613900;
+      const lng = parseFloat(data.longitude || data.gps_lng) || 77.209000;
+      const beaconId = data.beacon_node_id || "RESCUE-BEACON-04";
+      const type = data.emergency_type || "Emergency";
+      const needs = data.quick_needs || data.medical_needs || "None specified";
+      const blood = data.blood_type || "Unknown";
+      const age = data.age || "N/A";
+      const notes = data.message || "No notes provided";
+      const voiceDuration = data.voice_duration_sec || 0;
+      const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+
+      let voiceHtml = '';
+      if (hasVoice) {
+        voiceHtml = `
+          <div class="voice-player-box">
+            <div class="voice-player-top">
+              <span>🎙️ EMERGENCY VOICE AUDIO BEACON</span>
+              <span>${voiceDuration ? voiceDuration + 's' : 'Audio attached'}</span>
+            </div>
+            <audio id="ws-audio-${alertId}" src="${data.voice_note}" preload="metadata"></audio>
+            <div class="voice-controls-row">
+              <button type="button" id="ws-btn-${alertId}" class="btn-play-voice-sm" onclick="toggleWebVoice('${alertId}')">
+                ▶️ Play
+              </button>
+              <div class="audio-eq-bars" id="ws-eq-${alertId}">
+                <span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span>
+              </div>
+              <input type="range" id="ws-seek-${alertId}" class="seek-bar-sm" min="0" max="100" value="0" oninput="seekWebVoice('${alertId}', this.value)">
+              <span id="ws-time-${alertId}" style="font-family:monospace; font-size:0.75rem; color:var(--text-dim);">00:00</span>
+            </div>
+          </div>
+        `;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'sos-card' + (hasVoice ? ' voice-sos-highlight' : '');
+      card.id = `card-${alertId}`;
+      card.innerHTML = `
+        <div class="victim-header">
+          <span class="victim-name">👤 ${escapeHtml(name)}</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            ${hasVoice ? '<span class="voice-tag-badge">🎙️ VOICE SOS</span>' : ''}
+            <span class="badge-type">${escapeHtml(type)}</span>
+          </div>
+        </div>
+        <div style="background:rgba(16,185,129,0.15); border:1px solid #10b981; border-radius:6px; padding:4px 8px; font-size:0.75rem; margin-bottom:8px; display:flex; justify-content:space-between;">
+          <span>📡 <strong>Node:</strong> ${escapeHtml(beaconId)}</span>
+          <span style="color:#10b981; font-weight:700;">📍 Auto-Pinned GPS</span>
+        </div>
+        <div class="grid-info">
+          <div><strong>📞 Phone:</strong> ${escapeHtml(phone)}</div>
+          <div><strong>📍 GPS:</strong> ${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
+          <div><strong>🩸 Blood:</strong> ${escapeHtml(blood)}</div>
+          <div><strong>🎂 Age:</strong> ${escapeHtml(age)}</div>
+        </div>
+        <div style="font-size:0.85rem; margin-bottom:8px;"><strong>Aid Needs:</strong> ${escapeHtml(needs)}</div>
+        ${voiceHtml}
+        <div class="notes-box">"${escapeHtml(notes)}"</div>
+        <div class="card-footer-actions">
+          <a href="${mapUrl}" target="_blank" class="btn-map">🗺️ View Location on Map</a>
+          <button class="btn-tts-sm" onclick="speakAlert('${escapeHtml(name)}', '${escapeHtml(type)}', '${escapeHtml(notes)}')">🗣️ Read Aloud</button>
+        </div>
+      `;
+
+      cardsContainer.insertBefore(card, cardsContainer.firstChild);
+
+      if (hasVoice) {
+        setupWebAudioEvents(alertId);
+      }
+    }
+
+    function setupWebAudioEvents(alertId) {
+      const audio = document.getElementById(`ws-audio-${alertId}`);
+      const seek = document.getElementById(`ws-seek-${alertId}`);
+      const timeLabel = document.getElementById(`ws-time-${alertId}`);
+      const playBtn = document.getElementById(`ws-btn-${alertId}`);
+      const eq = document.getElementById(`ws-eq-${alertId}`);
+
+      if (!audio) return;
+
+      audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+          seek.value = (audio.currentTime / audio.duration) * 100;
+          timeLabel.innerText = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+        }
+      });
+
+      audio.addEventListener('ended', () => {
+        playBtn.innerText = '▶️ Play';
+        eq.classList.remove('playing');
+        seek.value = 0;
+      });
+    }
+
+    function toggleWebVoice(alertId) {
+      const audio = document.getElementById(`ws-audio-${alertId}`);
+      const playBtn = document.getElementById(`ws-btn-${alertId}`);
+      const eq = document.getElementById(`ws-eq-${alertId}`);
+
+      if (!audio) return;
+
+      if (audio.paused) {
+        document.querySelectorAll('audio').forEach(a => { if (a !== audio) a.pause(); });
+        audio.play();
+        playBtn.innerText = '⏸️ Pause';
+        eq.classList.add('playing');
+      } else {
+        audio.pause();
+        playBtn.innerText = '▶️ Play';
+        eq.classList.remove('playing');
+      }
+    }
+
+    function seekWebVoice(alertId, val) {
+      const audio = document.getElementById(`ws-audio-${alertId}`);
+      if (audio && audio.duration) {
+        audio.currentTime = (val / 100) * audio.duration;
+      }
+    }
+
+    function formatTime(sec) {
+      if (isNaN(sec)) return '00:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
