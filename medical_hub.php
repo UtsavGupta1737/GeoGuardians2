@@ -1,5 +1,5 @@
 <?php
-// medical_hub.php - DisasterSafe Medical Department & Hospital Command Hub (Government Theme)
+// medical_hub.php - DisasterSafe Medical Department & Hospital Command Hub (Unified Government Theme)
 define('PAGE_TITLE', 'Medical Department');
 require_once __DIR__ . '/auth.php';
 
@@ -36,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $pdo->prepare("UPDATE agency_teams SET status = :status, current_task = :current_task WHERE id = :id AND agency_type = 'Medical'");
         $stmt->execute([':status' => $newStatus, ':current_task' => $currentTask, ':id' => $teamId]);
-        logActivity($pdo, 'MEDICAL_TEAM_STATUS_UPDATED', "Medical / ALS squad #{$teamId} status changed to {$newStatus}");
-        setFlash('success', "Medical team status updated to {$newStatus}.");
+        logActivity($pdo, 'MEDICAL_TEAM_STATUS_UPDATED', "Medical / ALS ambulance #{$teamId} status changed to {$newStatus}");
+        setFlash('success', "Ambulance status updated to {$newStatus}.");
         header("Location: medical_hub.php");
         exit;
     }
@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = trim($_POST['message'] ?? '');
         if ($message) {
             logActivity($pdo, 'SUPERADMIN_MEDICAL_BROADCAST', "Superadmin broadcast order: '{$message}' to Hospital Control Hubs");
-            setFlash('success', "Critical medical directive broadcasted to all Trauma Centers and Ambulance Despatches.");
+            setFlash('success', "Critical medical directive broadcasted to all Trauma Centers and Ambulance Dispatches on VHF.");
         }
         header("Location: medical_hub.php");
         exit;
@@ -115,13 +115,14 @@ $stations = $pdo->query("SELECT * FROM agency_stations WHERE agency_type = 'Medi
 $teams = $pdo->query("SELECT t.*, s.station_name FROM agency_teams t LEFT JOIN agency_stations s ON t.station_id = s.id WHERE t.agency_type = 'Medical' ORDER BY t.id ASC")->fetchAll();
 $tasks = $pdo->query("SELECT * FROM agency_tasks WHERE agency_type = 'Medical' ORDER BY id DESC")->fetchAll();
 $resources = $pdo->query("SELECT r.*, s.station_name FROM agency_resources r LEFT JOIN agency_stations s ON r.station_id = s.id WHERE r.agency_type = 'Medical' ORDER BY r.id ASC")->fetchAll();
+$medicalSos = $pdo->query("SELECT * FROM emergency_sos WHERE dispatch_agency = 'Medical' OR emergency_type IN ('Medical Trauma', 'Medical', 'Structural Collapse') ORDER BY id DESC LIMIT 6")->fetchAll();
 
 // Live Metrics
 $totalHospitals = count($stations);
 $activeAmbulances = count(array_filter($teams, fn($t) => $t['status'] !== 'Available'));
 $availableAmbulances = count(array_filter($teams, fn($t) => $t['status'] === 'Available'));
 $openTasks = count(array_filter($tasks, fn($t) => $t['status'] !== 'Completed'));
-$totalMedicalStaff = array_sum(array_column($stations, 'personnel_count'));
+$totalPersonnel = array_sum(array_column($stations, 'personnel_count'));
 
 // Calculate Total ICU Bed Capacity
 $icuResource = array_values(array_filter($resources, fn($r) => str_contains($r['item_name'], 'ICU')));
@@ -137,408 +138,583 @@ require_once __DIR__ . '/sidebar.php';
 
     <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
 
-        <!-- POINT OF CONTACT & DEPARTMENT BANNER -->
-        <section class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 relative overflow-hidden shadow-sm">
-            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-teal-100/60 rounded-full blur-3xl pointer-events-none"></div>
+        <!-- 1. HERO COMMAND BANNER -->
+        <section class="bg-gradient-to-r from-teal-950 via-slate-900 to-teal-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-teal-800/40">
+            <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute right-20 top-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-                <!-- Left Details -->
-                <div class="space-y-2">
-                    <div class="flex items-center gap-2.5">
-                        <span class="w-9 h-9 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 font-black text-base shadow-2xs">
-                            <i class="fa-solid fa-truck-medical"></i>
-                        </span>
-                        <div>
-                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-teal-700 mono">Emergency Services Agency</span>
-                            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Medical Department &amp; Hospital Command Hub</h2>
-                        </div>
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div class="space-y-2 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-bold mono">
+                        <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+                        <i class="fa-solid fa-truck-medical text-xs"></i>
+                        <span>EMERGENCY MEDICAL SERVICES &bull; HOSPITAL EMS HUB</span>
                     </div>
-                    <p class="text-xs text-slate-600 max-w-2xl leading-relaxed font-medium">
-                        Superadmin direct point of contact for hospital ICU and trauma bed reserves, ALS ambulance routing, mass casualty triage, blood bank reserves, and field oxygen supply logistics.
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
+                        Medical Department &amp; Hospital Command
+                    </h1>
+                    <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                        Hospital ICU bed reserves, Advanced Life Support (ALS) ambulances, trauma triage centers, blood bank reserves, and field oxygen supply logistics across Delhi-NCR.
                     </p>
+                    <div class="flex flex-wrap items-center gap-4 pt-2 text-xs font-bold text-slate-300">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-doctor text-teal-400"></i> Director: <strong class="text-white">Dr. Ananya Roy (EMS Chief)</strong></span>
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-walkie-talkie text-emerald-400"></i> Radio: <strong class="text-white">EMS Dispatch Ch-1 (155.45 MHz)</strong></span>
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-phone text-teal-400"></i> Hotline: <strong class="text-white">108 / +91 11 2659 8800</strong></span>
+                    </div>
                 </div>
 
-                <!-- Right Point of Contact Card -->
-                    <div class="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center text-xl shrink-0 shadow-xs border border-teal-500">
-                        <i class="fa-solid fa-heart-pulse"></i>
-                    </div>
-                    <div class="text-xs space-y-1">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mono">Department Director In-Charge</span>
-                        <h4 class="font-extrabold text-slate-900 text-sm">Dr. Ananya Roy (EMS Chief)</h4>
-                        <div class="flex flex-wrap items-center gap-3 pt-0.5 text-[11px]">
-                            <a href="tel:108" class="text-teal-700 hover:underline font-mono font-bold flex items-center gap-1">
-                                <i class="fa-solid fa-phone text-[10px]"></i> 108 / +91 11 2659 8800
-                            </a>
-                            <span class="text-slate-600 font-mono font-semibold flex items-center gap-1">
-                                <i class="fa-solid fa-walkie-talkie text-teal-600 text-[10px]"></i> EMS Dispatch Ch-1 (155.45 MHz)
-                            </span>
-                        </div>
-                    </div>
+                <!-- Right Quick Controls -->
+                <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0">
+                    <button type="button" onclick="openCreateTaskModal()" class="px-4 py-2.5 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-black transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-plus-circle text-sm"></i>
+                        <span>Dispatch ALS Ambulance</span>
+                    </button>
+                    <a href="sos.php" class="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-truck-medical text-sm text-amber-400"></i>
+                        <span>Casualty Triage Console</span>
+                    </a>
                 </div>
             </div>
 
             <!-- Direct Tactical Broadcast Bar -->
-            <form method="POST" action="medical_hub.php" class="mt-5 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
+            <form method="POST" action="medical_hub.php" class="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center gap-3">
                 <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                 <input type="hidden" name="action" value="broadcast_order">
                 <div class="relative flex-1 w-full">
-                    <i class="fa-solid fa-tower-broadcast absolute left-3.5 top-3 text-teal-600 text-xs"></i>
-                    <input type="text" name="message" required placeholder="Transmit urgent medical order or mass triage alert to all Hospital Emergency Rooms..." class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 focus:bg-white font-medium">
+                    <i class="fa-solid fa-tower-broadcast absolute left-3.5 top-3 text-teal-400 text-xs"></i>
+                    <input type="text" name="message" required placeholder="Transmit direct priority medical directive to all Trauma Centers and Ambulance Dispatches..." class="w-full pl-9 pr-4 py-2 bg-slate-900/60 border border-slate-700 text-white rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:border-teal-500 font-medium">
                 </div>
-                <button type="submit" class="w-full sm:w-auto px-5 py-2.5 rounded-2xl bg-[#0d9488] hover:bg-[#0f766e] text-white font-bold text-xs shadow-2xs transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-paper-plane"></i> Broadcast Order
+                <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-xs transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-paper-plane text-xs"></i> Broadcast Order
                 </button>
             </form>
         </section>
 
-        <!-- KPI METRICS HUD WITH ACCENT CONTRAST -->
-        <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="bg-white border border-slate-200 border-l-4 border-l-emerald-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
+        <!-- 2. KPI METRICS GRID -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            <!-- Active Hospitals -->
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mono">Trauma Hospitals</p>
-                    <h3 class="text-2xl font-black text-slate-900 mt-0.5"><?= $totalHospitals ?></h3>
-                    <span class="text-[10px] font-bold text-emerald-700 mono">Delhi-NCR Apex Centers</span>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 mono">Trauma Centers</span>
+                    <h3 class="text-2xl font-black text-slate-900 mt-1"><?= $totalHospitals ?></h3>
+                    <p class="text-xs text-teal-600 font-bold mt-0.5 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+                        Designated Medical Hubs
+                    </p>
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 text-sm">
+                <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-200 flex items-center justify-center text-xl shrink-0">
                     <i class="fa-solid fa-hospital"></i>
                 </div>
             </div>
 
-            <div class="bg-white border border-slate-200 border-l-4 border-l-teal-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
+            <!-- Active Ambulances -->
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] font-extrabold text-teal-800 uppercase tracking-wider mono">ICU Beds Available</p>
-                    <h3 class="text-2xl font-black text-teal-700 mt-0.5"><?= $availableIcuBeds ?> / <?= $totalIcuBeds ?></h3>
-                    <span class="text-[10px] font-bold text-slate-500 mono">Critical Care Capacity</span>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 mono">ALS Ambulances</span>
+                    <h3 class="text-2xl font-black text-slate-900 mt-1"><?= count($teams) ?></h3>
+                    <p class="text-xs text-emerald-600 font-bold mt-0.5 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <?= $activeAmbulances ?> En Route &bull; <?= $availableAmbulances ?> Ready
+                    </p>
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-600 text-sm">
-                    <i class="fa-solid fa-bed-pulse"></i>
-                </div>
-            </div>
-
-            <div class="bg-white border border-slate-200 border-l-4 border-l-blue-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
-                <div>
-                    <p class="text-[10px] font-extrabold text-blue-800 uppercase tracking-wider mono">ALS Ambulances</p>
-                    <h3 class="text-2xl font-black text-blue-700 mt-0.5"><?= count($teams) ?></h3>
-                    <span class="text-[10px] font-bold text-slate-500 mono"><?= $activeAmbulances ?> En-Route • <?= $availableAmbulances ?> Standby</span>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 text-sm">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center text-xl shrink-0">
                     <i class="fa-solid fa-truck-medical"></i>
                 </div>
             </div>
 
-            <div class="bg-white border border-slate-200 border-l-4 border-l-rose-600 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between">
+            <!-- Available ICU Beds -->
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] font-extrabold text-rose-800 uppercase tracking-wider mono">Medical Staff</p>
-                    <h3 class="text-2xl font-black text-rose-700 mt-0.5"><?= $totalMedicalStaff ?></h3>
-                    <span class="text-[10px] font-bold text-rose-700 mono">Doctors &amp; Paramedics</span>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 mono">Available ICU Beds</span>
+                    <h3 class="text-2xl font-black text-slate-900 mt-1"><?= $availableIcuBeds ?> <span class="text-xs text-slate-400 font-medium">/ <?= $totalIcuBeds ?></span></h3>
+                    <p class="text-xs text-rose-600 font-bold mt-0.5 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                        Trauma &amp; Ventilator Capacity
+                    </p>
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 text-sm">
+                <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-bed-pulse"></i>
+                </div>
+            </div>
+
+            <!-- Medical Staff -->
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 mono">Doctors &amp; Paramedics</span>
+                    <h3 class="text-2xl font-black text-slate-900 mt-1"><?= number_format($totalPersonnel) ?></h3>
+                    <p class="text-xs text-blue-600 font-bold mt-0.5 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        On Shift Across Wards
+                    </p>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center text-xl shrink-0">
                     <i class="fa-solid fa-user-doctor"></i>
                 </div>
             </div>
         </section>
 
-        <!-- MAP & HOSPITALS CAPACITY GRID -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- 3. TACTICAL MEDICAL RADAR MAP & TRIAGE QUEUE (2 col / 1 col Grid) -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Dedicated Medical GIS Radar Map (Left Column) -->
-            <div class="lg:col-span-7 bg-white p-4 rounded-3xl border border-slate-200 flex flex-col shadow-xs min-h-[380px]">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-                    <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-map-location-dot text-teal-600"></i>
-                        <span>Hospital &amp; Trauma Centers GIS Radar</span>
-                    </h3>
-                    <span class="text-[10px] font-bold font-mono text-teal-800 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
-                        <?= count($stations) ?> Centers • <?= count($teams) ?> Ambulances
-                    </span>
-                </div>
-                <div id="medicalMap" class="flex-1 w-full rounded-2xl overflow-hidden min-h-[300px] border border-slate-200 bg-slate-100"></div>
-            </div>
-
-            <!-- Hospital Capacity & Trauma Centers Directory (Right Column) -->
-            <div class="lg:col-span-5 bg-white p-4 rounded-3xl border border-slate-200 flex flex-col shadow-xs">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-                    <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-hospital text-teal-600"></i>
-                        <span>Hospital Capacities &amp; Centers</span>
-                    </h3>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mono">Live Status</span>
-                </div>
-
-                <div class="space-y-2.5 overflow-y-auto max-h-[320px] pr-1">
-                    <?php foreach ($stations as $st): ?>
-                        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-teal-300 transition-all text-xs space-y-1.5">
-                            <div class="flex items-center justify-between">
-                                <h4 class="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
-                                    <span class="w-2 h-2 rounded-full <?= $st['status'] === 'Operational' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse' ?>"></span>
-                                    <?= htmlspecialchars($st['station_name']) ?>
-                                </h4>
-                                <span class="text-[9px] font-bold px-2 py-0.5 rounded-full <?= $st['status'] === 'Operational' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-amber-100 text-amber-800 border border-amber-200' ?> mono">
-                                    <?= htmlspecialchars($st['status']) ?>
-                                </span>
+            <!-- Leaflet Medical Map (2 cols) -->
+            <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid fa-map-location-dot"></i>
                             </div>
-                            <p class="text-slate-600 text-[11px] font-medium"><?= htmlspecialchars($st['address']) ?></p>
-                            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-200 text-[10px] text-slate-700 font-mono">
-                                <span><i class="fa-solid fa-user-doctor text-teal-600 mr-1"></i> <?= htmlspecialchars($st['commander_name']) ?></span>
-                                <a href="tel:<?= urlencode($st['contact_phone']) ?>" class="text-teal-700 hover:underline font-bold">
-                                    <i class="fa-solid fa-phone text-[9px]"></i> <?= htmlspecialchars($st['contact_phone']) ?>
-                                </a>
+                            <div>
+                                <h3 class="text-sm font-black text-slate-900">Hospital &amp; Trauma Bed GIS Radar</h3>
+                                <p class="text-[10px] text-slate-500 font-medium">Real-time GPS mapping of emergency clinics, ICU bed availability, and medical beacons</p>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                        <span class="px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 text-[10px] font-bold mono">
+                            <?= count($stations) ?> HOSPITALS PLOTTED
+                        </span>
+                    </div>
+
+                    <div id="medicalTacticalMap" class="w-full h-80 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden relative z-0"></div>
+
+                    <div class="pt-3 mt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] font-bold text-slate-600 gap-2">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-teal-600"></span> Trauma Hospitals</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> ALS Ambulances</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> Medical SOS Distress</span>
+                    </div>
                 </div>
             </div>
 
-        </div>
-
-        <!-- AMBULANCE SQUADS & PARAMEDIC ROSTER -->
-        <section class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <!-- Medical Triage Queue (1 col) -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
                 <div>
-                    <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-truck-medical text-teal-600"></i>
-                        <span>Ambulance Fleets &amp; Critical Care Transit</span>
-                    </h3>
-                    <p class="text-xs text-slate-500 font-medium">Active status of Type-C ALS ambulances, paramedic units, and mobile trauma triage vehicles.</p>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid fa-heart-pulse"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-black text-slate-900">Emergency 108 Triage Feed</h3>
+                                <p class="text-[10px] text-slate-500 font-medium">Critical Patient &amp; Trauma Queue</p>
+                            </div>
+                        </div>
+                        <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                    </div>
+
+                    <!-- Incidents List -->
+                    <div class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                        <?php if (empty($medicalSos)): ?>
+                            <p class="text-xs text-slate-400 italic text-center py-6">No emergency medical calls active.</p>
+                        <?php else: ?>
+                            <?php foreach ($medicalSos as $sos): ?>
+                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-black text-slate-900 text-[11px] flex items-center gap-1">
+                                            <i class="fa-solid fa-truck-medical text-teal-600 text-[10px]"></i>
+                                            <?= htmlspecialchars($sos['sender_name']) ?> (#<?= $sos['id'] ?>)
+                                        </span>
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-bold <?= $sos['priority'] === 'Critical' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800' ?> mono">
+                                            <?= htmlspecialchars($sos['priority']) ?>
+                                        </span>
+                                    </div>
+                                    <p class="text-slate-600 font-medium text-[11px]"><?= htmlspecialchars($sos['emergency_type']) ?> &bull; Blood: <?= htmlspecialchars($sos['blood_type'] ?: 'N/A') ?> &bull; <?= htmlspecialchars($sos['medical_needs'] ?: 'First aid required') ?></p>
+                                    <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-0.5">
+                                        <span>GPS: <?= $sos['gps_lat'] ?>, <?= $sos['gps_lng'] ?></span>
+                                        <span><?= $sos['status'] ?></span>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div class="pt-3 mt-3 border-t border-slate-100 text-center">
+                    <a href="sos.php" class="text-xs font-bold text-teal-600 hover:text-teal-700 flex items-center justify-center gap-1">
+                        <span>View All Emergency Distress Beacons</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                <?php foreach ($teams as $tm): ?>
-                    <?php 
-                        $statusClass = match($tm['status']) {
-                            'On-Scene' => 'bg-red-50 text-red-800 border-red-200',
-                            'Dispatched' => 'bg-teal-50 text-teal-800 border-teal-200',
-                            'Available' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
+        </section>
+
+        <!-- 4. AMBULANCE FLEET & HOSPITAL WARDS LEDGER -->
+        <section class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 border border-teal-200 flex items-center justify-center text-base font-bold">
+                        <i class="fa-solid fa-truck-medical"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-black text-slate-900">Advanced Life Support (ALS) Ambulance Fleet</h2>
+                        <p class="text-xs text-slate-500 font-medium">Real-time status of emergency ambulances, mobile ICUs, and neonatal transport squads</p>
+                    </div>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-black bg-teal-50 text-teal-700 border border-teal-200 mono">
+                    <?= count($teams) ?> Registered Ambulances
+                </span>
+            </div>
+
+            <!-- Teams Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <?php foreach ($teams as $team): ?>
+                    <?php
+                        $statusColor = match($team['status']) {
+                            'Available' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                            'Deployed', 'En Route' => 'bg-teal-50 text-teal-700 border-teal-200',
+                            'Standby' => 'bg-amber-50 text-amber-700 border-amber-200',
                             default => 'bg-slate-100 text-slate-700 border-slate-200'
                         };
                     ?>
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-teal-300 transition-all text-xs space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <span class="font-extrabold text-slate-900 text-sm flex items-center gap-1.5">
-                                <i class="fa-solid fa-heart-pulse text-teal-600 text-xs"></i>
-                                <?= htmlspecialchars($tm['callsign']) ?>
-                            </span>
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border <?= $statusClass ?> mono">
-                                <?= htmlspecialchars($tm['status']) ?>
-                            </span>
+                    <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-teal-300 transition-all shadow-2xs space-y-3">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-black text-slate-900 text-sm"><?= htmlspecialchars($team['team_code']) ?></h4>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black border <?= $statusColor ?> mono">
+                                        <?= htmlspecialchars($team['status']) ?>
+                                    </span>
+                                </div>
+                                <p class="text-xs text-slate-500 font-medium mt-0.5"><?= htmlspecialchars($team['team_name'] ?: 'ALS Ambulance Squad') ?></p>
+                            </div>
+                            <button type="button" onclick="openUpdateTeamModal(<?= $team['id'] ?>, '<?= htmlspecialchars($team['team_code']) ?>', '<?= htmlspecialchars($team['status']) ?>', '<?= addslashes(htmlspecialchars($team['current_task'] ?? '')) ?>')" class="p-1.5 text-slate-400 hover:text-teal-600 transition-colors cursor-pointer" title="Update Ambulance Status">
+                                <i class="fa-solid fa-pen-to-square text-xs"></i>
+                            </button>
                         </div>
 
-                        <div class="space-y-1 text-slate-700 text-[11px] font-medium">
-                            <p><b>Paramedic Lead:</b> <?= htmlspecialchars($tm['team_lead']) ?> (<b><?= $tm['members_count'] ?> Medics</b>)</p>
-                            <p class="text-slate-500"><b>Apparatus:</b> <?= htmlspecialchars($tm['vehicle_equipment']) ?></p>
-                            <p class="text-teal-800 font-semibold"><b>Task:</b> <?= htmlspecialchars($tm['current_task'] ?: 'Standby at ER Bay') ?></p>
+                        <div class="text-xs space-y-1.5 font-medium text-slate-600 bg-white p-2.5 rounded-xl border border-slate-200/80">
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="text-slate-400">Hospital Base:</span>
+                                <strong class="text-slate-800"><?= htmlspecialchars($team['station_name'] ?: 'Central Sector Hospital') ?></strong>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="text-slate-400">Paramedic Lead:</span>
+                                <strong class="text-slate-800"><?= htmlspecialchars($team['leader_name'] ?: 'EMS Specialist') ?></strong>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="text-slate-400">Current Assignment:</span>
+                                <span class="text-teal-700 font-bold truncate max-w-[150px]"><?= htmlspecialchars($team['current_task'] ?: 'Standby at Bay') ?></span>
+                            </div>
                         </div>
-
-                        <!-- Status Action Form -->
-                        <form method="POST" action="medical_hub.php" class="pt-2 border-t border-slate-200 flex items-center justify-between gap-2">
-                            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
-                            <input type="hidden" name="action" value="update_team_status">
-                            <input type="hidden" name="team_id" value="<?= $tm['id'] ?>">
-                            <input type="hidden" name="current_task" value="<?= htmlspecialchars($tm['current_task']) ?>">
-
-                            <select name="status" onchange="this.form.submit()" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-[10px] font-bold focus:outline-none focus:border-teal-600">
-                                <option value="Available" <?= $tm['status'] === 'Available' ? 'selected' : '' ?>>Available</option>
-                                <option value="Dispatched" <?= $tm['status'] === 'Dispatched' ? 'selected' : '' ?>>Dispatched</option>
-                                <option value="On-Scene" <?= $tm['status'] === 'On-Scene' ? 'selected' : '' ?>>On-Scene</option>
-                                <option value="Standby" <?= $tm['status'] === 'Standby' ? 'selected' : '' ?>>Standby</option>
-                            </select>
-                        </form>
                     </div>
                 <?php endforeach; ?>
             </div>
         </section>
 
-        <!-- TASKS QUEUE & RESOURCES INVENTORY -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <!-- Medical Missions Queue (Left 7 Cols) -->
-            <div class="lg:col-span-7 bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <div>
-                        <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-teal-600"></i>
-                            <span>Assigned Medical &amp; EMS Missions</span>
-                        </h3>
+        <!-- 5. ACTIVE MEDICAL MISSIONS & CASUALTY DISPATCHES -->
+        <section class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center text-base font-bold">
+                        <i class="fa-solid fa-list-check"></i>
                     </div>
-                    <button type="button" onclick="document.getElementById('medicalTaskModal').classList.remove('hidden')" class="px-3.5 py-2 rounded-2xl bg-[#0d9488] hover:bg-[#0f766e] text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-plus"></i> New Mission
-                    </button>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-black text-slate-900">Active Medical &amp; Casualty Dispatches</h2>
+                        <p class="text-xs text-slate-500 font-medium">Mass casualty evacuations, ventilator patient transfers, and mobile first-aid clinics</p>
+                    </div>
                 </div>
+                <button type="button" onclick="openCreateTaskModal()" class="px-3.5 py-1.5 rounded-xl bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer self-start sm:self-auto">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Dispatch Mission</span>
+                </button>
+            </div>
 
-                <div class="space-y-3">
-                    <?php foreach ($tasks as $tsk): ?>
-                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-teal-300 transition-all text-xs space-y-2">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase <?= $tsk['priority'] === 'Critical' ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-amber-100 text-amber-800 border border-amber-200' ?> mono">
-                                        <?= htmlspecialchars($tsk['priority']) ?>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <?php if (empty($tasks)): ?>
+                    <p class="col-span-2 text-xs text-slate-400 italic text-center py-6">No active medical dispatches.</p>
+                <?php else: ?>
+                    <?php foreach ($tasks as $task): ?>
+                        <div class="p-4 rounded-2xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between space-y-3">
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black <?= $task['priority'] === 'Critical' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200' ?> mono">
+                                        <?= htmlspecialchars($task['priority']) ?> PRIORITY
                                     </span>
-                                    <h4 class="font-extrabold text-slate-900 text-xs"><?= htmlspecialchars($tsk['title']) ?></h4>
+                                    <span class="text-[10px] font-bold text-slate-500 mono">
+                                        <?= htmlspecialchars($task['status']) ?>
+                                    </span>
                                 </div>
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold <?= $tsk['status'] === 'Completed' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-teal-100 text-teal-800 border border-teal-200' ?> mono">
-                                    <?= htmlspecialchars($tsk['status']) ?>
-                                </span>
+                                <h4 class="font-black text-slate-900 text-sm"><?= htmlspecialchars($task['title']) ?></h4>
+                                <p class="text-xs text-slate-600 font-medium leading-relaxed"><?= htmlspecialchars($task['description'] ?: 'Emergency medical patient care.') ?></p>
+                                <div class="flex items-center gap-4 text-[11px] font-bold text-slate-500 pt-1">
+                                    <span><i class="fa-solid fa-location-dot text-red-500 mr-1"></i> <?= htmlspecialchars($task['location']) ?></span>
+                                    <span><i class="fa-solid fa-truck-medical text-teal-500 mr-1"></i> <?= htmlspecialchars($task['assigned_team'] ?: 'Unassigned') ?></span>
+                                </div>
                             </div>
 
-                            <p class="text-slate-600 text-[11px] font-medium"><?= htmlspecialchars($tsk['description']) ?></p>
-                            
-                            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200 text-[11px]">
-                                <span class="text-slate-500"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i> <?= htmlspecialchars($tsk['location']) ?></span>
-                                <span class="text-teal-700 font-bold"><i class="fa-solid fa-truck-medical mr-1"></i> <?= htmlspecialchars($tsk['assigned_team'] ?: 'Unassigned') ?></span>
-                                
-                                <form method="POST" action="medical_hub.php" class="inline">
-                                    <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
-                                    <input type="hidden" name="action" value="update_task_status">
-                                    <input type="hidden" name="task_id" value="<?= $tsk['id'] ?>">
-                                    <?php if ($tsk['status'] !== 'Completed'): ?>
-                                        <button type="submit" name="status" value="Completed" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] cursor-pointer">
-                                            <i class="fa-solid fa-check mr-1"></i> Mark Completed
+                            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                                <?php if ($task['status'] !== 'Completed'): ?>
+                                    <form method="POST" action="medical_hub.php">
+                                        <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                                        <input type="hidden" name="action" value="update_task_status">
+                                        <input type="hidden" name="task_id" value="<?= $task['id'] ?>">
+                                        <input type="hidden" name="status" value="Completed">
+                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200 transition-all cursor-pointer">
+                                            <i class="fa-solid fa-check mr-1"></i> Mark Delivered &amp; Admitted
                                         </button>
-                                    <?php else: ?>
-                                        <button type="submit" name="status" value="In Progress" class="px-2.5 py-1 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-[10px] font-bold cursor-pointer">
-                                            Re-open
-                                        </button>
-                                    <?php endif; ?>
-                                </form>
+                                    </form>
+                                <?php else: ?>
+                                    <span class="text-xs font-bold text-emerald-600 flex items-center gap-1"><i class="fa-solid fa-check-circle"></i> Patient Safely Admitted</span>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </section>
+
+        <!-- 6. HOSPITAL CAPACITY, BLOOD BANK & MEDICAL RESERVES -->
+        <section class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 border border-teal-200 flex items-center justify-center text-base font-bold">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-black text-slate-900">Hospital ICU Bed Reserves &amp; Medical Supplies</h2>
+                        <p class="text-xs text-slate-500 font-medium">ICU beds, blood bank reserves, liquid oxygen, and trauma kits</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Medical Equipment & ICU Inventory (Right 5 Cols) -->
-            <div class="lg:col-span-5 bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-boxes-stacked text-teal-600"></i>
-                        <span>Medical Supplies &amp; ICU Beds</span>
-                    </h3>
-                </div>
-
-                <div class="space-y-3">
-                    <?php foreach ($resources as $res): ?>
-                        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-                            <div class="flex items-center justify-between">
-                                <h4 class="font-extrabold text-slate-900 text-xs"><?= htmlspecialchars($res['item_name']) ?></h4>
-                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold <?= $res['status'] === 'In Stock' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800' ?> mono">
-                                    <?= htmlspecialchars($res['status']) ?>
-                                </span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <?php foreach ($resources as $res): ?>
+                    <?php
+                        $pct = ($res['total_quantity'] > 0) ? round(($res['available_quantity'] / $res['total_quantity']) * 100) : 0;
+                    ?>
+                    <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 class="font-black text-slate-900 text-sm"><?= htmlspecialchars($res['item_name']) ?></h4>
+                                <span class="text-[10px] font-bold text-slate-400 mono uppercase"><?= htmlspecialchars($res['category'] ?? 'Medical Supplies') ?></span>
                             </div>
-
-                            <div class="flex items-center justify-between text-[11px] text-slate-700 font-medium">
-                                <span>Available: <strong class="text-teal-700"><?= $res['available_quantity'] ?> <?= htmlspecialchars($res['unit']) ?></strong></span>
-                                <span>Reserved: <strong class="text-amber-700"><?= $res['allocated_quantity'] ?></strong> / <?= $res['total_quantity'] ?></span>
-                            </div>
-
-                            <!-- Progress Bar -->
-                            <?php $percent = $res['total_quantity'] > 0 ? round(($res['available_quantity'] / $res['total_quantity']) * 100) : 0; ?>
-                            <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                                <div class="bg-[#0d9488] h-1.5 rounded-full" style="width: <?= $percent ?>%"></div>
-                            </div>
-
-                            <!-- Quick Reserve Allocation Form -->
-                            <form method="POST" action="medical_hub.php" class="pt-1.5 flex items-center gap-2">
-                                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
-                                <input type="hidden" name="action" value="allocate_resource">
-                                <input type="hidden" name="resource_id" value="<?= $res['id'] ?>">
-                                <input type="number" name="quantity" min="1" max="<?= $res['available_quantity'] ?>" value="1" class="w-16 px-2 py-1 bg-white border border-slate-200 rounded-xl text-slate-900 text-[10px] font-bold text-center">
-                                <button type="submit" <?= $res['available_quantity'] <= 0 ? 'disabled' : '' ?> class="flex-1 py-1 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-[10px] font-bold transition-all disabled:opacity-40 cursor-pointer">
-                                    Reserve for Triage
-                                </button>
-                            </form>
+                            <button type="button" onclick="openAllocateModal(<?= $res['id'] ?>, '<?= addslashes(htmlspecialchars($res['item_name'])) ?>', <?= (int)$res['available_quantity'] ?>, '<?= htmlspecialchars($res['unit']) ?>')" class="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-xs font-bold transition-all cursor-pointer">
+                                Reserve
+                            </button>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
 
-        </div>
+                        <div>
+                            <div class="flex items-center justify-between text-xs font-bold mb-1">
+                                <span class="text-slate-600">Available: <?= $res['available_quantity'] ?> / <?= $res['total_quantity'] ?> <?= htmlspecialchars($res['unit']) ?></span>
+                                <span class="text-teal-600 font-mono"><?= $pct ?>%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div class="bg-teal-600 h-full rounded-full transition-all" style="width: <?= $pct ?>%"></div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
 
     </main>
 </div>
 
-<!-- CREATE MEDICAL TASK MODAL -->
-<div id="medicalTaskModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white border border-slate-200 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden">
-        <div class="h-14 px-6 bg-white border-b border-slate-100 flex items-center justify-between">
-            <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-truck-medical text-teal-600"></i> Dispatch Medical / Ambulance Mission
-            </h3>
-            <button type="button" onclick="document.getElementById('medicalTaskModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-800 cursor-pointer">
+<!-- ==================== MODALS ==================== -->
+
+<!-- 1. Dispatch Medical Task Modal -->
+<div id="createTaskModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="text-base font-black text-slate-900">Dispatch Medical / Ambulance Mission</h3>
+            <button type="button" onclick="document.getElementById('createTaskModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
-        <form method="POST" action="medical_hub.php" class="p-6 space-y-3.5 text-xs">
+
+        <form method="POST" action="medical_hub.php" class="space-y-3 text-xs">
             <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
             <input type="hidden" name="action" value="create_task">
 
             <div>
-                <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Incident Title *</label>
-                <input type="text" name="title" required placeholder="e.g. Mass Casualty Triage & Evacuation at ISBT" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 font-medium">
+                <label class="block font-bold text-slate-700 mb-1">Mission Title</label>
+                <input type="text" name="title" required placeholder="e.g. Critical ICU Trauma Patient Transfer" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-teal-600">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Priority</label>
-                    <select name="priority" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-teal-600">
-                        <option value="Critical">Critical (Code Red)</option>
-                        <option value="High" selected>High</option>
-                        <option value="Medium">Medium</option>
+                    <label class="block font-bold text-slate-700 mb-1">Priority</label>
+                    <select name="priority" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-teal-600">
+                        <option value="Critical">Critical Priority</option>
+                        <option value="High" selected>High Priority</option>
+                        <option value="Medium">Medium Priority</option>
+                        <option value="Low">Low Priority</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Assign Ambulance</label>
-                    <select name="assigned_team" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-teal-600">
-                        <?php foreach ($teams as $tm): ?>
-                            <option value="<?= htmlspecialchars($tm['callsign']) ?>"><?= htmlspecialchars($tm['callsign']) ?> (<?= $tm['status'] ?>)</option>
+                    <label class="block font-bold text-slate-700 mb-1">Assigned Ambulance</label>
+                    <select name="assigned_team" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-teal-600">
+                        <?php foreach ($teams as $t): ?>
+                            <option value="<?= htmlspecialchars($t['team_code']) ?>"><?= htmlspecialchars($t['team_code']) ?> - <?= htmlspecialchars($t['team_name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
             </div>
 
             <div>
-                <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Target Location *</label>
-                <input type="text" name="location" required placeholder="e.g. Kashmere Gate Terminal, Ring Road" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 font-medium">
+                <label class="block font-bold text-slate-700 mb-1">Patient / Incident Location</label>
+                <input type="text" name="location" required placeholder="e.g. AIIMS Trauma Center Bay 3, New Delhi" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-teal-600">
             </div>
 
             <div>
-                <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Patient Vitals &amp; Directives</label>
-                <textarea name="description" rows="3" placeholder="Describe trauma type, number of critical patients, oxygen requirement..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 leading-relaxed focus:bg-white focus:outline-none focus:border-teal-600 font-medium"></textarea>
+                <label class="block font-bold text-slate-700 mb-1">Clinical Notes &amp; Oxygen Needs</label>
+                <textarea name="description" rows="3" placeholder="Specify trauma severity, oxygen requirement, blood group, and destination hospital..." class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-teal-600"></textarea>
             </div>
 
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="document.getElementById('medicalTaskModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Cancel</button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-[#0d9488] hover:bg-[#0f766e] text-white font-bold shadow-sm cursor-pointer">Dispatch Ambulance Unit</button>
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button type="button" onclick="document.getElementById('createTaskModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">Cancel</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold cursor-pointer">Dispatch Ambulance</button>
             </div>
         </form>
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const mMap = L.map('medicalMap', { zoomControl: false, attributionControl: false }).setView([28.6139, 77.2090], 11);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mMap);
+<!-- 2. Update Team Status Modal -->
+<div id="updateTeamModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="text-base font-black text-slate-900" id="teamModalTitle">Update Ambulance Status</h3>
+            <button type="button" onclick="document.getElementById('updateTeamModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 cursor-pointer">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
 
-    const stationsData = <?= json_encode($stations) ?>;
+        <form method="POST" action="medical_hub.php" class="space-y-3 text-xs">
+            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+            <input type="hidden" name="action" value="update_team_status">
+            <input type="hidden" name="team_id" id="modal_team_id">
 
-    stationsData.forEach(st => {
-        L.circleMarker([st.gps_lat, st.gps_lng], {
-            radius: 9,
-            fillColor: '#0d9488',
-            color: '#ffffff',
-            weight: 2,
-            fillOpacity: 0.95
-        }).addTo(mMap)
-        .bindPopup(`
-            <div style="color:#0f172a; font-family:'Inter', sans-serif; font-size:12px; min-width:180px;">
-                <strong style="color:#0d9488;">${st.station_name}</strong><br/>
-                <b>Zone:</b> ${st.zone_name}<br/>
-                <span>Director: <b>${st.commander_name}</b></span><br/>
-                <span>Ambulances: <b>${st.vehicles_count}</b> • Medics: <b>${st.personnel_count}</b></span><br/>
-                <span style="color:#64748b; font-size:10px;">Radio: ${st.radio_channel}</span>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Operational Status</label>
+                <select name="status" id="modal_team_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-teal-600">
+                    <option value="Available">Available (At Hospital Bay)</option>
+                    <option value="Deployed">Deployed (Transporting Patient)</option>
+                    <option value="En Route">En Route (Emergency ALS)</option>
+                    <option value="Standby">Standby (Sanitizing / Restocking)</option>
+                </select>
             </div>
-        `);
-    });
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Current Assignment / Destination</label>
+                <input type="text" name="current_task" id="modal_team_task" placeholder="e.g. En route to Safdarjung Hospital" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-teal-600">
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button type="button" onclick="document.getElementById('updateTeamModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">Cancel</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold cursor-pointer">Save Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 3. Allocate Resource Modal -->
+<div id="allocateModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="text-base font-black text-slate-900" id="resModalTitle">Reserve Medical Resource</h3>
+            <button type="button" onclick="document.getElementById('allocateModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 cursor-pointer">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <form method="POST" action="medical_hub.php" class="space-y-3 text-xs">
+            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+            <input type="hidden" name="action" value="allocate_resource">
+            <input type="hidden" name="resource_id" id="modal_res_id">
+
+            <p class="text-slate-500 font-medium" id="modal_res_info">Available in reserve: 0</p>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Quantity / Beds to Reserve</label>
+                <input type="number" name="quantity" min="1" required class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-teal-600">
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button type="button" onclick="document.getElementById('allocateModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">Cancel</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold cursor-pointer">Confirm Reservation</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== LEAFLET MAP SCRIPT ==================== -->
+<script>
+let medicalMap = null;
+
+function initMedicalMap() {
+    if (medicalMap) return;
+    const mapEl = document.getElementById('medicalTacticalMap');
+    if (!mapEl) return;
+
+    medicalMap = L.map('medicalTacticalMap').setView([28.6139, 77.2090], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(medicalMap);
+
+    // Plot Hospitals & Trauma Centers
+    <?php foreach ($stations as $st): ?>
+        <?php if (!empty($st['latitude']) && !empty($st['longitude'])): ?>
+            L.circleMarker([<?= (float)$st['latitude'] ?>, <?= (float)$st['longitude'] ?>], {
+                radius: 9,
+                fillColor: '#0d9488',
+                color: '#ffffff',
+                weight: 2.5,
+                opacity: 1,
+                fillOpacity: 0.95
+            }).addTo(medicalMap).bindPopup(`
+                <div style="font-family: sans-serif; font-size: 12px;">
+                    <strong style="color: #0d9488;">🏥 <?= htmlspecialchars($st['station_name']) ?></strong><br>
+                    <strong>Address:</strong> <?= htmlspecialchars($st['address'] ?? 'Trauma Care Center') ?><br>
+                    <strong>Doctors &amp; Staff:</strong> <?= (int)$st['personnel_count'] ?><br>
+                    <strong>EMS Line:</strong> <?= htmlspecialchars($st['contact_phone'] ?? '108') ?>
+                </div>
+            `);
+        <?php endif; ?>
+    <?php endforeach; ?>
+
+    // Plot Medical SOS Distress beacons
+    <?php foreach ($medicalSos as $sos): ?>
+        <?php if (!empty($sos['gps_lat']) && !empty($sos['gps_lng'])): ?>
+            L.circleMarker([<?= (float)$sos['gps_lat'] ?>, <?= (float)$sos['gps_lng'] ?>], {
+                radius: 8,
+                fillColor: '#e11d48',
+                color: '#ffffff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.9
+            }).addTo(medicalMap).bindPopup(`
+                <div style="font-family: sans-serif; font-size: 12px;">
+                    <strong style="color: #e11d48;">🩺 <?= htmlspecialchars($sos['emergency_type']) ?> (#<?= $sos['id'] ?>)</strong><br>
+                    <strong>Patient:</strong> <?= htmlspecialchars($sos['sender_name']) ?><br>
+                    <strong>Phone:</strong> <?= htmlspecialchars($sos['sender_phone']) ?><br>
+                    <strong>Priority:</strong> <?= htmlspecialchars($sos['priority']) ?><br>
+                    <strong>Blood Type:</strong> <?= htmlspecialchars($sos['blood_type'] ?: 'Unknown') ?>
+                </div>
+            `);
+        <?php endif; ?>
+    <?php endforeach; ?>
+}
+
+function openCreateTaskModal() {
+    document.getElementById('createTaskModal').classList.remove('hidden');
+}
+
+function openUpdateTeamModal(id, code, status, task) {
+    document.getElementById('modal_team_id').value = id;
+    document.getElementById('teamModalTitle').innerText = `Update Status for ${code}`;
+    document.getElementById('modal_team_status').value = status;
+    document.getElementById('modal_team_task').value = task || '';
+    document.getElementById('updateTeamModal').classList.remove('hidden');
+}
+
+function openAllocateModal(id, name, available, unit) {
+    document.getElementById('modal_res_id').value = id;
+    document.getElementById('resModalTitle').innerText = `Reserve ${name}`;
+    document.getElementById('modal_res_info').innerText = `Available in Reserve: ${available} ${unit}`;
+    document.getElementById('allocateModal').classList.remove('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initMedicalMap();
 });
 </script>
 
