@@ -466,7 +466,95 @@ require_once __DIR__ . '/sidebar.php';
 
         </section>
 
-        <!-- 4. Direct Citizen SOS Rescue & Assistance Queue -->
+        <!-- 4. Multi-Victim Direct Hotline Live Chat Hub -->
+        <section id="directVictimChatCard" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-4 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 via-amber-500 to-rose-500"></div>
+
+            <!-- Hub Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 pt-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-blue-50 text-[#1d63d8] border border-blue-200 flex items-center justify-center text-base font-bold">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-base sm:text-lg font-black text-slate-900">Citizen &amp; Victim Live Hotlines</h2>
+                            <span id="victimThreadsCountBadge" class="bg-rose-100 text-rose-800 text-[10px] font-mono font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <?= count($sosDistressList) ?> ACTIVE
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 font-medium">Real-time two-way communication lifeline with trapped civilians and distress callers</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 self-start sm:self-auto">
+                    <button type="button" onclick="simulateVictimReply()" title="Test simulated citizen response" class="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                        <i class="fa-solid fa-robot text-amber-600 text-xs"></i>
+                        <span>Simulate Reply</span>
+                    </button>
+                    <a href="tel:112" class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                        <i class="fa-solid fa-phone text-emerald-600 text-xs"></i>
+                        <span>Speed Dial 112</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Horizontal Victim Threads Selector Carousel -->
+            <div class="space-y-1.5">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mono">Active Distress Caller Threads:</span>
+                <div id="victimThreadList" class="flex gap-2.5 overflow-x-auto pb-2 custom-scroll">
+                    <!-- Dynamically populated threads -->
+                </div>
+            </div>
+
+            <!-- Live Hotline Chat Box Container -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                <!-- Active Victim Thread Info Header -->
+                <div class="flex items-center justify-between pb-2.5 border-b border-slate-200/80">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-red-100 text-red-700 flex items-center justify-center font-bold text-xs">
+                            <i class="fa-solid fa-person-circle-exclamation"></i>
+                        </div>
+                        <div>
+                            <h4 id="activeVictimNameDisplay" class="text-xs font-extrabold text-slate-900">Connecting to Citizen...</h4>
+                            <p id="activeVictimDetailsDisplay" class="text-[10px] text-slate-500 font-mono">Loading SOS Telemetry...</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="activeVictimStatusBadge" class="px-2 py-0.5 rounded text-[9px] font-black uppercase mono bg-amber-100 text-amber-800">Pending</span>
+                        <a id="activeVictimCallBtn" href="tel:112" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-bold shadow-2xs flex items-center gap-1">
+                            <i class="fa-solid fa-phone text-[10px] text-emerald-600"></i> Call
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Messages Stream -->
+                <div id="directVictimChatFeed" class="flex flex-col gap-2.5 max-h-[220px] min-h-[140px] overflow-y-auto p-1 custom-scroll text-xs">
+                    <div class="text-xs text-slate-400 italic text-center py-6">Connecting direct line with citizen...</div>
+                </div>
+
+                <!-- Quick Preset Response Chips -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pt-1 pb-1">
+                    <span class="text-[10px] font-bold text-slate-400 mono shrink-0">Quick Presets:</span>
+                    <button type="button" onclick="sendDirectVictimMsg('🚑 Volunteer rescue team is en route! ETA approx 2-3 mins.')" class="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:border-blue-400 text-[11px] font-bold text-slate-700 whitespace-nowrap shadow-2xs cursor-pointer transition-all">🚑 ETA 2 Mins</button>
+                    <button type="button" onclick="sendDirectVictimMsg('🚨 Stay indoors on higher ground. Do not attempt to cross moving water.')" class="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:border-blue-400 text-[11px] font-bold text-slate-700 whitespace-nowrap shadow-2xs cursor-pointer transition-all">🚨 Stay Inside</button>
+                    <button type="button" onclick="sendDirectVictimMsg('🚪 Please flash a light or wave a cloth at the window/balcony so our boat/team can spot you.')" class="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:border-blue-400 text-[11px] font-bold text-slate-700 whitespace-nowrap shadow-2xs cursor-pointer transition-all">🚪 Signal Window</button>
+                    <button type="button" onclick="sendDirectVictimMsg('🩺 Medical first-aid squad with trauma kit & stretcher has been assigned to your location.')" class="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:border-blue-400 text-[11px] font-bold text-slate-700 whitespace-nowrap shadow-2xs cursor-pointer transition-all">🩺 Med Team Assigned</button>
+                    <button type="button" onclick="sendDirectVictimMsg('🍞 Drinking water and food ration packets are being delivered to your shelter point.')" class="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:border-blue-400 text-[11px] font-bold text-slate-700 whitespace-nowrap shadow-2xs cursor-pointer transition-all">🍞 Supplies Ready</button>
+                </div>
+
+                <!-- Live Send Input Form -->
+                <form id="directVictimChatForm" onsubmit="handleSendDirectVictimMsg(event)" class="flex items-center gap-2 pt-1">
+                    <input type="text" id="directVictimInput" class="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600 font-medium placeholder-slate-400 shadow-2xs" placeholder="Type direct reply to citizen..." required />
+                    <button type="submit" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                        <span>Send</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 5. Direct Citizen SOS Rescue & Assistance Queue -->
         <section class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
                 <div class="flex items-center gap-3">
@@ -1018,14 +1106,171 @@ function fetchLiveGps() {
     }
 }
 
+// ============================================================
+// DIRECT MULTI-VICTIM LIVE HOTLINE CHAT LOGIC
+// ============================================================
+let activeVictimSosId = <?= (int)($sosDistressList[0]['id'] ?? 1) ?>;
+let localVictimThreads = <?= json_encode($sosDistressList) ?>;
+
+function selectVictimThread(sosId) {
+    activeVictimSosId = parseInt(sosId);
+    const feed = document.getElementById('directVictimChatFeed');
+    if (feed) {
+        feed.innerHTML = '<div class="text-xs text-blue-600 font-bold py-6 text-center animate-pulse"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Connecting to distress caller...</div>';
+    }
+    loadDirectVictimChat();
+}
+
+async function simulateVictimReply() {
+    if (!activeVictimSosId) return;
+    try {
+        const res = await fetch(`api/victim_volunteer_chat_simulate.php?sos_id=${activeVictimSosId}`);
+        const data = await res.json();
+        if (data.success) {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: `Citizen Reply: "${data.data.message}"`,
+                timer: 4000,
+                showConfirmButton: false
+            });
+            loadDirectVictimChat();
+        }
+    } catch (e) {
+        console.error('Error simulating reply:', e);
+    }
+}
+
+async function loadDirectVictimChat() {
+    if (!activeVictimSosId) return;
+
+    try {
+        const res = await fetch(`api/victim_volunteer_chat_fetch.php?sos_id=${activeVictimSosId}`);
+        const result = await res.json();
+
+        if (result.success && result.data) {
+            const victim = result.data.victim_info || {};
+            const messages = result.data.messages || [];
+            const allVictims = result.data.all_victims || localVictimThreads;
+
+            // 1. Update Active Header Info
+            const nameEl = document.getElementById('activeVictimNameDisplay');
+            const detailsEl = document.getElementById('activeVictimDetailsDisplay');
+            const badgeEl = document.getElementById('activeVictimStatusBadge');
+            const callBtn = document.getElementById('activeVictimCallBtn');
+            const countBadge = document.getElementById('victimThreadsCountBadge');
+
+            if (nameEl) nameEl.innerText = `${victim.victim_name || 'Citizen'} (${victim.emergency_type || 'Distress'})`;
+            if (detailsEl) detailsEl.innerText = `📞 ${victim.victim_phone || '+91 98765 43210'} • Priority: ${victim.priority || 'Critical'} • People: ${victim.people_count || '1-4'}`;
+            if (badgeEl) {
+                badgeEl.innerText = victim.status || 'Pending';
+                badgeEl.className = `px-2 py-0.5 rounded text-[9px] font-black uppercase mono ${victim.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`;
+            }
+            if (callBtn) callBtn.href = `tel:${victim.victim_phone || '112'}`;
+            if (countBadge) countBadge.innerText = `${allVictims.length || 1} ACTIVE`;
+
+            // 2. Render Horizontal Thread Selector
+            const threadContainer = document.getElementById('victimThreadList');
+            if (threadContainer && allVictims.length > 0) {
+                threadContainer.innerHTML = allVictims.map(t => {
+                    const isSelected = (parseInt(t.sos_id || t.id) === activeVictimSosId);
+                    return `
+                        <div onclick="selectVictimThread(${t.sos_id || t.id})" class="px-3 py-2 rounded-2xl border transition-all cursor-pointer flex items-center gap-2.5 shrink-0 ${isSelected ? 'bg-blue-50 border-blue-400 shadow-xs' : 'bg-white border-slate-200 hover:border-slate-300'}">
+                            <div class="w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black ${isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}">
+                                ${escapeHtml((t.victim_name || t.sender_name || 'C')[0])}
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <strong class="text-xs font-bold truncate block ${isSelected ? 'text-blue-900' : 'text-slate-900'}">${escapeHtml(t.victim_name || t.sender_name || 'Citizen')}</strong>
+                                    ${isSelected ? '<span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping"></span>' : ''}
+                                </div>
+                                <span class="text-[10px] text-slate-500 font-mono block">${escapeHtml(t.emergency_type || 'SOS')} • #${t.sos_id || t.id}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 3. Render Message Feed
+            const feed = document.getElementById('directVictimChatFeed');
+            if (feed) {
+                if (messages.length === 0) {
+                    feed.innerHTML = `<div class="text-xs text-slate-400 italic text-center py-6">Direct lifeline active. Send your first status or instructions to ${victim.victim_name || 'the citizen'} below.</div>`;
+                } else {
+                    feed.innerHTML = messages.map(m => {
+                        const isVolunteer = (m.sender_role === 'volunteer');
+                        return `
+                            <div class="flex flex-col ${isVolunteer ? 'items-end' : 'items-start'}">
+                                <div class="max-w-[82%] p-2.5 rounded-2xl text-xs ${isVolunteer ? 'bg-emerald-600 text-white rounded-br-none shadow-2xs' : 'bg-white border border-slate-200 text-slate-900 rounded-bl-none shadow-2xs'}">
+                                    <div class="flex items-center justify-between gap-2 mb-0.5">
+                                        <span class="text-[10px] font-mono font-bold ${isVolunteer ? 'text-emerald-200' : 'text-slate-500'}">${escapeHtml(m.sender_name)}</span>
+                                        <span class="text-[9px] font-mono ${isVolunteer ? 'text-emerald-200' : 'text-slate-400'}">${m.created_at ? m.created_at.substring(11, 16) : 'Just now'}</span>
+                                    </div>
+                                    <p class="font-medium leading-relaxed">${escapeHtml(m.message)}</p>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    feed.scrollTop = feed.scrollHeight;
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Error in loadDirectVictimChat:', e);
+    }
+}
+
+async function sendDirectVictimMsg(text) {
+    if (!text || !text.trim() || !activeVictimSosId) return;
+
+    try {
+        const res = await fetch('api/victim_volunteer_chat_send.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                sos_id: activeVictimSosId,
+                message: text.trim(),
+                message_type: 'text'
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            loadDirectVictimChat();
+        }
+    } catch (e) {
+        console.error('Error sending hotline message:', e);
+    }
+}
+
+function handleSendDirectVictimMsg(e) {
+    e.preventDefault();
+    const input = document.getElementById('directVictimInput');
+    const val = input.value.trim();
+    if (val) {
+        sendDirectVictimMsg(val);
+        input.value = '';
+    }
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadDirectVictimChat();
+    setInterval(loadDirectVictimChat, 4000);
+});
+
 // 2-Way Chat Modal Handler
 function openVictimChatModal(sosId, victimName) {
+    activeVictimSosId = sosId;
+    loadDirectVictimChat();
     document.getElementById('chat_sos_id').value = sosId;
     document.getElementById('chatVictimTitle').innerText = `Lifeline with ${victimName || 'Citizen'}`;
     document.getElementById('chatVictimSubtitle').innerText = `Direct rescue link for SOS #${sosId}`;
     document.getElementById('victimChatModal').classList.remove('hidden');
-
-    // Fetch initial chat
     loadVictimChat(sosId);
 }
 
@@ -1037,14 +1282,14 @@ function loadVictimChat(sosId) {
     const box = document.getElementById('victimChatMessagesBox');
     box.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Connecting to emergency lifeline...</p>`;
 
-    fetch(`api/victim_volunteer_chat_history.php?sos_id=${sosId}`)
+    fetch(`api/victim_volunteer_chat_fetch.php?sos_id=${sosId}`)
         .then(r => r.json())
         .then(data => {
-            if (data.status === 'success' && data.messages && data.messages.length > 0) {
-                box.innerHTML = data.messages.map(m => `
+            if (data.success && data.data && data.data.messages && data.data.messages.length > 0) {
+                box.innerHTML = data.data.messages.map(m => `
                     <div class="flex flex-col ${m.sender_role === 'volunteer' ? 'items-end' : 'items-start'}">
                         <div class="max-w-[80%] p-2.5 rounded-2xl text-xs ${m.sender_role === 'volunteer' ? 'bg-emerald-600 text-white rounded-br-none' : 'bg-white border border-slate-200 text-slate-900 rounded-bl-none shadow-2xs'}">
-                            <span class="block text-[10px] font-mono font-bold ${m.sender_role === 'volunteer' ? 'text-emerald-200' : 'text-slate-400'}">${m.sender_name} • ${m.created_at || 'Just now'}</span>
+                            <span class="block text-[10px] font-mono font-bold ${m.sender_role === 'volunteer' ? 'text-emerald-200' : 'text-slate-400'}">${m.sender_name} • ${m.created_at ? m.created_at.substring(11, 16) : 'Just now'}</span>
                             <p class="font-medium mt-0.5">${m.message}</p>
                         </div>
                     </div>
@@ -1064,10 +1309,10 @@ function sendQuickRadioMsg() {
     const msg = input.value.trim();
     if (!msg) return;
 
-    fetch('api/volunteer_broadcast.php', {
+    fetch('api/comms_send.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ message: msg })
+        body: JSON.stringify({ message: msg, channel: 'ops' })
     }).then(() => {
         input.value = '';
         location.reload();
