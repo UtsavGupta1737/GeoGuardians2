@@ -1,6 +1,6 @@
 <?php
 /**
- * Victim-Volunteer Chat Send API
+ * Victim-Volunteer & Admin Chat Send API
  */
 if (!headers_sent()) { header('Content-Type: application/json; charset=utf-8'); }
 require_once __DIR__ . '/../auth.php';
@@ -10,9 +10,22 @@ $sosId = (int)($input['sos_id'] ?? 1);
 $message = trim($input['message'] ?? '');
 $messageType = trim($input['message_type'] ?? 'text');
 
-$senderId = $_SESSION['user_id'] ?? 3;
-$senderName = $_SESSION['user_name'] ?? 'Elena (Volunteer)';
-$senderRole = in_array($_SESSION['user_role'] ?? '', ['user', 'citizen', 'victim']) ? 'victim' : 'volunteer';
+$currentUser = getCurrentUser($pdo);
+$roleSlug = $currentUser['role_slug'] ?? ($_SESSION['user_role'] ?? 'volunteer');
+
+if ($roleSlug === 'superadmin' || $roleSlug === 'admin') {
+    $senderRole = 'admin';
+    $defaultName = $currentUser['name'] ?? 'Disaster Command (Admin)';
+} elseif (in_array($roleSlug, ['user', 'citizen', 'victim'])) {
+    $senderRole = 'victim';
+    $defaultName = $currentUser['name'] ?? 'Citizen / Victim';
+} else {
+    $senderRole = 'volunteer';
+    $defaultName = $currentUser['name'] ?? 'Rajesh Kumar (Volunteer)';
+}
+
+$senderId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 11);
+$senderName = !empty($input['sender_name']) ? trim($input['sender_name']) : $defaultName;
 
 if (empty($message)) {
     echo json_encode(['success' => false, 'error' => 'Message cannot be empty.']);
@@ -36,6 +49,7 @@ try {
             'sender_name' => $senderName,
             'sender_role' => $senderRole,
             'message' => $message,
+            'message_type' => $messageType,
             'created_at' => date('Y-m-d H:i:s')
         ]
     ]);

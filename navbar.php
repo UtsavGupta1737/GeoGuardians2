@@ -166,13 +166,13 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                                 <p class="text-[10px] text-slate-500">Hospital ICU & Ambulances</p>
                             </div>
                         </a>
-                        <a href="login.php?quick_login=volunteer@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-900 transition-colors">
+                        <a href="login.php?quick_login=rajesh.volunteer@disaster.local" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-900 transition-colors">
                             <div class="w-7 h-7 bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center font-bold text-xs shrink-0">
                                 <i class="fa-solid fa-hand-holding-heart"></i>
                             </div>
                             <div>
-                                <p class="font-bold text-slate-900">Volunteer (Vaibhav Hub)</p>
-                                <p class="text-[10px] text-slate-500">Field Missions & Aid</p>
+                                <p class="font-bold text-slate-900">Rajesh Kumar (Volunteer)</p>
+                                <p class="text-[10px] text-slate-500">Field Hotline &amp; Rescue Aid</p>
                             </div>
                         </a>
                         <a href="login.php?quick_login=citizen@example.com" class="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-amber-50 hover:text-amber-900 transition-colors">

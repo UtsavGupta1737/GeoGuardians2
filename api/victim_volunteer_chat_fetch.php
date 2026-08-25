@@ -1,6 +1,6 @@
 <?php
 /**
- * Victim-Volunteer Chat Fetch API
+ * Victim-Volunteer & Admin Chat Fetch API
  */
 if (!headers_sent()) { header('Content-Type: application/json; charset=utf-8'); }
 require_once __DIR__ . '/../auth.php';
@@ -8,11 +8,12 @@ require_once __DIR__ . '/../auth.php';
 $sosId = (int)($_GET['sos_id'] ?? 1);
 
 try {
-    // 1. Fetch victim information
+    // 1. Fetch victim & responder information
     $sosStmt = $pdo->prepare("
         SELECT id as sos_id, sender_name as victim_name, sender_phone as victim_phone,
                gps_lat as victim_lat, gps_lng as victim_lng, emergency_type, priority,
-               persons_count as people_count, 'Sector 4 Lowlands, Delhi-NCR' as victim_address, status
+               persons_count as people_count, 'Sector 4 Lowlands, Delhi-NCR' as victim_address,
+               status, assigned_unit, responder_name, responder_phone, eta_minutes, dispatch_agency
         FROM emergency_sos
         WHERE id = ?
     ");
@@ -30,7 +31,12 @@ try {
             'priority' => 'Critical',
             'people_count' => 4,
             'victim_address' => 'Sector 4 Flood Relief Lowlands',
-            'status' => 'Pending'
+            'status' => 'Pending',
+            'assigned_unit' => 'Rajesh Kumar (Volunteer Corps)',
+            'responder_name' => 'Rajesh Kumar',
+            'responder_phone' => '+91 98765 43210',
+            'eta_minutes' => 5,
+            'dispatch_agency' => 'Volunteers'
         ];
     }
 
@@ -46,11 +52,12 @@ try {
 
     // 3. Fetch all active victims for multi-victim chat sidebar
     $allVictims = $pdo->query("
-        SELECT id as sos_id, sender_name as victim_name, emergency_type, priority,
+        SELECT id as sos_id, sender_name as victim_name, sender_phone as victim_phone, emergency_type, priority,
+               gps_lat, gps_lng, assigned_unit, responder_name, eta_minutes,
                'Sector 4' as victim_address, status
         FROM emergency_sos
         WHERE status != 'Resolved'
-        ORDER BY id DESC LIMIT 5
+        ORDER BY id DESC LIMIT 10
     ")->fetchAll();
 
     echo json_encode([
