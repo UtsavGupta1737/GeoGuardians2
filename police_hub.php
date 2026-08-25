@@ -141,7 +141,7 @@ require_once __DIR__ . '/sidebar.php';
                 <div class="space-y-2">
                     <div class="flex items-center gap-2.5">
                         <span class="w-9 h-9 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#1d63d8] font-black text-base shadow-2xs">
-                            🚓
+                            <i class="fa-solid fa-shield-halved"></i>
                         </span>
                         <div>
                             <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 mono">Emergency Services Agency</span>
@@ -333,10 +333,10 @@ require_once __DIR__ . '/sidebar.php';
                             <input type="hidden" name="current_task" value="<?= htmlspecialchars($tm['current_task']) ?>">
 
                             <select name="status" onchange="this.form.submit()" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-[10px] font-bold focus:outline-none focus:border-[#1d63d8]">
-                                <option value="Available" <?= $tm['status'] === 'Available' ? 'selected' : '' ?>>🟢 Available</option>
-                                <option value="Dispatched" <?= $tm['status'] === 'Dispatched' ? 'selected' : '' ?>>🔵 Dispatched</option>
-                                <option value="On-Scene" <?= $tm['status'] === 'On-Scene' ? 'selected' : '' ?>>🔴 On-Scene</option>
-                                <option value="Standby" <?= $tm['status'] === 'Standby' ? 'selected' : '' ?>>🟡 Standby</option>
+                                <option value="Available" <?= $tm['status'] === 'Available' ? 'selected' : '' ?>>Available</option>
+                                <option value="Dispatched" <?= $tm['status'] === 'Dispatched' ? 'selected' : '' ?>>Dispatched</option>
+                                <option value="On-Scene" <?= $tm['status'] === 'On-Scene' ? 'selected' : '' ?>>On-Scene</option>
+                                <option value="Standby" <?= $tm['status'] === 'Standby' ? 'selected' : '' ?>>Standby</option>
                             </select>
                         </form>
                     </div>
@@ -476,9 +476,9 @@ require_once __DIR__ . '/sidebar.php';
                 <div>
                     <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 mono">Priority</label>
                     <select name="priority" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-[#1d63d8]">
-                        <option value="Critical">🔴 Critical</option>
-                        <option value="High" selected>🟠 High</option>
-                        <option value="Medium">🟡 Medium</option>
+                        <option value="Critical">Critical</option>
+                        <option value="High" selected>High</option>
+                        <option value="Medium">Medium</option>
                     </select>
                 </div>
                 <div>
@@ -528,7 +528,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).addTo(pMap)
         .bindPopup(`
             <div style="color:#0f172a; font-family:'Inter', sans-serif; font-size:12px; min-width:180px;">
-                <strong style="color:#2563eb;">🏢 ${st.station_name}</strong><br/>
+                <strong style="color:#2563eb;">${st.station_name}</strong><br/>
                 <b>Zone:</b> ${st.zone_name}<br/>
                 <span>In-Charge: <b>${st.commander_name}</b></span><br/>
                 <span>Vehicles: <b>${st.vehicles_count}</b> • Officers: <b>${st.personnel_count}</b></span><br/>

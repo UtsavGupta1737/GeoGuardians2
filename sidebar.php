@@ -56,12 +56,6 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                     <span class="flex-1 font-extrabold">Command Hub</span>
                 </a>
 
-                <a href="map.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all <?= ($currentScript === 'map.php') ? 'bg-teal-50 text-teal-800 border-l-4 border-teal-600 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                    <i class="fa-solid fa-map-location-dot text-sm w-4 text-center text-teal-600"></i>
-                    <span class="flex-1 font-extrabold">Tactical GIS Map</span>
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                </a>
-
                 <?php 
                     $hasSosAccess = isSuperAdmin($currentUser) || hasPermission($currentUser, 'access_sos_database');
                     if ($hasSosAccess): 

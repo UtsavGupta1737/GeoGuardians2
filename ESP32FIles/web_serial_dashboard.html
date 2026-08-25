@@ -317,7 +317,7 @@
     </div>
 
     <button id="btnConnect" class="btn-connect" onclick="toggleSerial()">
-      🔌 Connect ESP32 USB
+      Connect ESP32 USB
     </button>
   </header>
 
@@ -326,7 +326,7 @@
     <!-- Feed -->
     <div class="feed-panel">
       <div class="feed-title">
-        <span>🚨 Parsed Emergency Dispatches</span>
+        <span>Parsed Emergency Dispatches</span>
         <span id="badgeCount" style="font-size:0.8rem; color:var(--text-dim);">0 reports</span>
       </div>
 
@@ -340,7 +340,7 @@
     <!-- Raw Serial Monitor -->
     <div class="log-panel">
       <div class="feed-title">
-        <span>📟 Live Serial Stream</span>
+        <span>Live Serial Stream</span>
         <button onclick="clearLog()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:0.75rem;">Clear</button>
       </div>
       <div id="serialLog" class="serial-log">Waiting for connection (115200 baud)...&#10;</div>
@@ -384,7 +384,7 @@
         if (reader) await reader.cancel();
         await port.close();
         port = null;
-        btnConnect.innerText = "🔌 Connect ESP32 USB";
+        btnConnect.innerText = "Connect ESP32 USB";
         btnConnect.classList.remove('connected');
         logToScreen("[DISCONNECTED] Serial port closed.");
         return;
@@ -399,7 +399,7 @@
         port = await navigator.serial.requestPort();
         await port.open({ baudRate: 115200 });
         keepReading = true;
-        btnConnect.innerText = "🛑 Disconnect USB";
+        btnConnect.innerText = "Disconnect USB";
         btnConnect.classList.add('connected');
         logToScreen("[CONNECTED] Listening on 115200 baud...");
 
@@ -496,13 +496,13 @@
         voiceHtml = `
           <div class="voice-player-box">
             <div class="voice-player-top">
-              <span>🎙️ EMERGENCY VOICE AUDIO BEACON</span>
+              <span>EMERGENCY VOICE AUDIO BEACON</span>
               <span>${voiceDuration ? voiceDuration + 's' : 'Audio attached'}</span>
             </div>
             <audio id="ws-audio-${alertId}" src="${data.voice_note}" preload="metadata"></audio>
             <div class="voice-controls-row">
               <button type="button" id="ws-btn-${alertId}" class="btn-play-voice-sm" onclick="toggleWebVoice('${alertId}')">
-                ▶️ Play
+                ▶ Play
               </button>
               <div class="audio-eq-bars" id="ws-eq-${alertId}">
                 <span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span>
@@ -519,28 +519,28 @@
       card.id = `card-${alertId}`;
       card.innerHTML = `
         <div class="victim-header">
-          <span class="victim-name">👤 ${escapeHtml(name)}</span>
+          <span class="victim-name">${escapeHtml(name)}</span>
           <div style="display:flex; gap:6px; align-items:center;">
-            ${hasVoice ? '<span class="voice-tag-badge">🎙️ VOICE SOS</span>' : ''}
+            ${hasVoice ? '<span class="voice-tag-badge">VOICE SOS</span>' : ''}
             <span class="badge-type">${escapeHtml(type)}</span>
           </div>
         </div>
         <div style="background:rgba(16,185,129,0.15); border:1px solid #10b981; border-radius:6px; padding:4px 8px; font-size:0.75rem; margin-bottom:8px; display:flex; justify-content:space-between;">
-          <span>📡 <strong>Node:</strong> ${escapeHtml(beaconId)}</span>
-          <span style="color:#10b981; font-weight:700;">📍 Auto-Pinned GPS</span>
+          <span><strong>Node:</strong> ${escapeHtml(beaconId)}</span>
+          <span style="color:#10b981; font-weight:700;">Auto-Pinned GPS</span>
         </div>
         <div class="grid-info">
-          <div><strong>📞 Phone:</strong> ${escapeHtml(phone)}</div>
-          <div><strong>📍 GPS:</strong> ${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
-          <div><strong>🩸 Blood:</strong> ${escapeHtml(blood)}</div>
-          <div><strong>🎂 Age:</strong> ${escapeHtml(age)}</div>
+          <div><strong>Phone:</strong> ${escapeHtml(phone)}</div>
+          <div><strong>GPS:</strong> ${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
+          <div><strong>Blood:</strong> ${escapeHtml(blood)}</div>
+          <div><strong>Age:</strong> ${escapeHtml(age)}</div>
         </div>
         <div style="font-size:0.85rem; margin-bottom:8px;"><strong>Aid Needs:</strong> ${escapeHtml(needs)}</div>
         ${voiceHtml}
         <div class="notes-box">"${escapeHtml(notes)}"</div>
         <div class="card-footer-actions">
-          <a href="${mapUrl}" target="_blank" class="btn-map">🗺️ View Location on Map</a>
-          <button class="btn-tts-sm" onclick="speakAlert('${escapeHtml(name)}', '${escapeHtml(type)}', '${escapeHtml(notes)}')">🗣️ Read Aloud</button>
+          <a href="${mapUrl}" target="_blank" class="btn-map">View Location on Map</a>
+          <button class="btn-tts-sm" onclick="speakAlert('${escapeHtml(name)}', '${escapeHtml(type)}', '${escapeHtml(notes)}')">Read Aloud</button>
         </div>
       `;
 
@@ -568,7 +568,7 @@
       });
 
       audio.addEventListener('ended', () => {
-        playBtn.innerText = '▶️ Play';
+        playBtn.innerText = 'Play';
         eq.classList.remove('playing');
         seek.value = 0;
       });
@@ -584,11 +584,11 @@
       if (audio.paused) {
         document.querySelectorAll('audio').forEach(a => { if (a !== audio) a.pause(); });
         audio.play();
-        playBtn.innerText = '⏸️ Pause';
+        playBtn.innerText = 'Pause';
         eq.classList.add('playing');
       } else {
         audio.pause();
-        playBtn.innerText = '▶️ Play';
+        playBtn.innerText = 'Play';
         eq.classList.remove('playing');
       }
     }
