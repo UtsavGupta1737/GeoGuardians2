@@ -42,7 +42,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 2. DISPATCH NEW FIRE MISSION
+    // 2. ADD NEW FIRE APPARATUS / TENDER
+    if ($action === 'add_team') {
+        $stationId = (int)($_POST['station_id'] ?? 5);
+        $callsign = trim($_POST['callsign'] ?? '');
+        $teamLead = trim($_POST['team_lead'] ?? '');
+        $membersCount = (int)($_POST['members_count'] ?? 10);
+        $vehicleEquipment = trim($_POST['vehicle_equipment'] ?? '');
+        $status = trim($_POST['status'] ?? 'Available');
+        $currentTask = trim($_POST['current_task'] ?? 'In Quarters / Ready');
+        $contactRadio = trim($_POST['contact_radio'] ?? 'VHF Fire Ch-1');
+
+        if ($callsign && $teamLead) {
+            $stmt = $pdo->prepare("INSERT INTO agency_teams (agency_type, station_id, callsign, team_lead, members_count, vehicle_equipment, status, current_task, contact_radio) VALUES ('Fire', :station_id, :callsign, :team_lead, :members_count, :vehicle_equipment, :status, :current_task, :contact_radio)");
+            $stmt->execute([
+                ':station_id' => $stationId,
+                ':callsign' => $callsign,
+                ':team_lead' => $teamLead,
+                ':members_count' => $membersCount,
+                ':vehicle_equipment' => $vehicleEquipment,
+                ':status' => $status,
+                ':current_task' => $currentTask,
+                ':contact_radio' => $contactRadio
+            ]);
+            logActivity($pdo, 'FIRE_APPARATUS_ADDED', "Registered new Fire apparatus {$callsign} under {$teamLead}");
+            setFlash('success', "Fire Engine / Apparatus '{$callsign}' registered and ready for CAD deployment.");
+        } else {
+            setFlash('error', 'Please provide Callsign and Station Lead name.');
+        }
+        header("Location: fire_hub.php");
+        exit;
+    }
+
+    // 3. DISPATCH NEW FIRE MISSION
     if ($action === 'create_task') {
         $title = trim($_POST['title'] ?? '');
         $priority = trim($_POST['priority'] ?? 'High');
@@ -53,6 +85,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($title && $location) {
             $stmt = $pdo->prepare("INSERT INTO agency_tasks (agency_type, title, priority, location, assigned_team, status, description) VALUES ('Fire', :title, :priority, :location, :assigned_team, 'In Progress', :description)");
             $stmt->execute([':title' => $title, ':priority' => $priority, ':location' => $location, ':assigned_team' => $assignedTeam, ':description' => $description]);
+            
+            // Update assigned apparatus status
+            if ($assignedTeam) {
+                $pdo->prepare("UPDATE agency_teams SET status = 'On-Scene', current_task = ? WHERE callsign = ? AND agency_type = 'Fire'")
+                    ->execute([$title . " at " . $location, $assignedTeam]);
+            }
+
             logActivity($pdo, 'FIRE_TASK_DISPATCHED', "New Fire CAD mission '{$title}' dispatched to {$assignedTeam} at {$location}");
             setFlash('success', "Fire response mission dispatched successfully.");
         } else {
@@ -62,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 3. UPDATE TASK STATUS
+    // 4. UPDATE TASK STATUS
     if ($action === 'update_task_status') {
         $taskId = (int)($_POST['task_id'] ?? 0);
         $status = trim($_POST['status'] ?? 'In Progress');
@@ -73,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 4. ALLOCATE RESOURCE / FOAM / EQUIPMENT
+    // 5. ALLOCATE RESOURCE / FOAM / EQUIPMENT
     if ($action === 'allocate_resource') {
         $resId = (int)($_POST['resource_id'] ?? 0);
         $qty = (int)($_POST['quantity'] ?? 0);
@@ -98,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 5. DIRECT BROADCAST
+    // 6. DIRECT BROADCAST
     if ($action === 'broadcast_order') {
         $message = trim($_POST['message'] ?? '');
         if ($message) {
@@ -119,7 +158,7 @@ $fireSos = $pdo->query("SELECT * FROM emergency_sos WHERE dispatch_agency = 'Fir
 
 // Live Metrics
 $totalStations = count($stations);
-$activeTenders = count(array_filter($teams, fn($t) => $t['status'] !== 'Available'));
+$activeTenders = count(array_filter($teams, fn($t) => in_array($t['status'], ['Deployed', 'On-Scene', 'Dispatched', 'En Route'])));
 $availableTenders = count(array_filter($teams, fn($t) => $t['status'] === 'Available'));
 $openTasks = count(array_filter($tasks, fn($t) => $t['status'] !== 'Completed'));
 $totalPersonnel = array_sum(array_column($stations, 'personnel_count'));
@@ -160,14 +199,14 @@ require_once __DIR__ . '/sidebar.php';
 
                 <!-- Right Quick Controls -->
                 <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0">
-                    <button type="button" onclick="openCreateTaskModal()" class="px-4 py-2.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-black transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="fa-solid fa-plus-circle text-sm"></i>
-                        <span>Dispatch Fire Engine</span>
+                    <button type="button" onclick="openAddTeamModal()" class="px-4 py-2.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-black transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-truck-droplet text-sm"></i>
+                        <span>Register Apparatus</span>
                     </button>
-                    <a href="disasters.php" class="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="fa-solid fa-triangle-exclamation text-sm text-amber-400"></i>
-                        <span>Disaster Incidents Hub</span>
-                    </a>
+                    <button type="button" onclick="openCreateTaskModal()" class="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-plus-circle text-sm text-amber-400"></i>
+                        <span>Dispatch Fire CAD</span>
+                    </button>
                 </div>
             </div>
 
@@ -198,18 +237,18 @@ require_once __DIR__ . '/sidebar.php';
                     </p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-600 border border-red-200 flex items-center justify-center text-xl shrink-0">
-                    <i class="fa-solid fa-building-flag"></i>
+                    <i class="fa-solid fa-fire-flame-curved"></i>
                 </div>
             </div>
 
-            <!-- Rolling Apparatus -->
+            <!-- Rolling Tenders -->
             <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-between">
                 <div>
-                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 mono">Rolling Tenders</span>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 mono">Heavy Apparatus</span>
                     <h3 class="text-2xl font-black text-slate-900 mt-1"><?= count($teams) ?></h3>
                     <p class="text-xs text-amber-600 font-bold mt-0.5 flex items-center gap-1">
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                        <?= $activeTenders ?> En Route &bull; <?= $availableTenders ?> In Quarters
+                        <?= $activeTenders ?> Deployed &bull; <?= $availableTenders ?> Ready
                     </p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center text-xl shrink-0">
@@ -217,38 +256,38 @@ require_once __DIR__ . '/sidebar.php';
                 </div>
             </div>
 
-            <!-- Active Fire Incidents -->
+            <!-- Active Fire CAD -->
             <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-between">
                 <div>
                     <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 mono">Active Fire CAD</span>
                     <h3 class="text-2xl font-black text-slate-900 mt-1"><?= $openTasks ?></h3>
                     <p class="text-xs text-rose-600 font-bold mt-0.5 flex items-center gap-1">
                         <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                        Structural &amp; Hazmat Calls
+                        Hazmat &amp; Suppression
                     </p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center text-xl shrink-0">
-                    <i class="fa-solid fa-fire-extinguisher"></i>
+                    <i class="fa-solid fa-fire"></i>
                 </div>
             </div>
 
-            <!-- On-Duty Firefighters -->
+            <!-- Firefighters -->
             <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-between">
                 <div>
                     <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 mono">Active Firefighters</span>
                     <h3 class="text-2xl font-black text-slate-900 mt-1"><?= number_format($totalPersonnel) ?></h3>
                     <p class="text-xs text-emerald-600 font-bold mt-0.5 flex items-center gap-1">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        Turnout Ready on Shift
+                        SCBA &amp; Rescue Qualified
                     </p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center text-xl shrink-0">
-                    <i class="fa-solid fa-helmet-safety"></i>
+                    <i class="fa-solid fa-person-military-rifle"></i>
                 </div>
             </div>
         </section>
 
-        <!-- 3. TACTICAL FIRE RADAR MAP & ALARM QUEUE (2 col / 1 col Grid) -->
+        <!-- 3. TACTICAL GIS RADAR MAP & LIVE TELEMETRY (2 col / 1 col Grid) -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Leaflet Fire Map (2 cols) -->
@@ -260,8 +299,8 @@ require_once __DIR__ . '/sidebar.php';
                                 <i class="fa-solid fa-map-location-dot"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-black text-slate-900">Fire Stations, Hydrants &amp; Incident Radar</h3>
-                                <p class="text-[10px] text-slate-500 font-medium">Real-time GPS mapping of fire headquarters, high-pressure hydrants, and active fire alarms</p>
+                                <h3 class="text-sm font-black text-slate-900">Fire Stations &amp; Hydrant GIS Radar</h3>
+                                <p class="text-[10px] text-slate-500 font-medium">Live GPS coordinates of fire stations, foam tenders, and fire distress alerts</p>
                             </div>
                         </div>
                         <span class="px-2.5 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold mono">
@@ -273,23 +312,23 @@ require_once __DIR__ . '/sidebar.php';
 
                     <div class="pt-3 mt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] font-bold text-slate-600 gap-2">
                         <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> Fire Stations</span>
-                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span> Heavy Water Tenders</span>
-                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span> Active Fire SOS Beacons</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span> Heavy Apparatus</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span> Fire / Hazmat SOS</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Fire CAD Alarms Queue (1 col) -->
+            <!-- Fire CAD & Distress Queue (1 col) -->
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-sm font-bold">
-                                <i class="fa-solid fa-bell"></i>
+                                <i class="fa-solid fa-bullhorn"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-black text-slate-900">Emergency 101 Alarms</h3>
-                                <p class="text-[10px] text-slate-500 font-medium">Real-Time CAD Distress Queue</p>
+                                <h3 class="text-sm font-black text-slate-900">Fire &amp; Hazmat CAD Feed</h3>
+                                <p class="text-[10px] text-slate-500 font-medium">Emergency Fire Alarms</p>
                             </div>
                         </div>
                         <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
@@ -298,20 +337,20 @@ require_once __DIR__ . '/sidebar.php';
                     <!-- Incidents List -->
                     <div class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
                         <?php if (empty($fireSos)): ?>
-                            <p class="text-xs text-slate-400 italic text-center py-6">No fire or gas emergencies reported.</p>
+                            <p class="text-xs text-slate-400 italic text-center py-6">No emergency fire alarms active.</p>
                         <?php else: ?>
                             <?php foreach ($fireSos as $sos): ?>
                                 <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
                                     <div class="flex items-center justify-between">
                                         <span class="font-black text-slate-900 text-[11px] flex items-center gap-1">
-                                            <i class="fa-solid fa-fire text-red-500 text-[10px]"></i>
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 text-[10px]"></i>
                                             <?= htmlspecialchars($sos['sender_name']) ?> (#<?= $sos['id'] ?>)
                                         </span>
                                         <span class="px-2 py-0.5 rounded text-[9px] font-bold <?= $sos['priority'] === 'Critical' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800' ?> mono">
                                             <?= htmlspecialchars($sos['priority']) ?>
                                         </span>
                                     </div>
-                                    <p class="text-slate-600 font-medium text-[11px]"><?= htmlspecialchars($sos['emergency_type']) ?> &bull; <?= htmlspecialchars($sos['message'] ?: 'Emergency response required') ?></p>
+                                    <p class="text-slate-600 font-medium text-[11px]"><?= htmlspecialchars($sos['emergency_type']) ?> &bull; <?= htmlspecialchars($sos['message'] ?: 'Fire suppression requested') ?></p>
                                     <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-0.5">
                                         <span>GPS: <?= $sos['gps_lat'] ?>, <?= $sos['gps_lng'] ?></span>
                                         <span><?= $sos['status'] ?></span>
@@ -324,7 +363,7 @@ require_once __DIR__ . '/sidebar.php';
 
                 <div class="pt-3 mt-3 border-t border-slate-100 text-center">
                     <a href="sos.php" class="text-xs font-bold text-red-600 hover:text-red-700 flex items-center justify-center gap-1">
-                        <span>View Universal SOS Console</span>
+                        <span>View All Emergency Distress Beacons</span>
                         <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </a>
                 </div>
@@ -344,9 +383,15 @@ require_once __DIR__ . '/sidebar.php';
                         <p class="text-xs text-slate-500 font-medium">Turnout status of water tenders, foam crash tenders, and hydraulic turntables</p>
                     </div>
                 </div>
-                <span class="px-3 py-1 rounded-full text-xs font-black bg-red-50 text-red-700 border border-red-200 mono">
-                    <?= count($teams) ?> Registered Engines
-                </span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="openAddTeamModal()" class="px-3 py-1.5 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Add Unit</span>
+                    </button>
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-red-50 text-red-700 border border-red-200 mono">
+                        <?= count($teams) ?> Registered Engines
+                    </span>
+                </div>
             </div>
 
             <!-- Teams Grid -->
@@ -355,8 +400,9 @@ require_once __DIR__ . '/sidebar.php';
                     <?php
                         $statusColor = match($team['status']) {
                             'Available' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                            'Deployed', 'En Route' => 'bg-red-50 text-red-700 border-red-200',
-                            'Standby' => 'bg-amber-50 text-amber-700 border-amber-200',
+                            'On-Scene', 'Deployed', 'En Route' => 'bg-red-50 text-red-700 border-red-200',
+                            'Dispatched' => 'bg-amber-50 text-amber-700 border-amber-200',
+                            'Standby' => 'bg-slate-100 text-slate-700 border-slate-200',
                             default => 'bg-slate-100 text-slate-700 border-slate-200'
                         };
                     ?>
@@ -364,15 +410,15 @@ require_once __DIR__ . '/sidebar.php';
                         <div class="flex items-start justify-between">
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <h4 class="font-black text-slate-900 text-sm"><?= htmlspecialchars($team['team_code']) ?></h4>
+                                    <h4 class="font-black text-slate-900 text-sm"><?= htmlspecialchars($team['callsign'] ?: 'Apparatus #' . $team['id']) ?></h4>
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-black border <?= $statusColor ?> mono">
                                         <?= htmlspecialchars($team['status']) ?>
                                     </span>
                                 </div>
-                                <p class="text-xs text-slate-500 font-medium mt-0.5"><?= htmlspecialchars($team['team_name'] ?: 'Fire Tender Unit') ?></p>
+                                <p class="text-xs text-slate-500 font-medium mt-0.5"><?= htmlspecialchars($team['vehicle_equipment'] ?: 'Fire Tender Engine') ?></p>
                             </div>
-                            <button type="button" onclick="openUpdateTeamModal(<?= $team['id'] ?>, '<?= htmlspecialchars($team['team_code']) ?>', '<?= htmlspecialchars($team['status']) ?>', '<?= addslashes(htmlspecialchars($team['current_task'] ?? '')) ?>')" class="p-1.5 text-slate-400 hover:text-red-600 transition-colors cursor-pointer" title="Update Apparatus Status">
-                                <i class="fa-solid fa-pen-to-square text-xs"></i>
+                            <button type="button" onclick="openUpdateTeamModal(<?= $team['id'] ?>, '<?= addslashes(htmlspecialchars($team['callsign'] ?: 'Apparatus #' . $team['id'])) ?>', '<?= htmlspecialchars($team['status']) ?>', '<?= addslashes(htmlspecialchars($team['current_task'] ?? '')) ?>')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer" title="Update Apparatus Status">
+                                <i class="fa-solid fa-pen-to-square text-[10px]"></i> Update
                             </button>
                         </div>
 
@@ -383,12 +429,50 @@ require_once __DIR__ . '/sidebar.php';
                             </div>
                             <div class="flex items-center justify-between text-[11px]">
                                 <span class="text-slate-400">Station Officer:</span>
-                                <strong class="text-slate-800"><?= htmlspecialchars($team['leader_name'] ?: 'Fire Station Lead') ?></strong>
+                                <strong class="text-slate-800"><?= htmlspecialchars($team['team_lead'] ?: 'Station Lead') ?> (<?= $team['members_count'] ?> crew)</strong>
                             </div>
                             <div class="flex items-center justify-between text-[11px]">
-                                <span class="text-slate-400">Current Assignment:</span>
-                                <span class="text-red-700 font-bold truncate max-w-[150px]"><?= htmlspecialchars($team['current_task'] ?: 'In Quarters / Ready') ?></span>
+                                <span class="text-slate-400">Radio Channel:</span>
+                                <span class="font-mono text-red-700 font-bold"><?= htmlspecialchars($team['contact_radio'] ?: 'VHF Fire Ch-1') ?></span>
                             </div>
+                            <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100">
+                                <span class="text-slate-400">Assignment:</span>
+                                <span class="text-slate-800 font-bold truncate max-w-[170px]" title="<?= htmlspecialchars($team['current_task']) ?>"><?= htmlspecialchars($team['current_task'] ?: 'In Quarters / Ready') ?></span>
+                            </div>
+                        </div>
+
+                        <!-- 1-Click Fast Status Buttons -->
+                        <div class="flex items-center gap-1 pt-1">
+                            <form method="POST" action="fire_hub.php" class="flex-1">
+                                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                                <input type="hidden" name="action" value="update_team_status">
+                                <input type="hidden" name="team_id" value="<?= $team['id'] ?>">
+                                <input type="hidden" name="status" value="Available">
+                                <input type="hidden" name="current_task" value="In Quarters / Ready">
+                                <button type="submit" class="w-full py-1 text-[10px] font-bold rounded-lg transition-all <?= $team['status'] === 'Available' ? 'bg-emerald-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' ?> cursor-pointer">
+                                    In Quarters
+                                </button>
+                            </form>
+                            <form method="POST" action="fire_hub.php" class="flex-1">
+                                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                                <input type="hidden" name="action" value="update_team_status">
+                                <input type="hidden" name="team_id" value="<?= $team['id'] ?>">
+                                <input type="hidden" name="status" value="On-Scene">
+                                <input type="hidden" name="current_task" value="<?= htmlspecialchars($team['current_task'] ?: 'Fire Ground Operations') ?>">
+                                <button type="submit" class="w-full py-1 text-[10px] font-bold rounded-lg transition-all <?= in_array($team['status'], ['On-Scene', 'Deployed']) ? 'bg-red-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' ?> cursor-pointer">
+                                    On-Scene
+                                </button>
+                            </form>
+                            <form method="POST" action="fire_hub.php" class="flex-1">
+                                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                                <input type="hidden" name="action" value="update_team_status">
+                                <input type="hidden" name="team_id" value="<?= $team['id'] ?>">
+                                <input type="hidden" name="status" value="Standby">
+                                <input type="hidden" name="current_task" value="Water Refill & Standby">
+                                <button type="submit" class="w-full py-1 text-[10px] font-bold rounded-lg transition-all <?= $team['status'] === 'Standby' ? 'bg-amber-600 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' ?> cursor-pointer">
+                                    Standby
+                                </button>
+                            </form>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -448,7 +532,7 @@ require_once __DIR__ . '/sidebar.php';
                                         </button>
                                     </form>
                                 <?php else: ?>
-                                    <span class="text-xs font-bold text-emerald-600 flex items-center gap-1"><i class="fa-solid fa-check-circle"></i> Incident Closed</span>
+                                    <span class="text-xs font-bold text-emerald-600 flex items-center gap-1"><i class="fa-solid fa-check-circle"></i> Incident Resolved</span>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -457,7 +541,7 @@ require_once __DIR__ . '/sidebar.php';
             </div>
         </section>
 
-        <!-- 6. FIRE LOGISTICS & FOAM DEPOT -->
+        <!-- 6. FIRE & RESCUE LOGISTICS & FOAM INVENTORY -->
         <section class="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-3">
@@ -465,8 +549,8 @@ require_once __DIR__ . '/sidebar.php';
                         <i class="fa-solid fa-boxes-stacked"></i>
                     </div>
                     <div>
-                        <h2 class="text-base sm:text-lg font-black text-slate-900">AFFF Foam, SCBA Gear &amp; Suppression Logistics</h2>
-                        <p class="text-xs text-slate-500 font-medium">Aqueous film-forming foam (AFFF), breathing apparatus, thermal cameras, and hydraulic cutters</p>
+                        <h2 class="text-base sm:text-lg font-black text-slate-900">Fire Suppression Resources &amp; AFFF Reserves</h2>
+                        <p class="text-xs text-slate-500 font-medium">AFFF foam concentrate, SCBA oxygen cylinders, hydraulic spreaders, and fire suits</p>
                     </div>
                 </div>
             </div>
@@ -480,7 +564,7 @@ require_once __DIR__ . '/sidebar.php';
                         <div class="flex items-start justify-between">
                             <div>
                                 <h4 class="font-black text-slate-900 text-sm"><?= htmlspecialchars($res['item_name']) ?></h4>
-                                <span class="text-[10px] font-bold text-slate-400 mono uppercase"><?= htmlspecialchars($res['category'] ?? 'Fire Supplies') ?></span>
+                                <span class="text-[10px] font-bold text-slate-400 mono uppercase"><?= htmlspecialchars($res['category'] ?? 'Equipment') ?></span>
                             </div>
                             <button type="button" onclick="openAllocateModal(<?= $res['id'] ?>, '<?= addslashes(htmlspecialchars($res['item_name'])) ?>', <?= (int)$res['available_quantity'] ?>, '<?= htmlspecialchars($res['unit']) ?>')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition-all cursor-pointer">
                                 Allocate
@@ -506,11 +590,80 @@ require_once __DIR__ . '/sidebar.php';
 
 <!-- ==================== MODALS ==================== -->
 
-<!-- 1. Dispatch Fire Task Modal -->
+<!-- 1. Add New Unit Modal -->
+<div id="addTeamModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="text-base font-black text-slate-900">Register Fire Apparatus</h3>
+            <button type="button" onclick="document.getElementById('addTeamModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 cursor-pointer">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <form method="POST" action="fire_hub.php" class="space-y-3 text-xs">
+            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+            <input type="hidden" name="action" value="add_team">
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Apparatus Callsign *</label>
+                    <input type="text" name="callsign" required placeholder="e.g. Foam Tender 5" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Station Base</label>
+                    <select name="station_id" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
+                        <?php foreach ($stations as $st): ?>
+                            <option value="<?= $st['id'] ?>"><?= htmlspecialchars($st['station_name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Station Officer Lead *</label>
+                    <input type="text" name="team_lead" required placeholder="e.g. Station Officer R. K. Tyagi" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Crew Count</label>
+                    <input type="number" name="members_count" min="1" value="10" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Apparatus &amp; Heavy Equipment</label>
+                <input type="text" name="vehicle_equipment" placeholder="e.g. 1x 4000L Foam Tender + SCBA Breathing Gear" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Initial Status</label>
+                    <select name="status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
+                        <option value="Available" selected>Available (In Quarters)</option>
+                        <option value="On-Scene">On-Scene (Suppressing)</option>
+                        <option value="Dispatched">Dispatched (En Route)</option>
+                        <option value="Standby">Standby (Refilling)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Radio Channel</label>
+                    <input type="text" name="contact_radio" value="VHF Fire Ch-1 (156.40 MHz)" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button type="button" onclick="document.getElementById('addTeamModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">Cancel</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold cursor-pointer">Register Apparatus</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 2. Dispatch Task Modal -->
 <div id="createTaskModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="text-base font-black text-slate-900">Dispatch Fire &amp; Rescue Incident</h3>
+            <h3 class="text-base font-black text-slate-900">Dispatch Fire &amp; Hazmat CAD</h3>
             <button type="button" onclick="document.getElementById('createTaskModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -522,7 +675,7 @@ require_once __DIR__ . '/sidebar.php';
 
             <div>
                 <label class="block font-bold text-slate-700 mb-1">Incident Title</label>
-                <input type="text" name="title" required placeholder="e.g. Commercial Complex 3rd Alarm Fire & Hazmat" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
+                <input type="text" name="title" required placeholder="e.g. Chemical Storage Tank 3 Fire Suppression" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
@@ -539,35 +692,35 @@ require_once __DIR__ . '/sidebar.php';
                     <label class="block font-bold text-slate-700 mb-1">Assigned Apparatus</label>
                     <select name="assigned_team" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
                         <?php foreach ($teams as $t): ?>
-                            <option value="<?= htmlspecialchars($t['team_code']) ?>"><?= htmlspecialchars($t['team_code']) ?> - <?= htmlspecialchars($t['team_name']) ?></option>
+                            <option value="<?= htmlspecialchars($t['callsign'] ?: 'Apparatus #' . $t['id']) ?>"><?= htmlspecialchars($t['callsign'] ?: 'Apparatus #' . $t['id']) ?> - <?= htmlspecialchars($t['team_lead']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
             </div>
 
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Incident Location</label>
-                <input type="text" name="location" required placeholder="e.g. Okhla Industrial Area Phase 2, New Delhi" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
+                <label class="block font-bold text-slate-700 mb-1">Target Location</label>
+                <input type="text" name="location" required placeholder="e.g. Site 4 Industrial Area, Sahibabad" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
             </div>
 
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Incident Brief &amp; Hazmat Details</label>
-                <textarea name="description" rows="3" placeholder="Specify smoke density, chemical hazards, hydrants in vicinity, and trapped casualties..." class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600"></textarea>
+                <label class="block font-bold text-slate-700 mb-1">CAD Incident Brief &amp; Hydrant Details</label>
+                <textarea name="description" rows="3" placeholder="Provide fire scale, hazardous materials involved, wind direction..." class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600"></textarea>
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
                 <button type="button" onclick="document.getElementById('createTaskModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">Cancel</button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold cursor-pointer">Dispatch Apparatus</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold cursor-pointer">Dispatch Fire Engine</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- 2. Update Team Status Modal -->
+<!-- 3. Update Team Status Modal -->
 <div id="updateTeamModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="text-base font-black text-slate-900" id="teamModalTitle">Update Tender Status</h3>
+            <h3 class="text-base font-black text-slate-900" id="teamModalTitle">Update Apparatus Status</h3>
             <button type="button" onclick="document.getElementById('updateTeamModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -579,18 +732,18 @@ require_once __DIR__ . '/sidebar.php';
             <input type="hidden" name="team_id" id="modal_team_id">
 
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Operational Status</label>
+                <label class="block font-bold text-slate-700 mb-1">Apparatus Turnout Status</label>
                 <select name="status" id="modal_team_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
-                    <option value="Available">Available (In Quarters)</option>
-                    <option value="Deployed">Deployed (On Scene)</option>
-                    <option value="En Route">En Route (Sirens On)</option>
-                    <option value="Standby">Standby (Refilling Water Tank)</option>
+                    <option value="Available">Available (In Quarters / Ready)</option>
+                    <option value="On-Scene">On-Scene (Actively Suppressing)</option>
+                    <option value="Dispatched">Dispatched (En Route to Scene)</option>
+                    <option value="Standby">Standby (Refilling Water / Foam)</option>
                 </select>
             </div>
 
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Current Assignment / Fire Scene</label>
-                <input type="text" name="current_task" id="modal_team_task" placeholder="e.g. Connaught Place Fire Suppression" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
+                <label class="block font-bold text-slate-700 mb-1">Current Fire Ground Assignment</label>
+                <input type="text" name="current_task" id="modal_team_task" placeholder="e.g. Sahibabad Solvent Cooling Tank 3" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-red-600">
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
@@ -601,11 +754,11 @@ require_once __DIR__ . '/sidebar.php';
     </div>
 </div>
 
-<!-- 3. Allocate Resource Modal -->
+<!-- 4. Allocate Resource Modal -->
 <div id="allocateModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="text-base font-black text-slate-900" id="resModalTitle">Allocate Fire Equipment</h3>
+            <h3 class="text-base font-black text-slate-900" id="resModalTitle">Allocate Firefighting Resource</h3>
             <button type="button" onclick="document.getElementById('allocateModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -640,15 +793,15 @@ function initFireMap() {
     const mapEl = document.getElementById('fireTacticalMap');
     if (!mapEl) return;
 
-    fireMap = L.map('fireTacticalMap').setView([28.6139, 77.2090], 12);
+    fireMap = L.map('fireTacticalMap').setView([28.629, 77.375], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(fireMap);
 
     // Plot Fire Stations
     <?php foreach ($stations as $st): ?>
-        <?php if (!empty($st['latitude']) && !empty($st['longitude'])): ?>
-            L.circleMarker([<?= (float)$st['latitude'] ?>, <?= (float)$st['longitude'] ?>], {
+        <?php if (!empty($st['gps_lat']) && !empty($st['gps_lng'])): ?>
+            L.circleMarker([<?= (float)$st['gps_lat'] ?>, <?= (float)$st['gps_lng'] ?>], {
                 radius: 9,
                 fillColor: '#dc2626',
                 color: '#ffffff',
@@ -658,9 +811,10 @@ function initFireMap() {
             }).addTo(fireMap).bindPopup(`
                 <div style="font-family: sans-serif; font-size: 12px;">
                     <strong style="color: #dc2626;">🚒 <?= htmlspecialchars($st['station_name']) ?></strong><br>
-                    <strong>Address:</strong> <?= htmlspecialchars($st['address'] ?? 'Fire Headquarters') ?><br>
-                    <strong>Firefighters Ready:</strong> <?= (int)$st['personnel_count'] ?><br>
-                    <strong>Hotline:</strong> <?= htmlspecialchars($st['contact_phone'] ?? '101') ?>
+                    <strong>Address:</strong> <?= htmlspecialchars($st['address'] ?? 'Fire Station HQ') ?><br>
+                    <strong>Firefighters:</strong> <?= (int)$st['personnel_count'] ?><br>
+                    <strong>Hotline:</strong> <?= htmlspecialchars($st['contact_phone'] ?? '101') ?><br>
+                    <strong>Radio:</strong> <?= htmlspecialchars($st['radio_channel'] ?? 'VHF Fire Ch-1') ?>
                 </div>
             `);
         <?php endif; ?>
@@ -671,15 +825,15 @@ function initFireMap() {
         <?php if (!empty($sos['gps_lat']) && !empty($sos['gps_lng'])): ?>
             L.circleMarker([<?= (float)$sos['gps_lat'] ?>, <?= (float)$sos['gps_lng'] ?>], {
                 radius: 8,
-                fillColor: '#ea580c',
+                fillColor: '#f97316',
                 color: '#ffffff',
                 weight: 2,
                 opacity: 1,
                 fillOpacity: 0.9
             }).addTo(fireMap).bindPopup(`
                 <div style="font-family: sans-serif; font-size: 12px;">
-                    <strong style="color: #ea580c;">🔥 <?= htmlspecialchars($sos['emergency_type']) ?> (#<?= $sos['id'] ?>)</strong><br>
-                    <strong>Caller:</strong> <?= htmlspecialchars($sos['sender_name']) ?><br>
+                    <strong style="color: #f97316;">🔥 <?= htmlspecialchars($sos['emergency_type']) ?> (#<?= $sos['id'] ?>)</strong><br>
+                    <strong>Citizen:</strong> <?= htmlspecialchars($sos['sender_name']) ?><br>
                     <strong>Phone:</strong> <?= htmlspecialchars($sos['sender_phone']) ?><br>
                     <strong>Priority:</strong> <?= htmlspecialchars($sos['priority']) ?>
                 </div>
@@ -688,13 +842,17 @@ function initFireMap() {
     <?php endforeach; ?>
 }
 
+function openAddTeamModal() {
+    document.getElementById('addTeamModal').classList.remove('hidden');
+}
+
 function openCreateTaskModal() {
     document.getElementById('createTaskModal').classList.remove('hidden');
 }
 
-function openUpdateTeamModal(id, code, status, task) {
+function openUpdateTeamModal(id, callsign, status, task) {
     document.getElementById('modal_team_id').value = id;
-    document.getElementById('teamModalTitle').innerText = `Update Status for ${code}`;
+    document.getElementById('teamModalTitle').innerText = `Update Status for ${callsign}`;
     document.getElementById('modal_team_status').value = status;
     document.getElementById('modal_team_task').value = task || '';
     document.getElementById('updateTeamModal').classList.remove('hidden');
