@@ -154,8 +154,9 @@ require_once __DIR__ . '/sidebar.php';
                 </div>
 
                 <!-- Right Point of Contact Card -->
-                <div class="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 flex flex-wrap sm:flex-nowrap items-center gap-4 shrink-0 shadow-2xs">
-                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80" alt="Commander" class="w-12 h-12 rounded-2xl object-cover border border-blue-200 shrink-0">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl shrink-0 shadow-xs border border-blue-500">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
                     <div class="text-xs space-y-1">
                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mono">Department Commander In-Charge</span>
                         <h4 class="font-extrabold text-slate-900 text-sm">Capt. Marcus Vance (Joint CP)</h4>

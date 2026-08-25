@@ -262,8 +262,30 @@ $currentScript = basename($_SERVER['PHP_SELF']);
     <div class="p-3 border-t border-slate-200 bg-slate-50 shrink-0">
         <div class="p-2.5 bg-white border border-slate-200 flex items-center justify-between">
             <div class="flex items-center gap-2.5 min-w-0">
-                <img src="<?= htmlspecialchars($currentUser['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($currentUser['name'] ?? 'User') . '&background=1d63d8&color=fff') ?>" 
-                     alt="Avatar" class="w-8 h-8 object-cover border border-slate-200 shrink-0">
+                <?php
+                    $sbRoleSlug = $currentUser['role_slug'] ?? 'user';
+                    $sbAvatarBg = match($sbRoleSlug) {
+                        'superadmin' => 'bg-purple-600 text-white',
+                        'ndrf' => 'bg-orange-600 text-white',
+                        'police' => 'bg-blue-600 text-white',
+                        'fire' => 'bg-red-600 text-white',
+                        'medical' => 'bg-teal-600 text-white',
+                        'volunteer' => 'bg-emerald-600 text-white',
+                        default => 'bg-slate-700 text-white'
+                    };
+                    $sbRoleIcon = match($sbRoleSlug) {
+                        'superadmin' => 'fa-crown',
+                        'ndrf' => 'fa-truck-monster',
+                        'police' => 'fa-shield-halved',
+                        'fire' => 'fa-fire-extinguisher',
+                        'medical' => 'fa-heart-pulse',
+                        'volunteer' => 'fa-hand-holding-heart',
+                        default => 'fa-user'
+                    };
+                ?>
+                <div class="w-8 h-8 rounded-lg <?= $sbAvatarBg ?> flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
+                    <i class="fa-solid <?= $sbRoleIcon ?>"></i>
+                </div>
                 <div class="min-w-0">
                     <p class="text-xs font-black text-slate-900 truncate"><?= htmlspecialchars($currentUser['name'] ?? 'User') ?></p>
                     <p class="text-[10px] font-bold text-[var(--role-primary)] uppercase tracking-wider truncate mono"><?= htmlspecialchars($currentUser['role_name'] ?? 'User') ?></p>

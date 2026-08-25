@@ -496,8 +496,9 @@ require_once __DIR__ . '/sidebar.php';
                                 <tr class="hover:bg-slate-50 transition-colors group">
                                     <!-- ID & Name -->
                                     <td class="py-3.5 px-3">
-                                        <div class="flex items-center gap-3">
-                                            <img src="<?= htmlspecialchars($v['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($v['full_name']) . '&background=1d63d8&color=fff') ?>" alt="<?= htmlspecialchars($v['full_name']) ?>" class="w-8 h-8 rounded-full border border-slate-200 object-cover shrink-0">
+                                            <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold text-xs flex items-center justify-center shrink-0 border border-emerald-800 shadow-2xs">
+                                                <?= strtoupper(substr($v['full_name'], 0, 2)) ?>
+                                            </div>
                                             <div>
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="font-mono text-[9px] font-bold text-slate-500">VOL-<?= str_pad($v['id'], 3, '0', STR_PAD_LEFT) ?></span>

@@ -117,9 +117,9 @@ require_once __DIR__ . '/sidebar.php';
                                         <i class="fa-solid fa-location-dot text-red-500 mr-1 text-[11px]"></i><?= htmlspecialchars($s['location']) ?>
                                     </td>
                                     <td class="py-4 px-4 text-slate-700">
-                                        <div class="flex items-center gap-2">
-                                            <img src="<?= htmlspecialchars($s['volunteer_avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($s['volunteer_name']) . '&background=1d63d8&color=fff') ?>" 
-                                                 alt="Avatar" class="w-6 h-6 rounded-full border border-slate-200 object-cover">
+                                            <div class="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0 shadow-2xs">
+                                                <i class="fa-solid fa-hand-holding-heart text-[8px]"></i>
+                                            </div>
                                             <span class="font-medium"><?= htmlspecialchars($s['volunteer_name']) ?></span>
                                         </div>
                                     </td>

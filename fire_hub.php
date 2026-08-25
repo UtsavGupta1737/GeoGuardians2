@@ -159,6 +159,12 @@ $readyHydrantsCount = count(array_filter($hydrants, fn($h) => $h['status'] === '
                     <i class="fa-solid fa-house text-xs"></i>
                 </a>
             <?php endif; ?>
+
+            <!-- Dedicated Header Sign Out Button -->
+            <a href="logout.php" title="Sign Out of DisasterSafe" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-800 text-xs font-bold text-rose-300 transition-colors shadow-2xs">
+                <i class="fa-solid fa-arrow-right-from-bracket text-rose-400"></i>
+                <span class="hidden sm:inline">Logout</span>
+            </a>
         </div>
     </header>
 

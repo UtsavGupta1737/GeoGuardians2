@@ -182,15 +182,35 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                         </a>
                     </div>
                 </div>
-            </div>
-
-            <!-- User Profile Avatar & Menu Dropdown -->
+            </div>            <!-- User Profile Badge & Menu Dropdown -->
             <div class="relative">
+                <?php
+                    $navRoleSlug = $currentUser['role_slug'] ?? 'user';
+                    $navRoleIcon = match($navRoleSlug) {
+                        'superadmin' => 'fa-crown',
+                        'ndrf' => 'fa-truck-monster',
+                        'police' => 'fa-shield-halved',
+                        'fire' => 'fa-fire-extinguisher',
+                        'medical' => 'fa-heart-pulse',
+                        'volunteer' => 'fa-hand-holding-heart',
+                        default => 'fa-user'
+                    };
+                    $navRoleBg = match($navRoleSlug) {
+                        'superadmin' => 'bg-purple-600 text-white',
+                        'ndrf' => 'bg-orange-600 text-white',
+                        'police' => 'bg-blue-600 text-white',
+                        'fire' => 'bg-red-600 text-white',
+                        'medical' => 'bg-teal-600 text-white',
+                        'volunteer' => 'bg-emerald-600 text-white',
+                        default => 'bg-slate-700 text-white'
+                    };
+                ?>
                 <button type="button" onclick="document.getElementById('userMenu').classList.toggle('hidden')" 
-                        class="flex items-center gap-2.5 p-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors focus:outline-none cursor-pointer">
-                    <img src="<?= htmlspecialchars($currentUser['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($currentUser['name'] ?? 'User') . '&background=1d63d8&color=fff') ?>" 
-                         alt="Avatar" class="w-8 h-8 object-cover border border-slate-200">
-                    <span class="text-xs font-extrabold text-slate-900 hidden lg:inline mr-1">
+                        class="flex items-center gap-2 p-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors focus:outline-none cursor-pointer rounded-lg">
+                    <div class="w-7 h-7 rounded <?= $navRoleBg ?> flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
+                        <i class="fa-solid <?= $navRoleIcon ?> text-[11px]"></i>
+                    </div>
+                    <span class="text-xs font-extrabold text-slate-900 hidden lg:inline">
                         <?= htmlspecialchars(explode(' ', $currentUser['name'] ?? 'User')[0]) ?>
                     </span>
                     <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 mr-1 hidden lg:inline"></i>
@@ -211,6 +231,12 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                     </a>
                 </div>
             </div>
+
+            <!-- Dedicated Header Sign Out Button (Consistent Across All Role Pages) -->
+            <a href="logout.php" title="Sign Out of DisasterSafe" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-xs font-bold text-red-700 transition-colors shadow-2xs">
+                <i class="fa-solid fa-arrow-right-from-bracket text-red-600"></i>
+                <span class="hidden sm:inline">Logout</span>
+            </a>iv>
 
         </div>
     </div>

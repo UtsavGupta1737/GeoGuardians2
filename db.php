@@ -585,7 +585,7 @@ function initializeDatabase(PDO $pdo) {
             'role_id' => $superadminRoleId,
             'status' => 'active',
             'phone' => '+1 (555) 019-2834',
-            'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+            'avatar' => ''
         ],
         [
             'name' => 'Brig. Rajiv Sharma (NDRF Commander)',
@@ -594,7 +594,7 @@ function initializeDatabase(PDO $pdo) {
             'role_id' => $ndrfRoleId,
             'status' => 'active',
             'phone' => '+91 (011) 2436-3260',
-            'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
+            'avatar' => ''
         ],
         [
             'name' => 'Capt. Marcus Vance (Police Command)',
@@ -603,7 +603,7 @@ function initializeDatabase(PDO $pdo) {
             'role_id' => $policeRoleId,
             'status' => 'active',
             'phone' => '+1 (555) 911-0422',
-            'avatar' => 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80'
+            'avatar' => ''
         ],
         [
             'name' => 'Chief Thomas Sterling (Fire & Rescue)',
@@ -612,7 +612,7 @@ function initializeDatabase(PDO $pdo) {
             'role_id' => $fireRoleId,
             'status' => 'active',
             'phone' => '+1 (555) 101-4490',
-            'avatar' => 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80'
+            'avatar' => ''
         ],
         [
             'name' => 'Dr. Ananya Roy (EMS & Medical Chief)',
@@ -621,7 +621,7 @@ function initializeDatabase(PDO $pdo) {
             'role_id' => $medicalRoleId,
             'status' => 'active',
             'phone' => '+1 (555) 108-7721',
-            'avatar' => 'https://images.unsplash.com/photo-1594824813620-4a0b2241cfd1?w=150&auto=format&fit=crop&q=80'
+            'avatar' => ''
         ],
         [
             'name' => 'Elena Rostova (Lead Volunteer)',
@@ -630,7 +630,7 @@ function initializeDatabase(PDO $pdo) {
             'role_id' => $volunteerRoleId,
             'status' => 'active',
             'phone' => '+1 (555) 830-4921',
-            'avatar' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80'
+            'avatar' => ''
         ],
         [
             'name' => 'Aarav Patel (Public Citizen)',
@@ -639,12 +639,16 @@ function initializeDatabase(PDO $pdo) {
             'role_id' => $citizenRoleId,
             'status' => 'active',
             'phone' => '+91 98765 43210',
-            'avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80'
+            'avatar' => ''
         ]
     ];
 
-    // Clean up old obsolete users
+    // Clean up old obsolete users & reset external avatars
     $pdo->exec("DELETE FROM users WHERE email IN ('alex.admin@system.local', 'sarah.manager@system.local', 'david.user@system.local')");
+    try {
+        $pdo->exec("UPDATE users SET avatar = '' WHERE avatar LIKE 'http%';");
+        $pdo->exec("UPDATE volunteers SET avatar = '' WHERE avatar LIKE 'http%';");
+    } catch (Exception $e) {}
 
     foreach ($specialUsers as $sUser) {
         $uCheck = $pdo->prepare("SELECT id FROM users WHERE email = ?");

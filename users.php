@@ -320,9 +320,30 @@ require_once __DIR__ . '/sidebar.php';
                                 <tr class="hover:bg-slate-50 transition-colors">
                                     
                                     <td class="py-4 px-4 sm:px-6">
-                                        <div class="flex items-center gap-3.5">
-                                            <img src="<?= htmlspecialchars($u['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($u['name']) . '&background=1d63d8&color=fff') ?>" 
-                                                 alt="Avatar" class="w-10 h-10 rounded-2xl object-cover border border-slate-200 shrink-0">
+                                            <?php
+                                                $uRoleSlug = $u['role_slug'] ?? 'user';
+                                                $uAvatarBg = match($uRoleSlug) {
+                                                    'superadmin' => 'bg-purple-600 text-white',
+                                                    'ndrf' => 'bg-orange-600 text-white',
+                                                    'police' => 'bg-blue-600 text-white',
+                                                    'fire' => 'bg-red-600 text-white',
+                                                    'medical' => 'bg-teal-600 text-white',
+                                                    'volunteer' => 'bg-emerald-600 text-white',
+                                                    default => 'bg-slate-700 text-white'
+                                                };
+                                                $uRoleIcon = match($uRoleSlug) {
+                                                    'superadmin' => 'fa-crown',
+                                                    'ndrf' => 'fa-truck-monster',
+                                                    'police' => 'fa-shield-halved',
+                                                    'fire' => 'fa-fire-extinguisher',
+                                                    'medical' => 'fa-heart-pulse',
+                                                    'volunteer' => 'fa-hand-holding-heart',
+                                                    default => 'fa-user'
+                                                };
+                                            ?>
+                                            <div class="w-10 h-10 rounded-2xl <?= $uAvatarBg ?> flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
+                                                <i class="fa-solid <?= $uRoleIcon ?>"></i>
+                                            </div>
                                             <div class="min-w-0">
                                                 <div class="flex items-center gap-2">
                                                     <span class="font-extrabold text-slate-900 text-xs"><?= htmlspecialchars($u['name']) ?></span>

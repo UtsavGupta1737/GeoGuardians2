@@ -85,10 +85,32 @@ require_once __DIR__ . '/sidebar.php';
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             
-            <!-- Left: Avatar Card -->
+            <!-- Left: Role Identity Card -->
             <div class="md:col-span-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col items-center text-center space-y-4">
-                <img src="<?= htmlspecialchars($currentUser['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($currentUser['name']) . '&background=1d63d8&color=fff') ?>" 
-                     alt="Avatar" class="w-24 h-24 rounded-3xl object-cover ring-4 ring-blue-100 shadow-sm">
+                <?php
+                    $pRoleSlug = $currentUser['role_slug'] ?? 'user';
+                    $pAvatarBg = match($pRoleSlug) {
+                        'superadmin' => 'bg-purple-600 text-white',
+                        'ndrf' => 'bg-orange-600 text-white',
+                        'police' => 'bg-blue-600 text-white',
+                        'fire' => 'bg-red-600 text-white',
+                        'medical' => 'bg-teal-600 text-white',
+                        'volunteer' => 'bg-emerald-600 text-white',
+                        default => 'bg-slate-700 text-white'
+                    };
+                    $pRoleIcon = match($pRoleSlug) {
+                        'superadmin' => 'fa-crown',
+                        'ndrf' => 'fa-truck-monster',
+                        'police' => 'fa-shield-halved',
+                        'fire' => 'fa-fire-extinguisher',
+                        'medical' => 'fa-heart-pulse',
+                        'volunteer' => 'fa-hand-holding-heart',
+                        default => 'fa-user'
+                    };
+                ?>
+                <div class="w-20 h-20 rounded-3xl <?= $pAvatarBg ?> flex items-center justify-center text-3xl shadow-md ring-4 ring-slate-100">
+                    <i class="fa-solid <?= $pRoleIcon ?>"></i>
+                </div>
                 <div>
                     <h3 class="text-base font-extrabold text-slate-900"><?= htmlspecialchars($currentUser['name']) ?></h3>
                     <p class="text-xs text-slate-500 font-mono"><?= htmlspecialchars($currentUser['email']) ?></p>

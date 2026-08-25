@@ -186,8 +186,9 @@ $contacts = [
                     </a>
                     <div class="flex items-center gap-2.5 pl-2 border-l border-[#243049]">
                         <span class="hidden sm:block text-xs font-bold text-slate-200"><?= htmlspecialchars($userName) ?></span>
-                        <a href="logout.php" title="Sign Out" class="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
-                            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                        <a href="logout.php" title="Sign Out of DisasterSafe" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 text-xs font-bold transition-all shadow-xs">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-red-400"></i>
+                            <span class="hidden sm:inline">Logout</span>
                         </a>
                     </div>
                 </div>

@@ -200,11 +200,16 @@ $userId = $currentUser['id'] ?? ($_SESSION['user_id'] ?? 3);
 
       <!-- User Avatar / Profile -->
       <div class="flex items-center gap-2 pl-2 border-l border-gray-200">
-        <div class="w-8 h-8 rounded-xl bg-[#1d63d8] text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:ring-2 hover:ring-[#1d63d8]/50 transition-all" onclick="switchVolunteerTab('profile')" title="View My Profile">
-          V
+        <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-xs cursor-pointer hover:ring-2 hover:ring-emerald-500/50 transition-all" onclick="switchVolunteerTab('profile')" title="View My Profile">
+          <i class="fa-solid fa-hand-holding-heart text-xs"></i>
         </div>
       </div>
 
+      <!-- Dedicated Header Sign Out Button (Consistent Across All Roles) -->
+      <a href="logout.php" title="Sign Out of DisasterSafe" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-xs font-bold text-red-700 transition-colors shadow-2xs">
+        <span class="material-symbols-outlined notranslate text-sm text-red-600" translate="no">logout</span>
+        <span class="hidden sm:inline">Logout</span>
+      </a>
     </div>
   </header>
 
