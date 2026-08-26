@@ -27,41 +27,6 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                 </span>
             </div>
 
-            <!-- Topbar Horizontal Quick Navigation Links (Compact text boxes, no icons) -->
-            <nav class="hidden xl:flex items-center gap-1.5 pl-3 border-l border-slate-200 text-[11px] font-semibold text-slate-600">
-                <a href="dashboard.php" class="px-2 py-1 rounded border transition-colors <?= $currentScript === 'dashboard.php' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' ?>">
-                    Command
-                </a>
-                <a href="map.php" class="px-2 py-1 rounded border transition-colors <?= $currentScript === 'map.php' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' ?>">
-                    Map
-                </a>
-                <a href="sos.php" class="px-2 py-1 rounded border transition-colors <?= $currentScript === 'sos.php' ? 'bg-red-700 text-white border-red-700' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' ?>">
-                    SOS
-                </a>
-                <a href="resources.php" class="px-2 py-1 rounded border transition-colors <?= $currentScript === 'resources.php' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' ?>">
-                    Resources
-                </a>
-                <a href="police_hub.php" class="px-2 py-1 rounded border transition-colors <?= $currentScript === 'police_hub.php' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' ?>">
-                    Police
-                </a>
-                <a href="fire_hub.php" class="px-2 py-1 rounded border transition-colors <?= $currentScript === 'fire_hub.php' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' ?>">
-                    Fire
-                </a>
-                <a href="medical_hub.php" class="px-2 py-1 rounded border transition-colors <?= $currentScript === 'medical_hub.php' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' ?>">
-                    Medical
-                </a>
-                <a href="volunteers.php" class="px-2 py-1 rounded border transition-colors <?= $currentScript === 'volunteers.php' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' ?>">
-                    Volunteers
-                </a>
-                <a href="tasks.php" class="px-2 py-1 rounded border transition-colors <?= $currentScript === 'tasks.php' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' ?>">
-                    Missions
-                </a>
-                <?php if (isSuperAdmin($currentUser)): ?>
-                    <a href="settings.php" class="px-2 py-1 rounded border transition-colors <?= $currentScript === 'settings.php' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' ?>">
-                        Settings
-                    </a>
-                <?php endif; ?>
-            </nav>
         </div>
 
         <!-- Right Section: Actions & Controls (Small minimalist boxes, text only) -->
