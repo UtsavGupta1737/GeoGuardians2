@@ -1,0 +1,11 @@
+RewriteEngine On
+RewriteBase /SMS_PART2/
+
+# Route GET /api/alerts/{id}
+RewriteRule ^api/alerts/([a-zA-Z0-9_-]+)$ api/alerts/index.php?id=$1 [QSA,L]
+
+# Route GET /api/alerts
+RewriteRule ^api/alerts$ api/alerts/index.php [QSA,L]
+
+# Route POST /api/devices/token (tolerates optional trailing slash)
+RewriteRule ^api/devices/token/?$ api/devices/token.php [QSA,L]
