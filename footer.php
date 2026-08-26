@@ -40,6 +40,9 @@ $flash = getFlash();
     </script>
     <?php endif; ?>
 
+    <!-- Global Real-Time SMS SOS Alert Listener & Modal Popup Trigger -->
+    <script src="js/sms_sos_listener.js"></script>
+
     <?php if (isset($currentUser) && isSuperAdmin($currentUser)): ?>
         <!-- Global Persistent ESP32 Web Serial Background Listener (Superadmin Only) -->
         <script src="js/esp32_global_serial.js"></script>

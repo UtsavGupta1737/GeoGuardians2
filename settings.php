@@ -57,6 +57,9 @@ require_once __DIR__ . '/sidebar.php';
                     <button type="button" onclick="injectTestEsp32Alert()" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2">
                         <i class="fa-solid fa-bolt"></i> <span>Simulate Serial SOS</span>
                     </button>
+                    <button type="button" onclick="injectTestSmsAlert()" class="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-lg shadow-teal-600/30 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-comment-sms"></i> <span>Simulate SMS SOS</span>
+                    </button>
                 </div>
             </div>
         </section>
