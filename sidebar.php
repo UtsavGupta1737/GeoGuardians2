@@ -195,6 +195,16 @@ $currentScript = basename($_SERVER['PHP_SELF']);
                             </span>
                         </a>
                     <?php endif; ?>
+
+                    <?php if ($isSuperAdmin): ?>
+                        <a href="gateway_sms.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all <?= ($currentScript === 'gateway_sms.php') ? 'bg-indigo-50 text-indigo-900 border-l-4 border-indigo-600 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                            <i class="fa-solid fa-tower-cell text-sm w-4 text-center text-indigo-600"></i>
+                            <span class="flex-1 font-extrabold">Gateway SMS</span>
+                            <span class="px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 mono">
+                                GSM
+                            </span>
+                        </a>
+                    <?php endif; ?>
                 </nav>
             </div>
         <?php endif; ?>
