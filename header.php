@@ -356,6 +356,11 @@ $_roleSlug = $_SESSION['user_role'] ?? 'superadmin';
                 transform: translateX(0);
             }
         }
+        /* Top Navbar Oval Buttons Styling */
+        header .rounded-full,
+        .nav-pill-btn {
+            border-radius: 9999px !important;
+        }
     </style>
     <script>
         function toggleMainSidebar() {

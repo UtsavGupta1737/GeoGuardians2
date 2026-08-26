@@ -4,12 +4,11 @@
    Sharp Edge Geometry + Role-Based Theme System
    ========================================================================== */
 
-/* GLOBAL ZERO-RADIUS ENFORCEMENT */
+/* GLOBAL BOX SIZING */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    border-radius: 0 !important;
 }
 
 :root {
