@@ -25,7 +25,6 @@ class SmsService {
      */
     public static function updateGatewayHeartbeat($event, $deviceId = null, $error = null) {
         $db = Database::getConnection();
-        $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
         $fields = [
             'gateway_last_seen' => date('Y-m-d H:i:s'),
             'gateway_last_event' => $event,
@@ -34,15 +33,9 @@ class SmsService {
         ];
         
         foreach ($fields as $key => $val) {
-            if ($driver === 'sqlite') {
-                $stmt = $db->prepare("INSERT INTO system_config (config_key, config_value, updated_at) 
-                                      VALUES (:key, :val, datetime('now')) 
-                                      ON CONFLICT(config_key) DO UPDATE SET config_value = :val2, updated_at = datetime('now')");
-            } else {
-                $stmt = $db->prepare("INSERT INTO system_config (config_key, config_value) 
-                                      VALUES (:key, :val) 
-                                      ON DUPLICATE KEY UPDATE config_value = :val2");
-            }
+            $stmt = $db->prepare("INSERT INTO system_config (config_key, config_value) 
+                                  VALUES (:key, :val) 
+                                  ON DUPLICATE KEY UPDATE config_value = :val2");
             $stmt->execute([
                 ':key' => $key,
                 ':val' => $val,
@@ -61,10 +54,7 @@ class SmsService {
         $db = Database::getConnection();
 
         // 1. Webhook Deduplication Check (Runs before any privacy shield parsing)
-        $cleanBodyNorm = preg_replace('/\s+/', ' ', trim(strtolower($body)));
-        $contentHash = 'sig_' . md5($fromNumber . '|' . $cleanBodyNorm);
-
-        if (($gatewayMsgId && SmsMessage::isDuplicate($gatewayMsgId)) || SmsMessage::isDuplicate($contentHash)) {
+        if ($gatewayMsgId && SmsMessage::isDuplicate($gatewayMsgId)) {
             return [
                 'status' => 'ignored',
                 'reason' => 'duplicate',
@@ -72,13 +62,11 @@ class SmsService {
             ];
         }
 
-        // Insert message ID and content hash to processed log immediately to block subsequent retries
+        // Insert message ID to processed log immediately to block subsequent retries
         if ($gatewayMsgId) {
             $stmt = $db->prepare("INSERT INTO processed_gateway_messages (gateway_message_id, is_sos) VALUES (:id, 0)");
-            try { $stmt->execute([':id' => $gatewayMsgId]); } catch (Exception $e) {}
+            $stmt->execute([':id' => $gatewayMsgId]);
         }
-        $stmt = $db->prepare("INSERT INTO processed_gateway_messages (gateway_message_id, is_sos) VALUES (:id, 0)");
-        try { $stmt->execute([':id' => $contentHash]); } catch (Exception $e) {}
 
         // 2. Personal SIM Privacy Filter
         $isEmergency = SmsParser::isEmergency($body);
@@ -95,15 +83,13 @@ class SmsService {
         // Flag message reference as an SOS event in the deduplication log
         if ($gatewayMsgId) {
             $stmt = $db->prepare("UPDATE processed_gateway_messages SET is_sos = 1 WHERE gateway_message_id = :id");
-            try { $stmt->execute([':id' => $gatewayMsgId]); } catch (Exception $e) {}
+            $stmt->execute([':id' => $gatewayMsgId]);
         }
-        $stmt = $db->prepare("UPDATE processed_gateway_messages SET is_sos = 1 WHERE gateway_message_id = :id");
-        try { $stmt->execute([':id' => $contentHash]); } catch (Exception $e) {}
 
-        // 2b. Extract Real Victim Phone Number from body if present
+                // 2b. Extract Real Victim Phone Number from body if present
         if (preg_match('/(?:Tel|Phone|Mobile|Contact):\s*([+0-9\s-]+)/i', $body, $pm)) {
             $cleaned = preg_replace('/[^\d+]/', '', $pm[1]);
-            if (strlen($cleaned) >= 10 && ($fromNumber === '+919999999999' || empty($fromNumber) || strpos($fromNumber, '999999') !== false || strpos($fromNumber, '8767491904') !== false)) {
+            if (strlen($cleaned) >= 10 && ($fromNumber === '+919999999999' || empty($fromNumber) || strpos($fromNumber, '999999') !== false)) {
                 if (strpos($cleaned, '+') !== 0 && strlen($cleaned) == 10) {
                     $cleaned = '+91' . $cleaned;
                 }
@@ -113,8 +99,6 @@ class SmsService {
 
         // Convert receivedAt format to MySQL datetime
         $dbReceivedAt = $receivedAt ? date('Y-m-d H:i:s', strtotime($receivedAt)) : date('Y-m-d H:i:s');
-        $now = date('Y-m-d H:i:s');
-        $cutoffTime = date('Y-m-d H:i:s', strtotime('-15 minutes'));
 
         // 3. Map or Create Conversation Thread
         // Get primary central SOS number configuration
@@ -125,21 +109,21 @@ class SmsService {
         // Check if there is an active conversation for this sender phone number in the last 15 minutes
         $stmt = $db->prepare("SELECT id FROM conversations 
                               WHERE sender_phone = :from 
-                                AND last_message_at >= :cutoff 
+                                AND last_message_at >= NOW() - INTERVAL 15 MINUTE 
                               LIMIT 1");
-        $stmt->execute([':from' => $fromNumber, ':cutoff' => $cutoffTime]);
+        $stmt->execute([':from' => $fromNumber]);
         $convRow = $stmt->fetch();
         
         $conversationId = null;
         if ($convRow) {
             $conversationId = (int)$convRow['id'];
-            $stmt = $db->prepare("UPDATE conversations SET last_message_at = :now WHERE id = :id");
-            $stmt->execute([':now' => $now, ':id' => $conversationId]);
+            $stmt = $db->prepare("UPDATE conversations SET last_message_at = NOW() WHERE id = :id");
+            $stmt->execute([':id' => $conversationId]);
         } else {
             // Register a new conversation thread
             $stmt = $db->prepare("INSERT INTO conversations (sender_phone, sms_number_id, last_message_at) 
-                                  VALUES (:from, :num_id, :now)");
-            $stmt->execute([':from' => $fromNumber, ':num_id' => $smsNumberId, ':now' => $now]);
+                                  VALUES (:from, :num_id, NOW())");
+            $stmt->execute([':from' => $fromNumber, ':num_id' => $smsNumberId]);
             $conversationId = (int)$db->lastInsertId();
         }
 
@@ -193,9 +177,9 @@ class SmsService {
         // Retrieve the latest active SOS request for this conversation within the last 15 minutes
         $stmt = $db->prepare("SELECT * FROM sos_requests 
                               WHERE conversation_id = :conv_id 
-                                AND created_at >= :cutoff 
+                                AND created_at >= NOW() - INTERVAL 15 MINUTE 
                               ORDER BY created_at DESC LIMIT 1");
-        $stmt->execute([':conv_id' => $conversationId, ':cutoff' => $cutoffTime]);
+        $stmt->execute([':conv_id' => $conversationId]);
         $latestSos = $stmt->fetch();
 
         $sosId = null;
@@ -284,102 +268,12 @@ class SmsService {
             "SOS-" . $sosId . " from " . $fromNumber . " via " . $extractionMethod . ". Priority: " . $extractedFields['priority']
         );
 
-        // 7. Synchronize directly into DisasterSafe Live Emergency Command Center (SQLite)
-        $disasterSafeSosId = null;
-        try {
-            $dsPdo = Database::getDisasterSafePdo();
-            if ($dsPdo) {
-                $citizenPhone = !empty($extractedFields['victim_phone']) ? $extractedFields['victim_phone'] : $fromNumber;
-                
-                // Victim Name Resolution: Clean name or fresh fallback
-                if (!empty($extractedFields['victim_name'])) {
-                    $citizenName = $extractedFields['victim_name'];
-                } elseif (!empty($extractedFields['person_name'])) {
-                    $citizenName = $extractedFields['person_name'];
-                } else {
-                    $last4 = substr(preg_replace('/\D/', '', $citizenPhone), -4);
-                    $citizenName = 'SMS Citizen (' . ($last4 ? $last4 : 'Mobile') . ')';
-                }
-
-                // Check for duplicate recent SOS insertion within last 45 seconds
-                $checkStmt = $dsPdo->prepare("SELECT id FROM emergency_sos WHERE sender_phone = :phone AND message = :msg AND created_at >= :recent LIMIT 1");
-                $checkStmt->execute([
-                    ':phone' => $citizenPhone,
-                    ':msg' => "[SMS Cellular Beacon] " . $body,
-                    ':recent' => date('Y-m-d H:i:s', strtotime('-45 seconds'))
-                ]);
-                $existingSos = $checkStmt->fetch();
-                if ($existingSos) {
-                    return [
-                        'status' => 'ignored',
-                        'reason' => 'duplicate_recent',
-                        'message_type' => 'SOS',
-                        'message_id' => $smsId,
-                        'sos_id' => $sosId,
-                        'disastersafe_sos_id' => (int)$existingSos['id']
-                    ];
-                }
-
-                $disasterType = !empty($extractedFields['disaster_type']) && $extractedFields['disaster_type'] !== 'unknown' ? $extractedFields['disaster_type'] : 'General Emergency';
-                $priority = !empty($extractedFields['priority']) ? ucfirst(strtolower($extractedFields['priority'])) : 'Critical';
-                $lat = !empty($extractedFields['latitude']) ? (float)$extractedFields['latitude'] : 28.6139;
-                $lng = !empty($extractedFields['longitude']) ? (float)$extractedFields['longitude'] : 77.2090;
-                $peopleCount = !empty($extractedFields['people_count']) ? (int)$extractedFields['people_count'] : 1;
-                $bloodType = !empty($extractedFields['blood_group']) ? $extractedFields['blood_group'] : 'Unknown';
-                $medicalNeeds = !empty($extractedFields['medical_info']) ? $extractedFields['medical_info'] : (!empty($extractedFields['help_required']) ? $extractedFields['help_required'] : '');
-                
-                // Determine dispatch agency based on disaster type
-                $agency = null;
-                $lowerType = strtolower($disasterType);
-                if (strpos($lowerType, 'fire') !== false || strpos($lowerType, 'smoke') !== false || strpos($lowerType, 'gas') !== false) {
-                    $agency = 'Fire';
-                } elseif (strpos($lowerType, 'medical') !== false || strpos($lowerType, 'trauma') !== false || strpos($lowerType, 'injured') !== false || strpos($lowerType, 'bleeding') !== false) {
-                    $agency = 'Medical';
-                } elseif (strpos($lowerType, 'theft') !== false || strpos($lowerType, 'police') !== false || strpos($lowerType, 'riot') !== false) {
-                    $agency = 'Police';
-                } elseif (strpos($lowerType, 'flood') !== false || strpos($lowerType, 'earthquake') !== false || strpos($lowerType, 'collapse') !== false) {
-                    $agency = 'NDRF';
-                }
-
-                $stmt = $dsPdo->prepare("INSERT INTO emergency_sos (
-                    sender_name, sender_phone, gps_lat, gps_lng, blood_type, age, persons_count, 
-                    priority, emergency_type, medical_needs, dispatch_agency, message, status, created_at
-                ) VALUES (
-                    :sender_name, :sender_phone, :gps_lat, :gps_lng, :blood_type, :age, :persons_count, 
-                    :priority, :emergency_type, :medical_needs, :dispatch_agency, :message, :status, :created_at
-                )");
-                $stmt->execute([
-                    ':sender_name' => $citizenName,
-                    ':sender_phone' => $citizenPhone,
-                    ':gps_lat' => $lat,
-                    ':gps_lng' => $lng,
-                    ':blood_type' => $bloodType,
-                    ':age' => 32,
-                    ':persons_count' => $peopleCount,
-                    ':priority' => $priority,
-                    ':emergency_type' => $disasterType,
-                    ':medical_needs' => $medicalNeeds,
-                    ':dispatch_agency' => $agency,
-                    ':message' => "[SMS Cellular Beacon] " . $body,
-                    ':status' => 'Pending',
-                    ':created_at' => date('Y-m-d H:i:s')
-                ]);
-                $disasterSafeSosId = (int)$dsPdo->lastInsertId();
-
-                // Send/Queue automated acknowledgement SMS
-                $ackMessage = "DisasterSafe Alert: SOS incident #" . $disasterSafeSosId . " received! Emergency command is dispatching units to your coordinates.";
-                GatewayService::sendSms($fromNumber, $ackMessage);
-            }
-        } catch (Exception $e) {
-            error_log("DisasterSafe SQLite integration sync error: " . $e->getMessage());
-        }
-
+        // Q7 = B: No automatic SMS acknowledgements will be sent.
         return [
             'status' => 'processed',
             'message_type' => 'SOS',
             'message_id' => $smsId,
-            'sos_id' => $sosId,
-            'disastersafe_sos_id' => $disasterSafeSosId
+            'sos_id' => $sosId
         ];
     }
 

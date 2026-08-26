@@ -1,87 +1,81 @@
 <?php
 /**
- * Public Webhook & Direct Endpoint - Receive Incoming SMS & App SOS
+ * Public Webhook Endpoint - Receive Incoming SMS
  * 
- * Supports Android SMS Gateway Webhook (Capcom6), direct mobile app POSTs, and form submissions.
+ * Target URL for the Android SMS Gateway Application.
+ * Example Webhook URL: http://<your-server-ip>/SMS_PART2/api/sms/receive.php?secret=sih_webhook_secret_key_2026
  */
 
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Gateway-Secret');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
-
+// Enable security access check
 define('SECURE_ACCESS', true);
 
 require_once __DIR__ . '/../../config/gateway.php';
 require_once __DIR__ . '/../../services/SmsService.php';
 
-// 1. Authenticate Request (Graceful: validate if secret is passed, otherwise allow LAN app posts)
+// 1. Authenticate Request
 $gatewayConfig = GatewayConfig::get();
-$expectedSecret = $gatewayConfig['webhook_secret'] ?? '';
-$providedSecret = $_GET['secret'] ?? ($_SERVER['HTTP_X_GATEWAY_SECRET'] ?? ($_POST['secret'] ?? ''));
+$expectedSecret = $gatewayConfig['webhook_secret'];
+$providedSecret = isset($_GET['secret']) ? $_GET['secret'] : ($_SERVER['HTTP_X_GATEWAY_SECRET'] ?? '');
 
-if (!empty($expectedSecret) && !empty($providedSecret) && $providedSecret !== $expectedSecret) {
+if (!empty($expectedSecret) && $providedSecret !== $expectedSecret) {
     http_response_code(401);
     echo json_encode(['success' => false, 'error' => 'Unauthorized: Invalid secret key']);
     exit;
 }
 
-// 2. Parse Payload (JSON body or $_POST)
+// 2. Parse JSON Payload
 $rawBody = file_get_contents('php://input');
-$data = json_decode($rawBody, true) ?: $_POST;
+$data = json_decode($rawBody, true);
 
-if (empty($data)) {
+if (!$data) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Bad Request: Empty request body']);
+    echo json_encode(['success' => false, 'error' => 'Bad Request: Invalid JSON body']);
     exit;
 }
 
+// Update telemetry heartbeat logs
+SmsService::updateGatewayHeartbeat($data['event'] ?? 'unknown', $data['deviceId'] ?? null);
+
+
 // 3. Handle System Ping Verification
 if (isset($data['event']) && $data['event'] === 'system:ping') {
-    SmsService::updateGatewayHeartbeat('system:ping', $data['deviceId'] ?? null);
     echo json_encode(['success' => true, 'status' => 'pong', 'timestamp' => date('c')]);
     exit;
 }
 
-// Update telemetry heartbeat
-SmsService::updateGatewayHeartbeat($data['event'] ?? 'sms:received', $data['deviceId'] ?? null);
-
-// 4. Normalize Payload Structure
-$payload = $data['payload'] ?? $data;
-
-$messageText  = $payload['message'] ?? ($payload['text'] ?? ($payload['body'] ?? ($payload['msg'] ?? '')));
-$fromNumber   = $payload['phoneNumber'] ?? ($payload['from'] ?? ($payload['phone'] ?? ($payload['sender'] ?? '')));
-$receivedAt   = $payload['receivedAt'] ?? date('Y-m-d H:i:s');
-
-if (empty($fromNumber)) {
-    $fromNumber = '+919999999999'; // Default mobile fallback if app doesn't send sender
-}
-
-// Deterministic fingerprint based on sender and normalized message content
-$cleanBodyNormalized = preg_replace('/\s+/', ' ', trim(strtolower($messageText)));
-$contentSignature = 'sig_' . md5($fromNumber . '|' . $cleanBodyNormalized);
-$gatewayMsgId = !empty($payload['messageId']) ? $payload['messageId'] : (!empty($payload['id']) ? $payload['id'] : $contentSignature);
-
-if (empty($messageText)) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Bad Request: Missing message text']);
+// 4. Validate Event Type
+if (!isset($data['event']) || $data['event'] !== 'sms:received') {
+    // Acknowledge other event types (e.g. system logs) without processing
+    echo json_encode(['success' => true, 'status' => 'ignored', 'event' => $data['event']]);
     exit;
 }
 
-// 5. Coordinate Processing & Sync into DisasterSafe Live Emergency Command Center
+$payload = $data['payload'] ?? null;
+if (!$payload) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Bad Request: Missing payload object']);
+    exit;
+}
+
+// 5. Extract SMS Properties
+$gatewayMsgId = $payload['messageId'] ?? null;
+$messageText = $payload['message'] ?? '';
+$fromNumber = $payload['phoneNumber'] ?? null;
+$receivedAt = $payload['receivedAt'] ?? null;
+
+if (empty($fromNumber) || empty($messageText)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Bad Request: Missing phoneNumber or message text']);
+    exit;
+}
+
+// 6. Coordinate Processing
 try {
     $result = SmsService::processIncoming($gatewayMsgId, $fromNumber, 'GatewaySIM', $messageText, $receivedAt);
     http_response_code(200);
-    echo json_encode([
-        'success' => true,
-        'status' => 'processed',
-        'result' => $result
-    ]);
+    echo json_encode(['success' => true, 'result' => $result]);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Internal Server Error: ' . $e->getMessage()]);
