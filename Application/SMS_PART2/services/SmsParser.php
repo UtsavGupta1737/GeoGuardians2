@@ -84,8 +84,18 @@ class SmsParser {
         $parsedFields = [];
 
         // --- Extra Extractors for Mobile App SOS Payload ---
-        // 1. Victim Name
-        if (preg_match('/(?:Victim|User|Citizen|Name):\s*([^\n\(\,]+)/i', $cleanBody, $m)) {
+        // 1. Victim Name (Supports diverse natural language formats)
+        if (preg_match('/(?:Victim|User|Citizen|Name|Sender|From|Patient|Contact Person)\s*[:=-]\s*([^\n\(\,\;\.]+)/i', $cleanBody, $m)) {
+            $extractedName = trim($m[1]);
+            // Strip any trailing field tags that might be on the same line
+            $extractedName = preg_replace('/\b(?:Tel|Phone|Mobile|Blood|Age|Lat|Lng|Need|SOS)\b.*/i', '', $extractedName);
+            $extractedName = trim($extractedName);
+            if (!empty($extractedName) && strlen($extractedName) >= 2) {
+                $result['victim_name'] = $extractedName;
+                $result['person_name'] = $extractedName;
+                $parsedFields[] = 'victim_name';
+            }
+        } elseif (preg_match('/\b(?:I am|My name is|This is)\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?)/', $cleanBody, $m)) {
             $result['victim_name'] = trim($m[1]);
             $result['person_name'] = trim($m[1]);
             $parsedFields[] = 'victim_name';

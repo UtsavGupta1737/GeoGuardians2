@@ -54,7 +54,6 @@ SmsService::updateGatewayHeartbeat($data['event'] ?? 'sms:received', $data['devi
 // 4. Normalize Payload Structure
 $payload = $data['payload'] ?? $data;
 
-$gatewayMsgId = $payload['messageId'] ?? ($payload['id'] ?? ('msg_' . time() . '_' . mt_rand(100, 999)));
 $messageText  = $payload['message'] ?? ($payload['text'] ?? ($payload['body'] ?? ($payload['msg'] ?? '')));
 $fromNumber   = $payload['phoneNumber'] ?? ($payload['from'] ?? ($payload['phone'] ?? ($payload['sender'] ?? '')));
 $receivedAt   = $payload['receivedAt'] ?? date('Y-m-d H:i:s');
@@ -62,6 +61,11 @@ $receivedAt   = $payload['receivedAt'] ?? date('Y-m-d H:i:s');
 if (empty($fromNumber)) {
     $fromNumber = '+919999999999'; // Default mobile fallback if app doesn't send sender
 }
+
+// Deterministic fingerprint based on sender and normalized message content
+$cleanBodyNormalized = preg_replace('/\s+/', ' ', trim(strtolower($messageText)));
+$contentSignature = 'sig_' . md5($fromNumber . '|' . $cleanBodyNormalized);
+$gatewayMsgId = !empty($payload['messageId']) ? $payload['messageId'] : (!empty($payload['id']) ? $payload['id'] : $contentSignature);
 
 if (empty($messageText)) {
     http_response_code(400);
