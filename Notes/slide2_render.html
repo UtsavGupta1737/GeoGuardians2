@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1920px;
+    height: 1080px;
+    background: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #0f172a;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* TOP HEADER */
+  .top-header {
+    height: 110px;
+    padding: 15px 45px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .team-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 24px;
+    background: #ffffff;
+    border: 2.5px solid #6366f1;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+  }
+  .team-badge span {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1e1b4b;
+    letter-spacing: -0.3px;
+  }
+  .brand-center {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .brand-logo {
+    width: 60px;
+    height: 60px;
+  }
+  .brand-title {
+    font-size: 44px;
+    font-weight: 900;
+    font-style: italic;
+    color: #064e3b;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .brand-sub {
+    font-size: 14px;
+    font-weight: 800;
+    color: #059669;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    margin-top: 4px;
+  }
+  .sih-badge {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .sih-text {
+    text-align: right;
+  }
+  .sih-text .title {
+    font-size: 21px;
+    font-weight: 900;
+    color: #1f2937;
+    letter-spacing: -0.5px;
+  }
+  .sih-text .sub {
+    font-size: 14px;
+    font-weight: 800;
+    color: #e11d48;
+    letter-spacing: 1.5px;
+  }
+
+  /* MAIN CONTENT LAYOUT */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 440px 1fr 440px;
+    gap: 24px;
+    padding: 22px 40px 12px;
+    height: calc(1080px - 165px);
+  }
+
+  /* SIDE CARDS */
+  .side-card {
+    background: #ffffff;
+    border-radius: 22px;
+    border: 2px solid #cbd5e1;
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  }
+  .card-header-pill {
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    border: 1.5px solid #cbd5e1;
+    text-align: center;
+    margin-bottom: 22px;
+  }
+  .card-header-pill h2 {
+    font-size: 21px;
+    font-weight: 800;
+    color: #1e3a8a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .bullet-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .bullet-list li {
+    font-size: 15.5px;
+    line-height: 1.48;
+    color: #334155;
+    position: relative;
+    padding-left: 26px;
+  }
+  .bullet-list li::before {
+    content: "•";
+    position: absolute;
+    left: 4px;
+    top: -2px;
+    color: #2563eb;
+    font-size: 26px;
+    font-weight: 900;
+  }
+  .bullet-list strong {
+    color: #0f172a;
+    font-weight: 800;
+  }
+
+  /* CENTER ARCHITECTURE WORKSPACE */
+  .center-workspace {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  /* TOP LEVEL PROGRESSION BAR */
+  .level-strip {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .level-box {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 2px solid #cbd5e1;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  }
+  .level-box.lvl-center {
+    border-color: #0284c7;
+    border-width: 2.5px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.16);
+  }
+  .level-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .level-tag {
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 2px;
+  }
+  .level-title {
+    font-size: 15.5px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+  }
+  .level-sub {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  /* 3-COLUMN ARCHITECTURE CANVAS */
+  .nodes-canvas {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr 1fr;
+    gap: 16px;
+    align-items: center;
+    flex: 1;
+    position: relative;
+    background: radial-gradient(circle at center, rgba(241, 245, 249, 0.9) 0%, transparent 70%);
+  }
+
+  /* NODE CARDS */
+  .node-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .device-card {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    width: 215px;
+  }
+  .device-card.hub {
+    width: 280px;
+    border-color: #0284c7;
+    border-width: 3.5px;
+    box-shadow: 0 14px 32px rgba(2, 132, 199, 0.2);
+    background: #ffffff;
+  }
+  .device-img {
+    height: 78px;
+    margin-bottom: 8px;
+  }
+  .device-card.hub .device-img {
+    height: 90px;
+  }
+  .device-name {
+    font-size: 17px;
+    font-weight: 850;
+    color: #0f172a;
+  }
+  .device-role {
+    font-size: 12px;
+    font-weight: 750;
+    color: #0284c7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* FLOATING FEATURE PILLS */
+  .pills-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    justify-content: center;
+    max-width: 270px;
+  }
+  .feat-pill {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 6px 11px;
+    font-size: 11.5px;
+    font-weight: 750;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .feat-pill.voice-highlight {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #dc2626;
+    font-weight: 850;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+  }
+  .feat-pill.sync-highlight {
+    background: #f0fdf4;
+    border-color: #10b981;
+    color: #059669;
+    font-weight: 850;
+  }
+
+  /* DIRECTIONAL ARROWS OVERLAY */
+  .arrow-connector {
+    position: absolute;
+    top: 36%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+  }
+  .arrow-connector.left-to-center {
+    left: 23%;
+    width: 80px;
+  }
+  .arrow-connector.right-to-center {
+    right: 23%;
+    width: 80px;
+  }
+  .arrow-line {
+    width: 100%;
+    height: 4px;
+    background: #0284c7;
+    position: relative;
+  }
+  .arrow-line.to-right::after {
+    content: "";
+    position: absolute;
+    right: -4px;
+    top: -6px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 12px solid #0284c7;
+  }
+  .arrow-line.to-left::after {
+    content: "";
+    position: absolute;
+    left: -4px;
+    top: -6px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 12px solid #0284c7;
+  }
+  .arrow-label {
+    font-size: 10.5px;
+    font-weight: 850;
+    color: #0284c7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #e0f2fe;
+    border: 1px solid #bae6fd;
+    padding: 3px 7px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    white-space: nowrap;
+  }
+
+  /* BOTTOM TAGLINE FOOTER */
+  .bottom-footer {
+    height: 55px;
+    padding: 0 45px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border-top: 2px solid #e2e8f0;
+  }
+  .tagline-text {
+    font-size: 19px;
+    font-weight: 750;
+    font-style: italic;
+    color: #475569;
+    letter-spacing: -0.2px;
+  }
+  .slide-num {
+    font-size: 19px;
+    font-weight: 900;
+    color: #0284c7;
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <div class="top-header">
+    <div class="team-badge">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span>IILM_GeoGuardians</span>
+    </div>
+
+    <div class="brand-center">
+      <svg class="brand-logo" viewBox="0 0 100 100" fill="none">
+        <path d="M50 5 L85 20 V50 C85 72 50 92 50 92 C50 92 15 72 15 50 V20 Z" fill="#059669" stroke="#047857" stroke-width="3"/>
+        <path d="M50 15 L78 27 V48 C78 66 50 82 50 82 C50 82 22 66 22 48 V27 Z" fill="#ffffff"/>
+        <path d="M50 25 L65 32 V45 C65 55 50 67 50 67 C50 67 35 55 35 45 V32 Z" fill="#0284c7"/>
+        <circle cx="50" cy="42" r="5" fill="#ffffff"/>
+      </svg>
+      <div>
+        <div class="brand-title">DisasterSafe</div>
+        <div class="brand-sub">Systems Overview &amp; Multi-Level Architecture</div>
+      </div>
+    </div>
+
+    <div class="sih-badge">
+      <div class="sih-text">
+        <div class="title">SMART INDIA HACKATHON</div>
+        <div class="sub">2026 EDITION</div>
+      </div>
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+    </div>
+  </div>
+
+  <!-- MAIN WORKSPACE -->
+  <div class="main-layout">
+
+    <!-- LEFT CARD: PROPOSED SOLUTION -->
+    <div class="side-card">
+      <div class="card-header-pill">
+        <h2>PROPOSED SOLUTION</h2>
+      </div>
+      <ul class="bullet-list">
+        <li><strong>Unified emergency response platform</strong> connecting authorities, rescue teams, hospitals, volunteers, and victims seamlessly.</li>
+        <li><strong>Multi-channel SOS</strong> through Web, Cellular 2G SMS, and local Hardware Voice Beacons.</li>
+        <li><strong>Real-time tracking</strong> of victims, rescue teams, and relief resources using tactical GIS mapping.</li>
+        <li><strong>Offline communication</strong> using standalone ESP32 edge nodes when power and mobile networks fail.</li>
+        <li><strong>AI-assisted triage &amp; dispatch</strong> for automatic distress classification, priority ranking, and agency routing.</li>
+      </ul>
+    </div>
+
+    <!-- CENTER ARCHITECTURE WORKSPACE (LEVEL 1 IN CENTER) -->
+    <div class="center-workspace">
+
+      <!-- 3-TIER PROGRESSION STRIP -->
+      <div class="level-strip">
+        <!-- LEVEL 2 (LEFT) -->
+        <div class="level-box">
+          <div class="level-icon" style="background:#fef3c7; color:#d97706;">📱</div>
+          <div>
+            <span class="level-tag" style="background:#fef3c7; color:#b45309;">LEVEL 2</span>
+            <div class="level-title">Citizen Mobile App</div>
+            <div class="level-sub">Offline + 2G Cellular SMS</div>
+          </div>
+        </div>
+
+        <!-- LEVEL 1 (CENTER - PROMINENT) -->
+        <div class="level-box lvl-center">
+          <div class="level-icon" style="background:#bae6fd; color:#0284c7;">💻</div>
+          <div>
+            <span class="level-tag" style="background:#0284c7; color:#ffffff;">LEVEL 1 (COMMAND HQ)</span>
+            <div class="level-title">DisasterSafe Platform</div>
+            <div class="level-sub">Multi-Agency Central Cloud Hub</div>
+          </div>
+        </div>
+
+        <!-- LEVEL 3 (RIGHT) -->
+        <div class="level-box">
+          <div class="level-icon" style="background:#dcfce7; color:#15803d;">📡</div>
+          <div>
+            <span class="level-tag" style="background:#dcfce7; color:#15803d;">LEVEL 3</span>
+            <div class="level-title">ESP32 Edge Node</div>
+            <div class="level-sub">Zero-Signal Local Wi-Fi Mesh</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NODES DIAGRAM CANVAS -->
+      <div class="nodes-canvas">
+
+        <!-- ARROWS -->
+        <div class="arrow-connector left-to-center">
+          <span class="arrow-label">SMS Webhook</span>
+          <div class="arrow-line to-right"></div>
+        </div>
+
+        <div class="arrow-connector right-to-center">
+          <span class="arrow-label">Web Serial / Sync</span>
+          <div class="arrow-line to-left"></div>
+        </div>
+
+        <!-- NODE 1: CITIZEN MOBILE (LEFT) -->
+        <div class="node-col">
+          <div class="device-card">
+            <svg class="device-img" viewBox="0 0 100 160" fill="none">
+              <rect x="15" y="10" width="70" height="140" rx="14" fill="#0f172a" stroke="#475569" stroke-width="3"/>
+              <rect x="20" y="20" width="60" height="120" rx="8" fill="#1e293b"/>
+              <rect x="30" y="32" width="40" height="40" rx="8" fill="#059669"/>
+              <path d="M42 45 L50 38 L58 45 V58 H42 Z" fill="#ffffff"/>
+              <rect x="25" y="80" width="50" height="12" rx="4" fill="#dc2626"/>
+              <rect x="25" y="98" width="50" height="6" rx="3" fill="#64748b"/>
+              <rect x="25" y="108" width="35" height="6" rx="3" fill="#64748b"/>
+              <circle cx="50" cy="148" r="4" fill="#64748b"/>
+            </svg>
+            <div class="device-name">DisasterSafe App</div>
+            <div class="device-role">Victim Mobile Interface</div>
+          </div>
+
+          <div class="pills-group">
+            <div class="feat-pill">📩 2G SMS SOS Fallback</div>
+            <div class="feat-pill">🤖 Offline AI Advisor</div>
+            <div class="feat-pill">🗺️ Offline GPS Radar</div>
+            <div class="feat-pill">🌐 Multilingual Survival UI</div>
+            <div class="feat-pill">🔋 Low-Power Battery Mode</div>
+          </div>
+        </div>
+
+        <!-- NODE 2: LEVEL 1 CENTRAL COMMAND (CENTER) -->
+        <div class="node-col">
+          <div class="device-card hub">
+            <svg class="device-img" viewBox="0 0 200 130" fill="none">
+              <rect x="35" y="15" width="130" height="85" rx="6" fill="#0f172a" stroke="#0284c7" stroke-width="3"/>
+              <rect x="42" y="22" width="116" height="71" rx="4" fill="#0b1329"/>
+              <!-- Map screen UI -->
+              <path d="M45 40 L65 30 L85 45 L105 35 L125 45 L145 30 L155 45" stroke="#334155" stroke-width="2" fill="none"/>
+              <circle cx="70" cy="55" r="4" fill="#ef4444"/>
+              <circle cx="110" cy="45" r="4" fill="#3b82f6"/>
+              <circle cx="135" cy="70" r="4" fill="#10b981"/>
+              <!-- Laptop base -->
+              <path d="M20 100 L35 100 L165 100 L180 100 L190 108 H10 Z" fill="#334155"/>
+              <rect x="85" y="102" width="30" height="3" rx="1.5" fill="#64748b"/>
+            </svg>
+            <div class="device-name" style="color:#0284c7; font-size:19px;">DisasterSafe Central HQ</div>
+            <div class="device-role" style="color:#047857;">Unified Incident Command</div>
+          </div>
+
+          <div class="pills-group" style="max-width:340px;">
+            <div class="feat-pill sync-highlight">⚡ Real-Time Triage Matrix</div>
+            <div class="feat-pill">🗺️ Multi-Agency GIS Map</div>
+            <div class="feat-pill">👥 7-Tier Agency RBAC</div>
+            <div class="feat-pill">🚒 Automated Team Dispatch</div>
+            <div class="feat-pill">📢 Mass Cellular Alerts</div>
+            <div class="feat-pill">📋 Audit Logs &amp; Analytics</div>
+          </div>
+        </div>
+
+        <!-- NODE 3: ESP32 EDGE BEACON (RIGHT) -->
+        <div class="node-col">
+          <div class="device-card">
+            <svg class="device-img" viewBox="0 0 120 120" fill="none">
+              <!-- ESP32 PCB -->
+              <rect x="25" y="25" width="70" height="80" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2.5"/>
+              <rect x="35" y="35" width="50" height="35" rx="4" fill="#334155"/>
+              <rect x="42" y="42" width="36" height="21" rx="2" fill="#0f172a"/>
+              <!-- Antenna -->
+              <rect x="80" y="8" width="6" height="20" rx="2" fill="#475569"/>
+              <circle cx="83" cy="8" r="3" fill="#10b981"/>
+              <!-- Pin headers -->
+              <rect x="20" y="35" width="4" height="60" fill="#cbd5e1"/>
+              <rect x="96" y="35" width="4" height="60" fill="#cbd5e1"/>
+            </svg>
+            <div class="device-name">ESP32 Edge Beacon</div>
+            <div class="device-role" style="color:#15803d;">Zero-Signal Hotspot</div>
+          </div>
+
+          <div class="pills-group">
+            <div class="feat-pill voice-highlight">🎙️ 1-Tap Voice SOS Note</div>
+            <div class="feat-pill">📶 Wi-Fi Captive Portal</div>
+            <div class="feat-pill">💾 LittleFS Flash Ledger</div>
+            <div class="feat-pill">📍 Offline GPS Beacon</div>
+            <div class="feat-pill">🚗 Field Rescue Nodes</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- RIGHT CARD: HOW IT ADDRESSES THE PROBLEM -->
+    <div class="side-card">
+      <div class="card-header-pill">
+        <h2>HOW IT ADDRESSES THE PROBLEM</h2>
+      </div>
+      <ul class="bullet-list">
+        <li><strong>Connects multiple agencies</strong> (NDRF, Police, Fire, EMS, Volunteers) on a single synchronized tactical command map.</li>
+        <li><strong>Enables faster SOS response</strong> and precise victim tracking with under 30-second alert latency.</li>
+        <li><strong>Maintains communication</strong> during complete power grid, fiber, and 4G/5G mobile network collapse.</li>
+        <li><strong>Optimizes resource allocation</strong> for rescue boats, ambulances, fire tenders, and relief supply stockpiles.</li>
+        <li><strong>Empowers faster decision-making</strong> through automated multi-agency classification and AI triage.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM TAGLINE FOOTER -->
+  <div class="bottom-footer">
+    <div class="tagline-text">“ Keeping rescue alive when everything goes dark. ”</div>
+    <div class="slide-num">2</div>
+  </div>
+
+</body>
+</html>
